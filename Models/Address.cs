@@ -19,7 +19,7 @@ namespace web_development_course.Models
         public string Street { get; set; }
 
         [Required]
-        [RegularExpression("([1-9][0-9]*)"), ErrorMessage = "Characters are not allowed.")]
+        [RegularExpression("([1-9][0-9]*)", ErrorMessage = "Characters are not allowed.")]
         public int BuildingNumber { get; set; }
     }
 }

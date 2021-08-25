@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using web_development_course.Common;
 
 namespace web_development_course.Models
 {
@@ -11,11 +12,11 @@ namespace web_development_course.Models
         public int Id { get; set; }
 
         [Required]
-        [RegularExpression("^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$", ErrorMessage = "Please enter valid hour")]
+        [RegularExpression(Consts.HOUR24_REGEX, ErrorMessage = Consts.HOUR_VIOLATION_ERROR)]
         public string Open { get; set; }
 
         [Required]
-        [RegularExpression("^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$", ErrorMessage = "Please enter valid hour")]
+        [RegularExpression(Consts.HOUR24_REGEX, ErrorMessage = Consts.HOUR_VIOLATION_ERROR)]
         public string Close{ get; set; }
 
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using web_development_course.Common;
 
 namespace web_development_course.Models
 {
@@ -19,7 +20,7 @@ namespace web_development_course.Models
         public string Street { get; set; }
 
         [Required]
-        [RegularExpression("([1-9][0-9]*)", ErrorMessage = "Characters are not allowed.")]
+        [Range(Consts.FIRST_BUILDING_NUM, Consts.MAX_BUILDING_NUM, ErrorMessage = Consts.ONLY_DIGITS_ERROR)]
         public int BuildingNumber { get; set; }
     }
 }

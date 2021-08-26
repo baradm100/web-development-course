@@ -12,7 +12,7 @@ namespace web_development_course.Models
 {
     public class ProductType
     {
-        public int ProductTypeID { get; set; }
+        public int Id { get; set; }
 
         [Required]
         public Product Product { get; set; }

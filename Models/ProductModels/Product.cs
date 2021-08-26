@@ -9,7 +9,7 @@ namespace web_development_course.Models
 {
     public class Product
     {
-        public int ProductID { get; set; }
+        public int Id { get; set; }
 
         [Required]
         public float Price { get; set; }

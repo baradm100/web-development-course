@@ -16,7 +16,7 @@ namespace web_development_course.Models
 
     public class User
     {
-        public int UserID { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [MaxLength(100)]

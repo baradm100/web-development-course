@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using web_development_course.Common;
 
 namespace web_development_course.Models.OrderModels
 {
@@ -17,9 +19,10 @@ namespace web_development_course.Models.OrderModels
         public int Amount { get; set; }
 
         [Required]
+        [Column("total_price")]
+        [Range(0,Consts.MaxProductsTotalPrice,ErrorMessage = Consts.ProductTotalPriceErrorMessage)]
         public int TotalPrice { get; set; }
         
-        //TODO: Validate
         public int ProductTypeID { get; set; }
 
         [Required]

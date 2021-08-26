@@ -8,7 +8,7 @@ namespace web_development_course.Models.OrderModels
 {
     public class OrderItem
     {
-        public int OrderItemID { get; set; }
+        public int Id { get; set; }
 
         [Required]
         public Order Order { get; set; }

@@ -10,6 +10,16 @@ using web_development_course.Common;
 
 namespace web_development_course.Models
 {
+    public enum ProductSize
+    {
+        xs,
+        s,
+        m,
+        l,
+        xl,
+        xxl
+    }
+
     public class ProductType
     {
         public int Id { get; set; }
@@ -18,7 +28,7 @@ namespace web_development_course.Models
         public Product Product { get; set; }
 
         [Required]
-        public int Size { get; set; }
+        public ProductSize Size { get; set; }
 
         [Range(0,Consts.MaxProductsQuantity,ErrorMessage = Consts.ProductTypeQuantityErrorMessage)]
         public int Quantity { get; set; } = 0;
@@ -26,9 +36,5 @@ namespace web_development_course.Models
         [Required]
         public Color Color { get; set; }
 
-        public byte[] Image { get; set; }
-
-        [NotMapped]
-        public IFormFile ImageFile { get; set; }
     }
 }

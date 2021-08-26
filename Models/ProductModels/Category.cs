@@ -8,7 +8,7 @@ namespace web_development_course.Models
 {
     public class Category
     {
-        public int CategoryID { get; set; }
+        public int Id { get; set; }
 
         [MaxLength(100)]
         [Required]

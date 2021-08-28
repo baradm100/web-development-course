@@ -1,0 +1,21 @@
+.category .item {
+  border-radius: 5px;
+  max-width: 20rem;
+  min-width: 15rem;
+  display: inline-block;
+  margin: 5px;
+}
+
+.category .item img {
+  width: 100%;
+  height: calc(15rem - 1.5rem);
+  object-fit: cover;
+}
+
+.category .item .colorContainer .color {
+  display: inline-block;
+}
+
+.category .item .viewButton {
+  width: 100%;
+}

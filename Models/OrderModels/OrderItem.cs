@@ -19,7 +19,7 @@ namespace web_development_course.Models.OrderModels
         public int Amount { get; set; }
 
         [Required]
-        [Column("total_price")]
+        [Display(Name = "total price")]
         [Range(0,Consts.MaxProductsTotalPrice,ErrorMessage = Consts.ProductTotalPriceErrorMessage)]
         public int TotalPrice { get; set; }
         

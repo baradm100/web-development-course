@@ -21,7 +21,7 @@ namespace web_development_course.Models
         [Required]
         [MaxLength(100)]
         public string FirstName { get; set; }
-        
+
         [Required]
         [MaxLength(100)]
         public string LastName { get; set; }
@@ -38,9 +38,9 @@ namespace web_development_course.Models
 
         [Required]
         [DataType(DataType.Date)]
-        public int DateOfBirth { get; set; }
+        public DateTime DateOfBirth { get; set; }
 
-        public Order OrderID { get; set; }
+        public int OrderID { get; set; }
 
         public Order Cart { get; set; }
 

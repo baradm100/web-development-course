@@ -25,3 +25,19 @@ dotnet ef database update
 ```bash
 dotnet ef migrations add InitialCreate
 ```
+
+## Connection Strings
+
+We set under [appsettings.Development.json](./appsettings.Development.json) a connection string to our local DBs, in order to run on the remote DB we just need to delete the `ConnectionStrings` segment
+
+### Local DB Connection String
+
+```
+Server=(localdb)\\mssqllocaldb;Database=aspLearningDB;Trusted_Connection=True;MultipleActiveResultSets=true
+```
+
+### When Running MSSQL In A Container
+
+```
+Server=localhost;Database=aspLearningDB;User ID=sa;Password=yourStrong(!)Password
+```

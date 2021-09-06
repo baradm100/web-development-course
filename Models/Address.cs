@@ -22,5 +22,11 @@ namespace web_development_course.Models
         [Required]
         [Range(Consts.FIRST_BUILDING_NUM, Consts.MAX_BUILDING_NUM, ErrorMessage = Consts.ONLY_DIGITS_ERROR)]
         public int BuildingNumber { get; set; }
+
+        public float Longitude { get; set; }
+
+        public float Latitude { get; set; }
+
+
     }
 }

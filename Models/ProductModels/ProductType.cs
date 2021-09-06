@@ -34,7 +34,7 @@ namespace web_development_course.Models
         public int Quantity { get; set; } = 0;
 
         [Required]
-        public Color Color { get; set; }
+        public string Color { get; set; }
 
     }
 }

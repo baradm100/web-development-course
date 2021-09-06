@@ -11,9 +11,6 @@ namespace web_development_course.Models.OrderModels
         public int Id { get; set; }
 
         [Required]
-        public User User { get; set; }
-
-        [Required]
         [DataType(DataType.Date)]
         public DateTime Date { get; set; } = DateTime.Now;
 

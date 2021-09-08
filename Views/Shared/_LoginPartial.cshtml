@@ -1,14 +1,17 @@
-@{ 
+@{
     var user = Context.User.Identity.Name;
     var authanticated = Context.User.Identity.IsAuthenticated;
     var userAuthLevel = Context.User.Identity.AuthenticationType;
 }
 
 <ul class="navbar-nav">
+    <partial name="_CartPartial" />
+
     @if (authanticated)
     {
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="Identity" asp-controller="Users" asp-action="Edit" title="Manage">Hello @user!</a>
+            <a class="nav-link text-dark" asp-area="Identity" asp-controller="Users" asp-action="Edit" title="Manage">Hello
+                @user!</a>
         </li>
         <li class="nav-item">
             <form class="form-inline" asp-area="Identity" asp-controller="Users" asp-action="Logout">

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ namespace web_development_course.Controllers
         }
 
         // GET: OrderItems
+        [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.OrderItem.Include(o => o.ProductType);
@@ -27,6 +29,7 @@ namespace web_development_course.Controllers
         }
 
         // GET: OrderItems/Details/5
+        [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -46,6 +49,7 @@ namespace web_development_course.Controllers
         }
 
         // GET: OrderItems/Create
+        [Authorize(Roles = "Admin,Editor")]
         public IActionResult Create()
         {
             ViewData["ProductTypeID"] = new SelectList(_context.ProductType, "Id", "Color");
@@ -57,6 +61,7 @@ namespace web_development_course.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> Create([Bind("Id,Amount,TotalPrice,ProductTypeID")] OrderItem orderItem)
         {
             if (ModelState.IsValid)
@@ -70,6 +75,7 @@ namespace web_development_course.Controllers
         }
 
         // GET: OrderItems/Edit/5
+        [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -91,6 +97,7 @@ namespace web_development_course.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Amount,TotalPrice,ProductTypeID")] OrderItem orderItem)
         {
             if (id != orderItem.Id)
@@ -123,6 +130,7 @@ namespace web_development_course.Controllers
         }
 
         // GET: OrderItems/Delete/5
+        [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -144,6 +152,7 @@ namespace web_development_course.Controllers
         // POST: OrderItems/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var orderItem = await _context.OrderItem.FindAsync(id);

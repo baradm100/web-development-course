@@ -57,16 +57,19 @@ namespace web_development_course.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,AddressId")] Branch branch)
+        public async Task<IActionResult> Create([Bind("Id,City,Street,BuildingNumber,Longitude,Latitude")] Address address)
         {
             if (ModelState.IsValid)
             {
+                _context.Add(address);
+                Branch branch = new Branch();
+                branch.AddressId = address.Id;
+                branch.Address = address;
                 _context.Add(branch);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AddressId"] = new SelectList(_context.Address, "Id", "City", branch.AddressId);
-            return View(branch);
+            return View();
         }
 
         // GET: Branches/Edit/5

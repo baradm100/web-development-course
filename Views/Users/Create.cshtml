@@ -34,7 +34,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="UserType" class="control-label"></label>
-                <select asp-for="UserType" class="form-control"></select>
+                <select asp-for="UserType" asp-items="Html.GetEnumSelectList<UserLevel>()" class="form-control"></select>
                 <span asp-validation-for="UserType" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -45,6 +45,9 @@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
+            @if (!String.IsNullOrEmpty(ViewBag.Error)){
+                <div class="text-danger">@ViewBag.Error</div>
+            }
         </form>
     </div>
 </div>

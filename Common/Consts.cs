@@ -25,7 +25,7 @@ namespace web_development_course.Common
 
         #region Regex
 
-        public const string HOUR24_REGEX = "^(2[0 - 3]|[01]?[0 - 9]):([0 - 5]?[0 - 9])$";
+        public const string HOUR24_REGEX = "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$";
 
         # endregion
     }

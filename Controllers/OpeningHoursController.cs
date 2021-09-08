@@ -10,23 +10,22 @@ using web_development_course.Models;
 
 namespace web_development_course.Controllers
 {
-    public class BranchesController : Controller
+    public class OpeningHoursController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public BranchesController(ApplicationDbContext context)
+        public OpeningHoursController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Branches
+        // GET: OpeningHours
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Branch.Include(b => b.Address);
-            return View(await applicationDbContext.ToListAsync());
+            return View(await _context.OpeningHour.ToListAsync());
         }
 
-        // GET: Branches/Details/5
+        // GET: OpeningHours/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -34,42 +33,39 @@ namespace web_development_course.Controllers
                 return NotFound();
             }
 
-            var branch = await _context.Branch
-                .Include(b => b.Address)
+            var openingHour = await _context.OpeningHour
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (branch == null)
+            if (openingHour == null)
             {
                 return NotFound();
             }
 
-            return View(branch);
+            return View(openingHour);
         }
 
-        // GET: Branches/Create
+        // GET: OpeningHours/Create
         public IActionResult Create()
         {
-            ViewData["AddressId"] = new SelectList(_context.Address, "Id", "City","Street");
             return View();
         }
 
-        // POST: Branches/Create
+        // POST: OpeningHours/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,AddressId")] Branch branch)
+        public async Task<IActionResult> Create([Bind("Id,Open,Close,DayOfWeek")] OpeningHour openingHour)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(branch);
+                _context.Add(openingHour);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AddressId"] = new SelectList(_context.Address, "Id", "City", branch.AddressId);
-            return View(branch);
+            return View(openingHour);
         }
 
-        // GET: Branches/Edit/5
+        // GET: OpeningHours/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -77,23 +73,22 @@ namespace web_development_course.Controllers
                 return NotFound();
             }
 
-            var branch = await _context.Branch.FindAsync(id);
-            if (branch == null)
+            var openingHour = await _context.OpeningHour.FindAsync(id);
+            if (openingHour == null)
             {
                 return NotFound();
             }
-            ViewData["AddressId"] = new SelectList(_context.Address, "Id", "City", branch.AddressId);
-            return View(branch);
+            return View(openingHour);
         }
 
-        // POST: Branches/Edit/5
+        // POST: OpeningHours/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,AddressId")] Branch branch)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Open,Close,DayOfWeek")] OpeningHour openingHour)
         {
-            if (id != branch.Id)
+            if (id != openingHour.Id)
             {
                 return NotFound();
             }
@@ -102,12 +97,12 @@ namespace web_development_course.Controllers
             {
                 try
                 {
-                    _context.Update(branch);
+                    _context.Update(openingHour);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BranchExists(branch.Id))
+                    if (!OpeningHourExists(openingHour.Id))
                     {
                         return NotFound();
                     }
@@ -118,11 +113,10 @@ namespace web_development_course.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AddressId"] = new SelectList(_context.Address, "Id", "City", branch.AddressId);
-            return View(branch);
+            return View(openingHour);
         }
 
-        // GET: Branches/Delete/5
+        // GET: OpeningHours/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -130,31 +124,30 @@ namespace web_development_course.Controllers
                 return NotFound();
             }
 
-            var branch = await _context.Branch
-                .Include(b => b.Address)
+            var openingHour = await _context.OpeningHour
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (branch == null)
+            if (openingHour == null)
             {
                 return NotFound();
             }
 
-            return View(branch);
+            return View(openingHour);
         }
 
-        // POST: Branches/Delete/5
+        // POST: OpeningHours/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var branch = await _context.Branch.FindAsync(id);
-            _context.Branch.Remove(branch);
+            var openingHour = await _context.OpeningHour.FindAsync(id);
+            _context.OpeningHour.Remove(openingHour);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool BranchExists(int id)
+        private bool OpeningHourExists(int id)
         {
-            return _context.Branch.Any(e => e.Id == id);
+            return _context.OpeningHour.Any(e => e.Id == id);
         }
     }
 }

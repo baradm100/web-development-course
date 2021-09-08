@@ -10,8 +10,8 @@ using web_development_course.Data;
 namespace web_development_course.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210903143645_add_coordinate")]
-    partial class add_coordinate
+    [Migration("20210907164054_cast_to_double")]
+    partial class cast_to_double
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -237,10 +237,10 @@ namespace web_development_course.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<double>("Latitude")
-                        .HasColumnType("real");
+                        .HasColumnType("float");
 
                     b.Property<double>("Longitude")
-                        .HasColumnType("real");
+                        .HasColumnType("float");
 
                     b.Property<string>("Street")
                         .IsRequired()

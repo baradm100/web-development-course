@@ -6,14 +6,14 @@ namespace web_development_course.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<float>(
+            migrationBuilder.AddColumn<double>(
                 name: "Latitude",
                 table: "Address",
                 type: "real",
                 nullable: false,
                 defaultValue: 0f);
 
-            migrationBuilder.AddColumn<float>(
+            migrationBuilder.AddColumn<double>(
                 name: "Longitude",
                 table: "Address",
                 type: "real",

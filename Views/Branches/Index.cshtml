@@ -1,22 +1,80 @@
 ﻿@model IEnumerable<web_development_course.Models.Branch>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Stores";
 }
 
-<h1>Branches</h1>
+<h1>Stores</h1>
+<div class="row">
+    <div class="col-xl-7 mb-5">
+        <div class="from-container bg-white">
+            @foreach (var item in Model)
+            {
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">Branch name</h3>
+                        <div class="row">
+                            <div class="col-xl-5 mb-4">
+                                <b class="txt-lg col-sm-12">Address</b>
+                                <div class="txt-md col-sm-12">@item.Address</div>
+                            </div>
+                            <div class="col-xl-4 mb-4">
+                                <b class="txt-lg col-sm-12">Opening hours</b>
+                                <div class="txt-md col-sm-12">@item.OpeningHours</div>
+                            </div>
+                            <div class="col-xl-3 mb-4">
+                                <div class="col centered-left">
+                                    <a href="#" class="btn btn-primary text-end">Show on map</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="col-sm-5">
+        <div id="googleMap"></div>
+    </div>
+</div>
 
-<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-<link rel="stylesheet" type="text/css" href="~/css/style.css" />
-<script src="~/js/index.js"></script>
+@section Scripts{
 
-<div id="map"></div>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script src="~/js/site.js"></script>   
+        
+    <script language="javascript" type="text/javascript">
+        
+        var _branchesLst = @Html.Raw(Json.Serialize(Model.Select(b => new { address = b.Address})));
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDZ2pOfh-9YmVLc7XaMifZUGQBS6exoWgY&callback=initMap&libraries=&v=weekly"
-        ></script>
+        var _list = @Model;
+      var _map
+
+        const myLatLng = { lat: 32.084694, lng: 34.7912818 };
+        _map = new google.maps.Map(document.getElementById("googleMap"), {
+            zoom: 8,
+            center: myLatLng
+        });
+        
+        // Adds the markers of branches locations:
+        _markers = [];
+        for (var i = 0; i < _branchesLst.length; i++) {
+            _markers.push(new google.maps.Marker({
+                position: { lat: _branchesLst[i].address.latitude, lng: _branchesLst[i].address.longitude },
+                title: _branchesLst[i].address.city,
+                map: _map
+            }));
+            _markers[i].addListener("click", () => {
+    //            showInfoWindow(_markers[i]);
+            });
+        }
+
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDZ2pOfh-9YmVLc7XaMifZUGQBS6exoWgY&callback=initMap&libraries=&v=weekly" async></script>
+
+}
 
 
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-

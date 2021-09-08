@@ -9,13 +9,14 @@ namespace web_development_course.Models
     public class Branch
     {
         public int Id { get; set; }
-
+                       
         public int AddressId { get; set; }
 
         [Required]
         public Address Address { get; set; }
 
         [Required]
-        public OpeningHour[] OpeningHours { get; set; }
+        public IEnumerable<OpeningHour> OpeningHours { get; set; }
+
     }
 }

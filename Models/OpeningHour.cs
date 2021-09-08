@@ -19,5 +19,7 @@ namespace web_development_course.Models
         [RegularExpression(Consts.HOUR24_REGEX, ErrorMessage = Consts.HOUR_VIOLATION_ERROR)]
         public string Close{ get; set; }
 
+        [Required]
+        public DayOfWeek DayOfWeek { get; set; }
     }
 }

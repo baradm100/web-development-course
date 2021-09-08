@@ -40,10 +40,6 @@ namespace web_development_course.Models
         [DataType(DataType.Date)]
         public DateTime DateOfBirth { get; set; }
 
-        public int OrderID { get; set; }
-
-        public Order Cart { get; set; }
-
         public IEnumerable<Order> Orders { get; set; }
 
     }

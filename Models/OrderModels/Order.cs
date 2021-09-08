@@ -11,12 +11,17 @@ namespace web_development_course.Models.OrderModels
         public int Id { get; set; }
 
         [Required]
+        public int UserId { get; set; }
         public User User { get; set; }
+
+        [Required]
+        public bool IsCart { get; set; } = true;
 
         [Required]
         [DataType(DataType.Date)]
         public DateTime Date { get; set; } = DateTime.Now;
 
         public IEnumerable<OrderItem> OrderItems { get; set; }
+
     }
 }

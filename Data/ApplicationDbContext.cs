@@ -31,7 +31,7 @@ namespace web_development_course.Data
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);
 
-            modelBuilder.Entity<User>().HasData(new User { Id = -1, FirstName = "Admin", LastName = "Admin", Email = "admin@admin.com", Password = "1234", UserType = UserLevel.Admin });
+            modelBuilder.Entity<User>().HasData(new User { Id = 1, FirstName = "Admin", LastName = "Admin", Email = "admin@admin.com", Password = "1234", UserType = UserLevel.Admin });
         }
     }
 

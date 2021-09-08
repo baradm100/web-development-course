@@ -10,8 +10,8 @@ using web_development_course.Data;
 namespace web_development_course.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210908122557_default-user")]
-    partial class defaultuser
+    [Migration("20210908174748_AddAdminUser")]
+    partial class AddAdminUser
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -458,7 +458,7 @@ namespace web_development_course.Migrations
                     b.HasData(
                         new
                         {
-                            Id = -1,
+                            Id = 1,
                             DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@admin.com",
                             FirstName = "Admin",

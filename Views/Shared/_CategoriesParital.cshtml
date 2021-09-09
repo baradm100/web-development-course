@@ -9,14 +9,22 @@
     <ul class="dropdown-menu" aria-labelledby="catagory-@item.Category.Id">
         @foreach (var subItem in item.SubCategories)
             {
-                <a asp-area="" asp-controller="Categories" asp-action="Details" asp-route-id="@subItem.Id">
-                    @subItem.Name
-                </a>
+                <li>
+                    <a class="dropdown-item" asp-area="" asp-controller="Categories" asp-action="Details"
+                asp-route-id="@subItem.Id">
+                        @subItem.Name
+                    </a>
+                </li>
             }
-
-            <a asp-area="" asp-controller="Categories" asp-action="Details" asp-route-id="@item.Category.Id">
-                View All
-            </a>
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            <li>
+                <a class="dropdown-item" asp-area="" asp-controller="Categories" asp-action="Details"
+                asp-route-id="@item.Category.Id">
+                    View All
+                </a>
+            </li>
         </ul>
     </li>
 }

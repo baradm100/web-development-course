@@ -15,5 +15,9 @@ namespace web_development_course.Models
         public string Name { get; set; }
 
         public IEnumerable<Product> Products { get; set; }
+
+        public int? ParentCategoryId { get; set; }
+
+        public Category ParentCategory { get; set; }
     }
 }

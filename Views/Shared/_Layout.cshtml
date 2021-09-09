@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@inject web_development_course.Models.ProductModels.CategoryModelService CategoryModelService
+
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -27,6 +29,30 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        @foreach (var item in @CategoryModelService.GetCategoryTrees())
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-dark nav-link dropdown-toggle" data-bs-toggle="dropdown"
+                                aria-expanded="false" id="catagory-@item.Category.Id" href="#">@item.Category.Name</a>
+
+                                <ul class="dropdown-menu" aria-labelledby="catagory-@item.Category.Id">
+                                    @foreach (var subItem in item.SubCategories)
+                                    {
+                                        <a asp-area="" asp-controller="Categories" asp-action="Details"
+                                    asp-route-id="@subItem.Id">
+                                            @subItem.Name
+                                        </a>
+                                    }
+
+
+                                    <a asp-area="" asp-controller="Categories" asp-action="Details"
+                                    asp-route-id="@item.Category.Id">
+                                        View All
+                                    </a>
+                                </ul>
+                            </li>
+                        }
+
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home"
                                 asp-action="Privacy">Branches</a>

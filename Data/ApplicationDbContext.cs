@@ -32,6 +32,17 @@ namespace web_development_course.Data
             // Add your customizations after calling base.OnModelCreating(builder);
 
             modelBuilder.Entity<User>().HasData(new User { Id = 1, FirstName = "Admin", LastName = "Admin", Email = "admin@admin.com", Password = "1234", UserType = UserLevel.Admin });
+
+            modelBuilder.Entity<Category>().HasData(
+                new Category { Id = 1, Name = "Men" },
+                new Category { Id = 2, Name = "Women" },
+                new Category { Id = 3, Name = "Men Shirts", ParentCategoryId = 1 },
+                new Category { Id = 4, Name = "Women Shirts", ParentCategoryId = 2 },
+                new Category { Id = 5, Name = "Men Pants", ParentCategoryId = 1 },
+                new Category { Id = 6, Name = "Women Pants", ParentCategoryId = 2 },
+                new Category { Id = 7, Name = "Men Hats", ParentCategoryId = 1 },
+                new Category { Id = 8, Name = "Women Hats", ParentCategoryId = 2 }
+            );
         }
     }
 

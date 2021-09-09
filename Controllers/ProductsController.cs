@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -44,6 +45,7 @@ namespace web_development_course.Controllers
         }
 
         // GET: Products/Create
+        [Authorize(Roles = "Admin,Editor")]
         public IActionResult Create()
         {
             return View();
@@ -54,6 +56,7 @@ namespace web_development_course.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> Create([Bind("Id,Price,Name,DiscountPercentage")] Product product)
         {
             if (ModelState.IsValid)
@@ -66,6 +69,7 @@ namespace web_development_course.Controllers
         }
 
         // GET: Products/Edit/5
+        [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -86,6 +90,7 @@ namespace web_development_course.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Price,Name,DiscountPercentage")] Product product)
         {
             if (id != product.Id)
@@ -117,6 +122,7 @@ namespace web_development_course.Controllers
         }
 
         // GET: Products/Delete/5
+        [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -137,6 +143,7 @@ namespace web_development_course.Controllers
         // POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var product = await _context.Product.FindAsync(id);

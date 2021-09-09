@@ -1,0 +1,55 @@
+.cartQuickView .cartItem > img {
+  max-width: 150px;
+  max-height: 150px;
+  object-fit: cover;
+}
+
+.cartQuickView .cartItem > .cartItemDetails > div > select {
+  width: unset;
+  display: inline;
+}
+
+.cartQuickView .goToCart {
+  width: 100%;
+}
+
+.cartQuickView .deleteButton {
+  margin-top: -4px;
+}
+
+.cartQuickView .itemList {
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.cartQuickView .itemList::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 12px;
+}
+
+.cartQuickView .itemList::-webkit-scrollbar-track {
+  background: white;
+}
+
+.cartQuickView .itemList::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  background-clip: content-box;
+  border-radius: 9px;
+  background-color: rgb(192, 192, 192);
+}
+
+.cartQuickView .itemList::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(124, 124, 124);
+}
+
+ul.dropdown-menu.container.cartQuickView {
+  min-width: 18em;
+  left: -40px;
+  padding-right: 5px;
+  padding-left: 5px;
+}
+
+ul.dropdown-menu.container.cartQuickView.noLogin {
+  left: -80px;
+}

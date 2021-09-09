@@ -26,6 +26,16 @@ dotnet ef database update
 dotnet ef migrations add InitialCreate
 ```
 
+## Run In Watch Mode
+
+```bash
+dotnet watch run
+```
+
+## Documents
+
+- [UML](https://lucid.app/lucidchart/invitations/accept/inv_d49a6e28-5842-4ef0-bf0c-35581ee00ad5)
+
 ## Connection Strings
 
 We set under [appsettings.Development.json](./appsettings.Development.json) a connection string to our local DBs, in order to run on the remote DB we just need to delete the `ConnectionStrings` segment

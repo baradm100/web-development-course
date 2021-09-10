@@ -16,6 +16,7 @@ namespace web_development_course.Common
         public const string DiscountPercentageErrorMessage = "The value should be between 0 - 100";
         public const string ProductTypeQuantityErrorMessage = "quantity must be between 0 and 100000";
         public const string ProductTotalPriceErrorMessage = "the price must be a value between 0 and 10000";
+        public const string ProductTypeImageError = "You must upload at least one image";
 
         # endregion
 

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using web_development_course.Models;
 using web_development_course.Models.OrderModels;
+using web_development_course.Models.ProductModels;
 
 namespace web_development_course.Data
 {
@@ -22,6 +23,7 @@ namespace web_development_course.Data
         public DbSet<Category> Category { get; set; }
         public DbSet<Product> Product { get; set; }
         public DbSet<ProductType> ProductType { get; set; }
+        public DbSet<ProductImage> ProductImage { get; set; }
         public DbSet<User> User { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -33,6 +35,7 @@ namespace web_development_course.Data
 
             modelBuilder.Entity<User>().HasData(new User { Id = 1, FirstName = "Admin", LastName = "Admin", Email = "admin@admin.com", Password = "1234", UserType = UserLevel.Admin });
         }
+
     }
 
 }

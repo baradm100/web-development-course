@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using web_development_course.Common;
+using web_development_course.Models.ProductModels;
 
 namespace web_development_course.Models
 {
@@ -24,5 +25,8 @@ namespace web_development_course.Models
         public IEnumerable<Category> Categories { get; set; }
 
         public IEnumerable<ProductType> ProductTypes { get; set; }
+
+        public IEnumerable<ProductImage> ProductImages { get; set; }
+
     }
 }

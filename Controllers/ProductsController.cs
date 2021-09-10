@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using web_development_course.Common;
 using web_development_course.Data;
 using web_development_course.Models;
+using web_development_course.Models.ProductModels;
 
 namespace web_development_course.Controllers
 {
@@ -23,7 +27,7 @@ namespace web_development_course.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Product.ToListAsync());
+            return View(await _context.Product.Include(product => product.ProductTypes).Include(product => product.ProductImages).ToListAsync());
         }
 
         // GET: Products/Details/5
@@ -57,15 +61,49 @@ namespace web_development_course.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Editor")]
-        public async Task<IActionResult> Create([Bind("Id,Price,Name,DiscountPercentage")] Product product)
+        public async Task<IActionResult> Create(IFormFile files, [Bind("Id,Price,Name,DiscountPercentage")] Product product, [Bind("Id,Size,Quantity,Color,Product")] ProductType productType)
         {
+            if (productType.Quantity > Consts.MaxProductsQuantity)
+            {
+                ViewBag.QuantityError = Consts.ProductTypeQuantityErrorMessage;
+                return View();
+            }
             if (ModelState.IsValid)
             {
-                _context.Add(product);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (files != null)
+                {
+                    //TODO: had validation that product name is uniqe
+                    if (product.ProductImages == null)
+                        product.ProductImages = new List<ProductImage>();
+                    if (product.ProductTypes == null)
+                        product.ProductTypes = new List<ProductType>();
+                    ProductImage img = UploadImageToDb(files);
+                    product.ProductImages.Append(img);
+                    img.Product = product;
+                    img.ProductId = product.Id;
+                    productType.Product = product;
+                    product.ProductTypes.Append(productType);
+                    _context.ProductImage.Add(img);
+                    _context.Product.Add(product);
+                    _context.ProductType.Add(productType);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                ViewBag.ImageError = Consts.ProductTypeImageError;
+                return View();
             }
-            return View(product);
+            return View();
+        }
+
+        public ProductImage UploadImageToDb(IFormFile files)
+        {
+            var fileName = Path.GetFileName(files.FileName);
+            ProductImage img = new ProductImage();
+            img.Name = fileName;
+            var ms = new MemoryStream();
+            files.CopyTo(ms);
+            img.ImageData = ms.ToArray();
+            return img;
         }
 
         // GET: Products/Edit/5

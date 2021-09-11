@@ -6,26 +6,44 @@
 
 <h1>Stores</h1>
 <div class="row">
-    <div class="col-xl-7 mb-5">
+    <div id="stores"class="col-xl-7 mb-4">
         <div class="from-container bg-white">
-            @foreach (var item in Model)
+            @for (int i = 0; i < Model.ToList().Count; i++)
             {
                 <div class="card">
                     <div class="card-body">
-                        <h3 class="card-title">Branch name</h3>
+                        <h3 class="card-title">@Model.ToList()[i].Name</h3>
                         <div class="row">
-                            <div class="col-xl-5 mb-4">
+                            <div class="col-xl-4 mb-4">
                                 <b class="txt-lg col-sm-12">Address</b>
-                                <div class="txt-md col-sm-12">@item.Address</div>
+                                <div class="txt-md col-sm-12">@Model.ToList()[i].Address</div>
                             </div>
                             <div class="col-xl-4 mb-4">
-                                <b class="txt-lg col-sm-12">Opening hours</b>
-                                <div class="txt-md col-sm-12">@item.OpeningHours</div>
+                                <b class="txt-lg col-sm-12">Opening Hours</b>
+                                @functions {
+                                    private string OpenDays(IEnumerable<OpeningHour> item)
+                                    {
+                                        string str = "";
+                                        List<OpeningHour> sortedList = item.OrderBy(o => o.DayOfWeek).ToList();
+
+                                        foreach (var day in sortedList)
+                                        {
+                                            str += day.ToString();
+                                        }
+                                        return str;
+                                    }
+
+                                }
+                                <p class="txt-md col-sm-12" style="white-space: pre-line">@OpenDays(Model.ToList()[i].OpeningHours) </p>
                             </div>
-                            <div class="col-xl-3 mb-4">
-                                <div class="col centered-left">
-                                    <a href="#" class="btn btn-primary text-end">Show on map</a>
+                            <div class="col ">
+                                <div class="col  d-flex justify-content-center align-items-center">
+                                    <button type="button" class="btn btn-primary text-center shadow" marker-position-show="@i">Show In Map</button>
                                 </div>
+                                <div class="col  d-flex justify-content-center align-items-center">
+                                    <a asp-action="Edit" asp-route-id="@Model.ToList()[i].Id">Edit</a> |
+                                    <a asp-action="Delete" asp-route-id="@Model.ToList()[i].Id">Delete</a>
+                                </div>                         
                             </div>
                         </div>
                     </div>
@@ -33,44 +51,18 @@
             }
         </div>
     </div>
-    <div class="col-sm-5">
-        <div id="googleMap"></div>
+    <div class="col">
+        <div id="map-container" class="from-container" >
+            <div id="google-map"></div>
+        </div>
     </div>
+ 
 </div>
 
 @section Scripts{
-
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-    <script src="~/js/site.js"></script>   
-        
-    <script language="javascript" type="text/javascript">
-        
-        var _branchesLst = @Html.Raw(Json.Serialize(Model.Select(b => new { address = b.Address})));
-
-        var _list = @Model;
-      var _map
-
-        const myLatLng = { lat: 32.084694, lng: 34.7912818 };
-        _map = new google.maps.Map(document.getElementById("googleMap"), {
-            zoom: 8,
-            center: myLatLng
-        });
-        
-        // Adds the markers of branches locations:
-        _markers = [];
-        for (var i = 0; i < _branchesLst.length; i++) {
-            _markers.push(new google.maps.Marker({
-                position: { lat: _branchesLst[i].address.latitude, lng: _branchesLst[i].address.longitude },
-                title: _branchesLst[i].address.city,
-                map: _map
-            }));
-            _markers[i].addListener("click", () => {
-    //            showInfoWindow(_markers[i]);
-            });
-        }
-
-    </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDZ2pOfh-9YmVLc7XaMifZUGQBS6exoWgY&callback=initMap&libraries=&v=weekly" async></script>
+    <script src="~/js/googlemaps.js" type="text/javascript"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDZ2pOfh-9YmVLc7XaMifZUGQBS6exoWgY&callback=initMap&libraries=&v=weekly"></script>
 
 }
 

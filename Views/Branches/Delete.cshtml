@@ -11,12 +11,22 @@
     <h4>Branch</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Address)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+            <p class="font-weight-light">@Model.Name</p>
+            </dt>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Address.City)
+            <p class="font-weight-normal">@Model.Address.City</p>
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Address.City)
-        </dd class>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Address.Street)
+            <p class="font-weight-normal">@Model.Address.Street</p>
+        </dt>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Address.BuildingNumber)
+            <p class="font-weight-normal">@Model.Address.BuildingNumber</p>
+        </dt>
     </dl>
     
     <form asp-action="Delete">

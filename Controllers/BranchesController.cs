@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using web_development_course.Data;
+using web_development_course.Data;  
 using web_development_course.Models;
 
 namespace web_development_course.Controllers
@@ -22,7 +22,9 @@ namespace web_development_course.Controllers
         // GET: Branches
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Branch.Include(b => b.Address);
+
+
+            var applicationDbContext = _context.Branch.Include(b => b.Address).Include(d=>d.OpeningHours);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -48,8 +50,15 @@ namespace web_development_course.Controllers
         // GET: Branches/Create
         public IActionResult Create()
         {
-            ViewData["AddressId"] = new SelectList(_context.Address, "Id", "City","Street");
+            ViewData["AddressId"] = new SelectList(_context.Address, "Id,Name,City,Street,BuildingNumber,Longitude,Latitude");
             return View();
+        }
+
+        // GET: Branches/GetJson
+         public async Task<IActionResult> GetJson()
+        {
+            var applicationDbContext = _context.Branch.Include(b => b.Address);
+            return Json(await applicationDbContext.ToListAsync());
         }
 
         // POST: Branches/Create
@@ -57,7 +66,7 @@ namespace web_development_course.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,City,Street,BuildingNumber,Longitude,Latitude")] Address address)
+        public async Task<IActionResult> Create([Bind("Id,City,Street,BuildingNumber,Longitude,Latitude")] Address address, [Bind("Id,Name")] string name)
         {
             if (ModelState.IsValid)
             {
@@ -65,6 +74,7 @@ namespace web_development_course.Controllers
                 Branch branch = new Branch();
                 branch.AddressId = address.Id;
                 branch.Address = address;
+                branch.Name = name;
                 _context.Add(branch);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -85,7 +95,8 @@ namespace web_development_course.Controllers
             {
                 return NotFound();
             }
-            ViewData["AddressId"] = new SelectList(_context.Address, "Id", "City", branch.AddressId);
+
+            ViewData["Address"] = await _context.Address.FindAsync(branch.AddressId);
             return View(branch);
         }
 
@@ -94,9 +105,13 @@ namespace web_development_course.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,AddressId")] Branch branch)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,City,Street,BuildingNumber,Longitude,Latitude")] Address address, [Bind("Id,Name")] string name)
         {
-            if (id != branch.Id)
+            var branchToEdit = (from branch in _context.Branch
+                         where branch.Id == id
+                         select branch).ToList();
+
+            if (branchToEdit == null || branchToEdit.Count > 1 || branchToEdit.Count == 0)
             {
                 return NotFound();
             }
@@ -105,12 +120,15 @@ namespace web_development_course.Controllers
             {
                 try
                 {
-                    _context.Update(branch);
+                    branchToEdit[0].Address = address;
+                    branchToEdit[0].AddressId = address.Id;
+                    branchToEdit[0].Name = name;
+                    _context.Update(branchToEdit[0]);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BranchExists(branch.Id))
+                    if (!BranchExists(branchToEdit[0].Id))
                     {
                         return NotFound();
                     }
@@ -121,8 +139,8 @@ namespace web_development_course.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AddressId"] = new SelectList(_context.Address, "Id", "City", branch.AddressId);
-            return View(branch);
+            ViewData["AddressId"] = new SelectList(_context.Address, "Id", "Name,City,Street,BuildingNumber,Longitude,Latitude", branchToEdit[0].AddressId);
+            return View(branchToEdit[0]);
         }
 
         // GET: Branches/Delete/5

@@ -1,4 +1,4 @@
-﻿
+﻿    /*
 function initMap() {
     const myLatLng = { lat: 32.084694, lng: 34.7912818 };
     map = new google.maps.Map(document.getElementById("googleMap"), {
@@ -11,3 +11,4 @@ function initMap() {
         title: "Hello World!",
     });
 }
+*/

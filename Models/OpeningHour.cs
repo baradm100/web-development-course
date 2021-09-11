@@ -20,6 +20,16 @@ namespace web_development_course.Models
         public string Close{ get; set; }
 
         [Required]
-        public DayOfWeek DayOfWeek { get; set; }
+        public DayOfWeek DayOfWeek { get; set; }    
+
+        public int BranchId{ get; set; }
+
+        [Required]
+        public Branch Branch { get; set; }
+
+        public override string ToString()
+        {
+            return "" + DayOfWeek + " " + Open + "-" + Close + "\n";
+        }
     }
 }

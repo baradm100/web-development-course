@@ -42,26 +42,24 @@
                         <p class="card-text"><strong>Price: </strong> @product.Price</p>
                     </div>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><strong>Price: </strong> @product.Price</li>
                         <li class="list-group-item">
                             <strong>Colors: </strong>  @if (product.ProductTypes != null)
                             {
-                                @foreach (var color in product.ProductTypes)
+                                @foreach (var pr in product.ProductTypes)
                                 {
-                                    <div style="border-radius: 10px; display: inline-block; background: @color.Color; width: 20px; height: 20px; "></div>
+                        <button class="editProductType" name="@product.Name" data-bs-toggle="tooltip" data-bs-placement="top" quantity="@pr.Quantity" size="@pr.Size" title="Amount Available: @pr.Quantity  Size: @pr.Size">
+                            <div  style="border-radius: 10px; display: inline-block; background: @pr.Color; width: 20px; height: 20px; " id="color"></div>
+                        </button>
                                 }
                             }
-                        </li>
+                                </li>
                         <li class="list-group-item">
                             <strong>Amount: </strong>  @if (product.ProductTypes != null)
                             {
                                 var totalAmount = 0;
                                 @foreach (var pr in product.ProductTypes)
                                 {
-                                    if (pr.Quantity != null)
-                                    {
-                                        totalAmount = totalAmount + pr.Quantity;
-                                    }
+                                    totalAmount = totalAmount + pr.Quantity;
                                 }
                                 @totalAmount
                             }
@@ -85,6 +83,55 @@
             </div>
         }
     }
+</div>
+
+<div class="modal" id="addGoodsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Goods</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-success d-none" id="successIcon" role="alert">
+                    Added!
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                    </svg>
+                </div>
+                <div class="alert alert-danger d-none" id="errorIcon" role="alert">
+                    Something went wrong!
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
+                    </svg>
+                </div>
+                <div class="d-none d-flex justify-content-center" id="loadingSpinner">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div class="form-group" id="addGoodsForm">
+                    <div class="form-group">
+                        <label class="control-label">Product Size </label>
+                        <select id="Size" name="Size" asp-items="Html.GetEnumSelectList<ProductSize>()" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Product Amount</label>
+                        <input id="Quantity" value="0" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Color</label>
+                        <input id="Color" class="form-control" type="color" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeBtn" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="addGoodsModalBtn" class="btn btn-success">Add goods</button>
+                <button type="button" id="deleteGoodsModalBtn" class="btn btn-danger d-none">delete this product type</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 

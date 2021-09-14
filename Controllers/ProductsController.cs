@@ -61,35 +61,72 @@ namespace web_development_course.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Editor")]
-        public async Task<IActionResult> Create(IFormFile files, [Bind("Id,Price,Name,DiscountPercentage")] Product product, [Bind("Id,Size,Quantity,Color,Product")] ProductType productType)
+        public async Task<IActionResult> Create(List<IFormFile> files, [Bind("Id,Price,Name,DiscountPercentage")] Product product)
         {
-            if (productType.Quantity > Consts.MaxProductsQuantity)
-            {
-                ViewBag.QuantityError = Consts.ProductTypeQuantityErrorMessage;
-                return View();
-            }
             if (ModelState.IsValid)
             {
                 if (files != null)
                 {
-                    //TODO: had validation that product name is uniqe
+                    var pro = _context.Product.FirstOrDefault(p => p.Name.ToLower() == product.Name.ToLower());
+                    if (pro != null)
+                    {
+                        ViewBag.ProductExistError = Consts.ProductExsistError;
+                        return View();
+                    }
                     if (product.ProductImages == null)
                         product.ProductImages = new List<ProductImage>();
                     if (product.ProductTypes == null)
                         product.ProductTypes = new List<ProductType>();
-                    ProductImage img = UploadImageToDb(files);
+                    foreach (var file in files)
+                    {
+                    ProductImage img = UploadImageToDb(file);
                     product.ProductImages.Append(img);
                     img.Product = product;
                     img.ProductId = product.Id;
-                    productType.Product = product;
-                    product.ProductTypes.Append(productType);
                     _context.ProductImage.Add(img);
+                    }
                     _context.Product.Add(product);
-                    _context.ProductType.Add(productType);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("AddGoods", "ProductTypes", new {product.Id});
                 }
-                ViewBag.ImageError = Consts.ProductTypeImageError;
+                ViewBag.ImageError = Consts.ProductImageMissingError;
+                return View();
+            }
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Editor")]
+        public async Task<IActionResult> AddGoods(List<IFormFile> files, [Bind("Id,Price,Name,DiscountPercentage")] Product product)
+        {
+            if (ModelState.IsValid)
+            {
+                if (files != null)
+                {
+                    var pro = _context.Product.FirstOrDefault(p => p.Name.ToLower() == product.Name.ToLower());
+                    if (pro != null)
+                    {
+                        ViewBag.ProductExistError = Consts.ProductExsistError;
+                        return View();
+                    }
+                    if (product.ProductImages == null)
+                        product.ProductImages = new List<ProductImage>();
+                    if (product.ProductTypes == null)
+                        product.ProductTypes = new List<ProductType>();
+                    foreach (var file in files)
+                    {
+                        ProductImage img = UploadImageToDb(file);
+                        product.ProductImages.Append(img);
+                        img.Product = product;
+                        img.ProductId = product.Id;
+                        _context.ProductImage.Add(img);
+                    }
+                    _context.Product.Add(product);
+                    await _context.SaveChangesAsync();
+                    return Json(new { Result = "success" });
+                }
+                ViewBag.ImageError = Consts.ProductImageMissingError;
                 return View();
             }
             return View();
@@ -104,6 +141,12 @@ namespace web_development_course.Controllers
             files.CopyTo(ms);
             img.ImageData = ms.ToArray();
             return img;
+        }
+
+        public ActionResult GetLastProductId()
+        {
+            int lastId = _context.Product.OrderByDescending(p => p.Id).First().Id;
+            return Json(new { Id = lastId });
         }
 
         // GET: Products/Edit/5

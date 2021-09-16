@@ -24,6 +24,7 @@ namespace web_development_course.Data
         public DbSet<Product> Product { get; set; }
         public DbSet<ProductType> ProductType { get; set; }
         public DbSet<ProductImage> ProductImage { get; set; }
+        public DbSet<ProductCategory> ProductCategory { get; set; }
         public DbSet<User> User { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -87,7 +87,7 @@ namespace web_development_course.Controllers
         {
             try
             {
-                var product = await _context.Product.Include(p => p.ProductTypes).FirstOrDefaultAsync(p => p.Name.ToLower() == productName);
+                var product = await _context.Product.Include(p => p.ProductTypes).FirstOrDefaultAsync(p => p.Name.ToLower() == productName.ToLower());
                 if (product != null)
                 {
                     foreach (var p in product.ProductTypes)
@@ -124,7 +124,7 @@ namespace web_development_course.Controllers
         {
             try
             {
-                var product = await _context.Product.FirstOrDefaultAsync(p => p.Name.ToLower() == productName);
+                var product = await _context.Product.Include(p => p.ProductTypes).FirstOrDefaultAsync(p => p.Name.ToLower() == productName.ToLower());
                 if (product != null)
                 {
                     foreach (var p in product.ProductTypes)
@@ -132,6 +132,7 @@ namespace web_development_course.Controllers
                         if (p.Size == pt.Size && p.Color == pt.Color)
                         {
                             _context.ProductType.Remove(p);
+                            _context.Product.Update(product);
                             await _context.SaveChangesAsync();
                             return Json(new { success = true });
                         }

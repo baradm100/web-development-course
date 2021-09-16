@@ -27,7 +27,18 @@ namespace web_development_course.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Product.Include(product => product.ProductTypes).Include(product => product.ProductImages).ToListAsync());
+
+            if (User.IsInRole("Admin") || User.IsInRole("Edtior"))
+                return RedirectToAction("EditorIndex", await _context.Product.Include(product => product.ProductImages)
+                    .Include(product => product.ProductTypes).Include(product => product.ProductCategories)
+                    .ToListAsync());
+
+            return View(await _context.Product.Include(product => product.ProductImages)
+                    .Include(product => product.ProductTypes).Include(product => product.ProductCategories)
+                    .ToListAsync());
+
+
+
         }
 
         // GET: Products/Details/5
@@ -61,7 +72,7 @@ namespace web_development_course.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Editor")]
-        public async Task<IActionResult> Create(List<IFormFile> files, [Bind("Id,Price,Name,DiscountPercentage")] Product product)
+        public async Task<IActionResult> Create(List<IFormFile> files, [Bind("Id,Price,Name,DiscountPercentage,Categories")] Product product)
         {
             if (ModelState.IsValid)
             {
@@ -93,6 +104,98 @@ namespace web_development_course.Controllers
                 return View();
             }
             return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Editor")]
+        public async Task<IActionResult> AddProduct([Bind("Id,Price,Name,DiscountPercentage")] Product product, List<string> categories)
+        {
+            {
+                var pro = _context.Product.FirstOrDefault(p => p.Name.ToLower() == product.Name.ToLower());
+                if (pro != null)
+                {
+                    return Json(new { success = false });
+                }
+                if (product.ProductImages == null)
+                    product.ProductImages = new List<ProductImage>();
+                if (product.ProductTypes == null)
+                    product.ProductTypes = new List<ProductType>();
+                _context.Product.Add(product);
+                await _context.SaveChangesAsync();
+                Product p = _context.Product.First(p => p.Name.ToLower() == product.Name.ToLower());
+                foreach (var cat in categories)
+                {
+                    Category category = _context.Category.FirstOrDefault(c => c.Name == cat);
+                    if (category != null)
+                    {
+                        ProductCategory bind = new ProductCategory();
+                        bind.CategoryId = category.Id;
+                        bind.Categories.Append(category);
+                        bind.ProductId = p.Id;
+                        bind.Products.Append(p);
+                        category.ProductCategories.Append(bind);
+                        product.ProductCategories.Append(bind);
+                        _context.Category.Update(category);
+                        _context.ProductCategory.Add(bind);
+                    }
+                }
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, productId = product.Id });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Editor")]
+        public async Task<IActionResult> AddProductImage(int id)
+        {
+            try
+            {
+                var product = _context.Product.Include(p => p.ProductImages).FirstOrDefault(p => p.Id == id);
+                foreach (var image in this.Request.Form.Files)
+                {
+                    ProductImage img = UploadImageToDb(image);
+                    product.ProductImages.Append(img);
+                    img.Product = product;
+                    img.ProductId = product.Id;
+                    _context.ProductImage.Add(img);
+                }
+                await _context.SaveChangesAsync();
+                return Json(new { success = true });
+            } catch
+            {
+            return Json(new { success = false });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Editor")]
+        public async Task<IActionResult> deleteProduct(int id)
+        {
+            try
+            {
+                Product product = await _context.Product.FirstOrDefaultAsync(p => p.Id == id);
+                _context.Product.Remove(product);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true });
+            }
+            catch
+            {
+                return Json(new { success = false });
+            }
+        }
+
+        public ProductImage UploadImageToDb(IFormFile files)
+        {
+            var fileName = Path.GetFileName(files.FileName);
+            ProductImage img = new ProductImage();
+            img.Name = fileName;
+            var ms = new MemoryStream();
+            files.CopyTo(ms);
+            img.ImageData = ms.ToArray();
+            return img;
         }
 
         [HttpPost]
@@ -132,16 +235,7 @@ namespace web_development_course.Controllers
             return View();
         }
 
-        public ProductImage UploadImageToDb(IFormFile files)
-        {
-            var fileName = Path.GetFileName(files.FileName);
-            ProductImage img = new ProductImage();
-            img.Name = fileName;
-            var ms = new MemoryStream();
-            files.CopyTo(ms);
-            img.ImageData = ms.ToArray();
-            return img;
-        }
+       
 
         public ActionResult GetLastProductId()
         {

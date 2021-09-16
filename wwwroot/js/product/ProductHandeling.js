@@ -24,7 +24,7 @@
                     var Text = "Categories: ";
                     for (let i = 0; i < response.categories.length; i++){
                         Text += response.categories[i];
-                        Text += " ";
+                        Text += ", ";
                     };
                     var a = "[category=" + "'" + ProductName + "'" + "]"
                     $(a).text(Text);
@@ -136,20 +136,19 @@
                 DiscountPercentage: ProductDiscount,
                 Categories: ProductCategories,
             },
-            fail: function (xhr, textStatus, errorThrown) {
-                Success = false;
-                $("#ProductloadingSpinner").addClass("d-none");
-                $("#addProductForm").removeClass("d-none");
-                $("#ProductErrorIcon").removeClass("d-none");
-                console.log(result);
-            },
-            success:  function (response) {
-                var imagesUploading = uploadImages(dataImages, response.productId);
-                $("#ProductloadingSpinner").addClass("d-none");
-                $("#addProductForm").removeClass("d-none");
-                Success = true;
-                $("#ProductSuccessIcon").removeClass("d-none");
-                console.log(result);
+            success: function (response) {
+                if (response.success == true) {
+                    var imagesUploading = uploadImages(dataImages, response.productId);
+                    $("#ProductloadingSpinner").addClass("d-none");
+                    $("#addProductForm").removeClass("d-none");
+                    Success = true;
+                    $("#ProductSuccessIcon").removeClass("d-none");
+                } else {
+                    Success = false;
+                    $("#ProductloadingSpinner").addClass("d-none");
+                    $("#addProductForm").removeClass("d-none");
+                    $("#ProductErrorIcon").removeClass("d-none");
+                }
             },
             error: function (result) {
                 console.log(result);

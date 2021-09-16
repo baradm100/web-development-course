@@ -29,6 +29,19 @@
        timeout: 5000,
    });
 
+    $("#categoriesDropDownList").change(function () {
+        var selected = $("#categoriesDropDownList option:selected").text();
+        var cards = $("div.card");
+        for (let i = 0; i < cards.length; i++) {
+            var card = $(cards[i]);
+            if ($(card).find(".category").text().includes(selected) || selected == "All")
+                $(card).parent(".col").removeClass("d-none");
+            else
+                $(card).parent(".col").addClass("d-none");
+        }
+        
+    })
+
     $("#AddNewCategoryBtn").click(function () {
         $("#addCategoryModal").modal("show");
     })

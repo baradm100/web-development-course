@@ -29,17 +29,26 @@ namespace web_development_course.Controllers
         {
 
             if (User.IsInRole("Admin") || User.IsInRole("Edtior"))
-                return RedirectToAction("EditorIndex", await _context.Product.Include(product => product.ProductImages)
-                    .Include(product => product.ProductTypes).Include(product => product.ProductCategories)
-                    .ToListAsync());
+                return RedirectToAction("EditorIndex", "Products");
 
             return View(await _context.Product.Include(product => product.ProductImages)
                     .Include(product => product.ProductTypes).Include(product => product.ProductCategories)
                     .ToListAsync());
 
+        }
 
+        [Authorize(Roles = "Admin,Editor")]
+        public async Task<IActionResult> EditorIndex()
+        {
+
+            return View(await _context.Product.Include(product => product.ProductImages)
+                    .Include(product => product.ProductTypes).Include(product => product.ProductCategories)
+                    .ToListAsync());
 
         }
+
+
+
 
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)

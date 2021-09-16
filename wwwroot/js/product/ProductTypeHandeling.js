@@ -59,19 +59,20 @@
                 Quantity: quantity,
                 Color: color,
             },
-            fail: function (xhr, textStatus, errorThrown) {
-                Success = false;
-                $("#loadingSpinner").addClass("d-none");
-                $("#addGoodsForm").removeClass("d-none");
-                $("#errorIcon").removeClass("d-none");
-            },
             success: function (result) {
-                Success = true;
-                $("#loadingSpinner").addClass("d-none");
-                $("#addGoodsForm").removeClass("d-none");
-                $("#successIcon").removeClass("d-none");
-                $("#addGoodsModalBtn").addClass("d-none");
-                $("#deleteGoodsModalBtn").addClass("d-none");
+                if (result.success == true) {
+                    Success = true;
+                    $("#loadingSpinner").addClass("d-none");
+                    $("#addGoodsForm").removeClass("d-none");
+                    $("#successIcon").removeClass("d-none");
+                    $("#addGoodsModalBtn").addClass("d-none");
+                    $("#deleteGoodsModalBtn").addClass("d-none");
+                } else {
+                    Success = false;
+                    $("#loadingSpinner").addClass("d-none");
+                    $("#addGoodsForm").removeClass("d-none");
+                    $("#errorIcon").removeClass("d-none");
+                }
             },
             error: function (result) {
                 console.log(result);
@@ -116,20 +117,20 @@
                 Quantity: quantity,
                 Color: color,
             },
-            fail: function (xhr, textStatus, errorThrown) {
+            success: function (result) {
+                if (result.success == true) {
+                    Success = true;
+                    $("#loadingSpinner").addClass("d-none");
+                    $("#addGoodsForm").removeClass("d-none");
+                    $("#successIcon").removeClass("d-none");
+                    $(this).val = "add more goods";
+                } else {
                 Success = false;
                 $("#loadingSpinner").addClass("d-none");
                 $("#addGoodsForm").removeClass("d-none");
                 $("#errorIcon").removeClass("d-none");
                 console.log(result);
-            },
-            success: function (result) {
-                Success = true;
-                $("#loadingSpinner").addClass("d-none");
-                $("#addGoodsForm").removeClass("d-none");
-                $("#successIcon").removeClass("d-none");
-                $(this).val = "add more goods";
-                console.log(result);
+                }
             },
             error: function (result) {
                 console.log(result);

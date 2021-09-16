@@ -5,9 +5,9 @@
 
 }
 
-<h1>Product Managment Page</h1>
 
-<div>
+<div class="text-center">
+    <h1>Product Managment Page</h1>
     <button type="button" id="AddNewProductBtn" class="btn btn-primary">
         <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
             <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
@@ -24,76 +24,79 @@
         <option selected>Category Select</option>
     </select>
 </div>
-<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
-    @{ foreach (var product in Model)
-        {
-            <div class="col">
-                <div class="card" style="width: 18rem;">
-                    @if (product.ProductImages != null)
-                    {
-                        <div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
-                            <div class="carousel-inner">
-                                @foreach (var image in product.ProductImages)
-                                {
-                                    <div class="carousel-item active">
-                                        @{
-                                            string img = Convert.ToBase64String(image.ImageData);
-                                            <img src="data:image/png;base64,@img" class="card-img-top" width="100" height="250" />
-                                        }
-                                    </div>
-                                }
+<div class="container"></div>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 align-items-start">
+        @{ foreach (var product in Model)
+            {
+                <div class="col">
+                    <div class="card" style="width: 18rem;">
+                        @if (product.ProductImages != null)
+                        {
+                            <div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    @foreach (var image in product.ProductImages)
+                                    {
+                                        <div class="carousel-item active">
+                                            @{
+                                                string img = Convert.ToBase64String(image.ImageData);
+                                                <img src="data:image/png;base64,@img" class="card-img-top" width="100" height="250" />
+                                            }
+                                        </div>
+                                    }
+                                </div>
                             </div>
-                        </div>
 
-                    }
-                <div class="card-body">
-                      <p class="card-text" category="@product.Name">
-                        
-                     </p>
-                    <h5 class="card-title">@product.Name</h5>
-                    <p class="card-text"><strong>Price: </strong> @product.Price</p>
-                </div>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
-                            <strong>Colors: </strong>  @if (product.ProductTypes != null)
-                            {
-                                @foreach (var pr in product.ProductTypes)
+                        }
+                        <div class="card-body">
+                            <p class="card-text category" category="@product.Name">
+
+                            </p>
+                            <h5 class="card-title">@product.Name</h5>
+                            <p class="card-text"><strong>Price: </strong> @product.Price</p>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <strong>Colors: </strong>  @if (product.ProductTypes != null)
                                 {
-                                    <button class="editProductType" style="border-radius: 10px; display: inline-block; background: @pr.Color; width: 20px; height: 20px; " id="color" name="@product.Name" data-bs-toggle="tooltip" data-bs-placement="top" quantity="@pr.Quantity" size="@pr.Size" title="Amount Available: @pr.Quantity  Size: @pr.Size">
-                                    </button>
+                                    @foreach (var pr in product.ProductTypes)
+                                    {
+                            <button class="editProductType text-center" style="border-radius: 10px;  display: inline-block; background: @pr.Color; width: 20px; height: 20px; " id="color" name="@product.Name" data-bs-toggle="tooltip" data-bs-placement="top" quantity="@pr.Quantity" size="@pr.Size" title="Amount Available: @pr.Quantity  Size: @pr.Size">
+                                <span style="color: antiquewhite"> @pr.Size</span>
+                            </button>
+                                    }
                                 }
-                            }
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Total Stock Amount: </strong>  @if (product.ProductTypes != null)
-                            {
-                                var totalAmount = 0;
-                                @foreach (var pr in product.ProductTypes)
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Total Stock Amount: </strong>  @if (product.ProductTypes != null)
                                 {
-                                    totalAmount = totalAmount + pr.Quantity;
+                                    var totalAmount = 0;
+                                    @foreach (var pr in product.ProductTypes)
+                                    {
+                                        totalAmount = totalAmount + pr.Quantity;
+                                    }
+                                    @totalAmount
                                 }
-                                @totalAmount
-                            }
-                        </li>
-                    </ul>
-                    <div class="card-body">
-                        <button type="button" id=@product.Name class="btn btn-primary btnAddGoods">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
-                                <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
-                            </svg>
-                            Add goods
-                        </button>
-                        <button type="button" id=@product.Id class="btn btn-danger btnDeleteProduct">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
-                                <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
-                            </svg>
-                            Delete product
-                        </button>
+                            </li>
+                        </ul>
+                        <div class="card-body">
+                            <button type="button" id=@product.Name class="btn btn-primary btnAddGoods">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                    <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
+                                </svg>
+                                Add goods
+                            </button>
+                            <button type="button" id=@product.Id class="btn btn-danger btnDeleteProduct">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                    <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
+                                </svg>
+                                Delete product
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            }
         }
-    }
+    </div>
 </div>
 
 <div class="modal" id="addGoodsModal" tabindex="-1">

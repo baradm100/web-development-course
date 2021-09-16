@@ -75,45 +75,7 @@ namespace web_development_course.Controllers
             return View();
         }
 
-        // POST: Products/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,Editor")]
-        public async Task<IActionResult> Create(List<IFormFile> files, [Bind("Id,Price,Name,DiscountPercentage,Categories")] Product product)
-        {
-            if (ModelState.IsValid)
-            {
-                if (files != null)
-                {
-                    var pro = _context.Product.FirstOrDefault(p => p.Name.ToLower() == product.Name.ToLower());
-                    if (pro != null)
-                    {
-                        ViewBag.ProductExistError = Consts.ProductExsistError;
-                        return View();
-                    }
-                    if (product.ProductImages == null)
-                        product.ProductImages = new List<ProductImage>();
-                    if (product.ProductTypes == null)
-                        product.ProductTypes = new List<ProductType>();
-                    foreach (var file in files)
-                    {
-                    ProductImage img = UploadImageToDb(file);
-                    product.ProductImages.Append(img);
-                    img.Product = product;
-                    img.ProductId = product.Id;
-                    _context.ProductImage.Add(img);
-                    }
-                    _context.Product.Add(product);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction("AddGoods", "ProductTypes", new {product.Id});
-                }
-                ViewBag.ImageError = Consts.ProductImageMissingError;
-                return View();
-            }
-            return View();
-        }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -206,45 +168,6 @@ namespace web_development_course.Controllers
             img.ImageData = ms.ToArray();
             return img;
         }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,Editor")]
-        public async Task<IActionResult> AddGoods(List<IFormFile> files, [Bind("Id,Price,Name,DiscountPercentage")] Product product)
-        {
-            if (ModelState.IsValid)
-            {
-                if (files != null)
-                {
-                    var pro = _context.Product.FirstOrDefault(p => p.Name.ToLower() == product.Name.ToLower());
-                    if (pro != null)
-                    {
-                        ViewBag.ProductExistError = Consts.ProductExsistError;
-                        return View();
-                    }
-                    if (product.ProductImages == null)
-                        product.ProductImages = new List<ProductImage>();
-                    if (product.ProductTypes == null)
-                        product.ProductTypes = new List<ProductType>();
-                    foreach (var file in files)
-                    {
-                        ProductImage img = UploadImageToDb(file);
-                        product.ProductImages.Append(img);
-                        img.Product = product;
-                        img.ProductId = product.Id;
-                        _context.ProductImage.Add(img);
-                    }
-                    _context.Product.Add(product);
-                    await _context.SaveChangesAsync();
-                    return Json(new { Result = "success" });
-                }
-                ViewBag.ImageError = Consts.ProductImageMissingError;
-                return View();
-            }
-            return View();
-        }
-
-       
 
         public ActionResult GetLastProductId()
         {

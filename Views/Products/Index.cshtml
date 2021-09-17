@@ -15,54 +15,74 @@
 <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
     @{ foreach (var product in Model)
         {
-            <div class="col">
+        <div class="col">
                 <div class="card" style="width: 18rem;">
-                    <div id="carouselImages" class="carousel slide" data-bs-ride="carousel">
                     @if (product.ProductImages != null)
                     {
-                        <div class="carousel-inner">
-                            @foreach (var image in product.ProductImages)
-                            {
-                                <div class="carousel-item active">
-                                    @{
-                                        string img = Convert.ToBase64String(image.ImageData);
-                                        <img src="data:image/png;base64,@img" class="card-img-top" width="100" height="250" />
+                        <div id="carouselProducts" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                @for (var i = 0; i < product.ProductImages.Count(); i++)
+                                {
+                                    if (i == 0)
+                                    {
+                                        <div class="carousel-item active">
+                                            @{
+                                                string img = Convert.ToBase64String(product.ProductImages.ElementAt(i).ImageData);
+                                                <img src="data:image/png;base64,@img" class="card-img-top d-block w-100" width="100" height="250" />
+                                            }
+                                        </div>
                                     }
-                                </div>
-                            }
+                                    else
+                                    {
+                                        <div class="carousel-item">
+                                            @{
+                                                string img = Convert.ToBase64String(product.ProductImages.ElementAt(i).ImageData);
+                                                <img src="data:image/png;base64,@img" class="card-img-top d-block w-100" width="100" height="250" />
+                                            }
+                                        </div>
+                                    }
+                                }
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselProducts" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselProducts" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
                         </div>
 
                     }
-                    </div>
-                <div class="card-body">
-                      <p class="card-text category" category="@product.Name">
-                        
-                     </p>
-                    <h5 class="card-title">@product.Name</h5>
-                    <p class="card-text"><strong>Price: </strong> @product.Price</p>
-                </div>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
-                            <strong>Colors: </strong>  @if (product.ProductTypes != null)
-                            {
-                                @foreach (var pr in product.ProductTypes)
-                                {
-                                    <div class="editProductType text-center" style="border-radius: 10px; display: inline-block; background: @pr.Color; width: 20px; height: 20px; " id="color" data-bs-toggle="tooltip" data-bs-placement="top">
-                                        <span style="color: antiquewhite"> @pr.Size</span>
-                                    </div>
-                                }
-                            }
-                        </li>
-                    </ul>
-                    <div class="card-body">
-                        <button type="button" id=@product.Name class="btn btn-primary btnAddGoods">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
-                                <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
-                            </svg>
-                            Add to cart
-                        </button>
-                    </div>
-                </div>
+            <div class="card-body">
+                <p class="card-text category" category="@product.Name">
+
+                </p>
+                <h5 class="card-title">@product.Name</h5>
+                <p class="card-text"><strong>Price: </strong> @product.Price</p>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <strong>Colors: </strong>  @if (product.ProductTypes != null)
+                    {
+                        @foreach (var pr in product.ProductTypes)
+                        {
+                            <div class="editProductType text-center" style="border-radius: 10px; display: inline-block; background: @pr.Color; width: 20px; height: 20px; " id="color" data-bs-toggle="tooltip" data-bs-placement="top">
+                                <span style="color: antiquewhite"> @pr.Size</span>
+                            </div>
+                        }
+                    }
+                </li>
+            </ul>
+            <div class="card-body">
+                <button type="button" id=@product.Name class="btn btn-primary btnAddGoods">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
+                    </svg>
+                    Add to cart
+                </button>
+            </div>
+        </div>
             </div>
         }
     }

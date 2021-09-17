@@ -24,7 +24,7 @@
         <option selected>Category Select</option>
     </select>
 </div>
-<div class="container"></div>
+<div class="container">
     <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 align-items-start">
         @{ foreach (var product in Model)
             {
@@ -32,18 +32,38 @@
                     <div class="card" style="width: 18rem;">
                         @if (product.ProductImages != null)
                         {
-                            <div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
+                            <div id="carouselPrdoucts" class="carousel slide" data-bs-ride="carousel">
                                 <div class="carousel-inner">
-                                    @foreach (var image in product.ProductImages)
+                                    @for (var i = 0; i < product.ProductImages.Count(); i++)
                                     {
-                                        <div class="carousel-item active">
-                                            @{
-                                                string img = Convert.ToBase64String(image.ImageData);
-                                                <img src="data:image/png;base64,@img" class="card-img-top" width="100" height="250" />
-                                            }
-                                        </div>
+                                        if (i == 0)
+                                        {
+                                            <div class="carousel-item active">
+                                                @{
+                                                    string img = Convert.ToBase64String(product.ProductImages.ElementAt(i).ImageData);
+                                                    <img src="data:image/png;base64,@img" class="card-img-top d-block w-100" width="100" height="250" />
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="carousel-item">
+                                                @{
+                                                    string img = Convert.ToBase64String(product.ProductImages.ElementAt(i).ImageData);
+                                                    <img src="data:image/png;base64,@img" class="card-img-top d-block w-100" width="100" height="250" />
+                                                }
+                                            </div>
+                                        }
                                     }
                                 </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carouselProducts" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carouselProducts" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
                             </div>
 
                         }
@@ -60,9 +80,9 @@
                                 {
                                     @foreach (var pr in product.ProductTypes)
                                     {
-                            <button class="editProductType text-center" style="border-radius: 10px;  display: inline-block; background: @pr.Color; width: 20px; height: 20px; " id="color" name="@product.Name" data-bs-toggle="tooltip" data-bs-placement="top" quantity="@pr.Quantity" size="@pr.Size" title="Amount Available: @pr.Quantity  Size: @pr.Size">
-                                <span style="color: antiquewhite"> @pr.Size</span>
-                            </button>
+                                        <button class="editProductType text-center" style="border-radius: 10px;  display: inline-block; background: @pr.Color; width: 20px; height: 20px; " id="color" name="@product.Name" data-bs-toggle="tooltip" data-bs-placement="top" quantity="@pr.Quantity" size="@pr.Size" title="Amount Available: @pr.Quantity  Size: @pr.Size">
+                                            <span style="color: antiquewhite"> @pr.Size</span>
+                                        </button>
                                     }
                                 }
                             </li>
@@ -98,7 +118,6 @@
         }
     </div>
 </div>
-
 <div class="modal" id="addGoodsModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">

@@ -148,6 +148,14 @@ namespace web_development_course.Controllers
             try
             {
                 Product product = await _context.Product.FirstOrDefaultAsync(p => p.Id == id);
+                var productsCategory = await _context.ProductCategory.Where(a => a.ProductId == product.Id).ToListAsync();
+                if (productsCategory != null)
+                {
+                    foreach (var pc in productsCategory)
+                    {
+                        _context.ProductCategory.Remove(pc);
+                    }
+                }
                 _context.Product.Remove(product);
                 await _context.SaveChangesAsync();
                 return Json(new { success = true });

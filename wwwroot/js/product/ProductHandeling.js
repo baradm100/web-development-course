@@ -1,6 +1,8 @@
 ﻿$(function () {
     var dataImages = null;
     var product_names = $(".card-title");
+    var productEditId = null
+    var Changed = false
 
 
     const insertCategoriesToCards = (name) => {
@@ -47,6 +49,7 @@
     });
 
     $('.btnEditProduct').click(function () {
+        productEditId = $(this).attr("id");
         var Success = addCategoriesToModal("#categoriesEditDropDownListPModel");
         var formData = new FormData();
         var ProductId = $(this).attr("id");
@@ -77,7 +80,7 @@
                     for (let i = 0; i < response.categories.length; i++)
                         ProductCategories.val(response.categories[i]).attr('selected', true);
                     for (let i = 0; i < response.images.length; i++) {
-                        ProductImages.append(`<div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id=${i} value="option1" checked><label class="form-check-label" for=${i}>${response.images[i]}</label></div>`)
+                        ProductImages.append(`<div class="form-check form-check-inline editCheckBoxes"><input class="form-check-input" type="checkbox" id=${i} value=${response.images[i]} checked><label class="form-check-label" for=${i}>${response.images[i]}</label></div>`)
                     };
                 } else {
                     Success = false;
@@ -97,6 +100,82 @@
             timeout: 5000,
         });
         $("#editProductModal").modal("show");
+    });
+
+    const findActiveCheckbox = (div) => {
+        var selected = [];
+        $(div).find(':checkbox').each(function () {
+            if (jQuery(this).attr('checked') == true)
+                actives.add(jQuery(this).attr('value'));
+        });
+        return selected;
+    }
+
+    const findSelectedDropdown = (selector) => {
+        var selected = [];
+        var s = $(selector).find('option:selected')
+        for (let i = 0; i < s.length; i++)
+            selected.push($(s[i]).val());
+        return selected;
+    }
+
+    $("#editProductModalBtn").click(function () {
+        var formData = new FormData();
+        $("#ProductEditloadingSpinner").removeClass("d-none");
+        $("#editProductForm").addClass("d-none");
+        $("#ProductEditErrorIcon").addClass("d-none");
+        $("#ProductEditSuccessIcon").addClass("d-none");
+        var ProductName = $("#ProductEditName").val();
+        var ProductPrice = $("#ProductEditPrice").val();
+        var ProductCategories = findSelectedDropdown("#categoriesEditDropDownListPModel").forEach(a => formData.append("categories", a));
+        var ProductDiscount = $("#ProductEditDiscount").val();
+        var token = $('input[name="__RequestVerificationToken"]').val();
+
+        formData.append("__RequestVerificationToken", token);
+        formData.append("id", productEditId);
+        formData.append("Name", ProductName);
+        formData.append("Price", ProductPrice);
+        formData.append("DiscountPercentage", ProductDiscount);
+
+        var Success = false;
+        $.ajax({
+            url: "/Products/EditProduct/",
+            type: 'POST',
+            dataType: 'json',
+            data: formData,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.success == true) {
+                    /*var imagesUploading = uploadImages(dataImages, response.productId);*/
+                    $("#ProductEditloadingSpinner").addClass("d-none");
+                    $("#edotProductForm").removeClass("d-none");
+                    Success = true;
+                    $("#ProductEditSuccessIcon").removeClass("d-none");
+                    Changed = true;
+                } else {
+                    Success = false;
+                    $("#ProductEditloadingSpinner").addClass("d-none");
+                    $("#editProductForm").removeClass("d-none");
+                    $("#ProductEditErrorIcon").removeClass("d-none");
+                }
+            },
+            error: function (result) {
+                console.log(result);
+                return false
+            },
+            complete: function () {
+                if (!Success) { $("#ProductEditErrorIcon").removeClass("d-none"); }
+                $("#ProductEditloadingSpinner").addClass("d-none");
+                $("#editProductForm").removeClass("d-none");
+                dataImages = null;
+                return Success;
+            },
+            timeout: 10000
+        });
+        var Success = addCategoriesToModal("#categoriesDropDownListPModel");
+        return Success;
     });
 
     $("#UploadImg").change(function () {
@@ -233,6 +312,8 @@
         var ProductDiscount = $("#ProductEditDiscount").val("");
         var ProductCategories = $("#categoriesEditDropDownListPModel").val("");
         var ProductImages = $("#imagesCheckBox").html("");
+        if (Changed)
+            location.reload();
     });
 
     $('.btnDeleteProduct').click(function () {

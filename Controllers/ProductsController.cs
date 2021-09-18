@@ -202,6 +202,44 @@ namespace web_development_course.Controllers
             return Json(new { Id = lastId });
         }
 
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Editor")]
+        public async Task<IActionResult> EditProduct(int id, int Price, string Name, int DiscountPercentage, List<string> Categories)
+        {
+            var product = await _context.Product.FirstOrDefaultAsync(p => p.Id == id);
+            if (product == null)
+                return Json(new { success = false });
+            product.Name = Name;
+            product.Price = Price;
+            product.DiscountPercentage = DiscountPercentage;
+            var pc =_context.ProductCategory.Where(q => q.ProductId == id);
+            foreach(var cat in pc)
+            {
+             _context.ProductCategory.Remove(cat);
+            }
+            foreach (var cat in Categories)
+            {
+                Category category = _context.Category.FirstOrDefault(c => c.Name == cat);
+                if (category != null)
+                {
+                    ProductCategory bind = new ProductCategory();
+                    bind.CategoryId = category.Id;
+                    bind.Categories.Append(category);
+                    bind.ProductId = product.Id;
+                    bind.Products.Append(product);
+                    category.ProductCategories.Append(bind);
+                    product.ProductCategories.Append(bind);
+                    _context.Category.Update(category);
+                    _context.ProductCategory.Add(bind);
+                }
+            }
+            await _context.SaveChangesAsync();
+            return Json(new { success = true });
+        }
+
+
         // GET: Products/Edit/5
         [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> Edit(int? id)

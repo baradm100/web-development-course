@@ -42,35 +42,61 @@
 
     $('#AddNewProductBtn').click(function () {
         $("#addProductModal").modal("show");
+        var Success = addCategoriesToModal("#categoriesDropDownListPModel");
+       
+    });
+
+    $('.btnEditProduct').click(function () {
+        var Success = addCategoriesToModal("#categoriesEditDropDownListPModel");
+        var formData = new FormData();
+        var ProductId = $(this).attr("id");
+        var ProductName = $("#ProductEditName");
+        var ProductPrice = $("#ProductEditPrice");
+        var ProductDiscount = $("#ProductEditDiscount");
+        var ProductCategories = $("#categoriesEditDropDownListPModel");
+        var ProductImages = $("#imagesCheckBox");
+        formData.append("Id", ProductId);
         $.ajax({
-            url: "/Categories/GetCategories/",
+            url: "/Products/GetProduct/",
             type: 'POST',
+            data: formData,
+            cache: false,
+            processData: false,
+            contentType: false,
             dataType: 'json',
-            data: null,
             fail: function (xhr, textStatus, errorThrown) {
                 Success = false;
                 alert("Something went wrong in server")
             },
             success: function (response) {
-                Success = true;
-                console.log(response.categories.result);
-                if (response.categories.result.length > 0) {
-                    $('#categoriesDropDownListPModel').html('');
-                    var options = '';
-                    options += '<option value="Select">---</option>';
-                    for (var i = 0; i < response.categories.result.length; i++) {
-                        console.log(response.categories.result[i]);
-                        options += '<option value="' + response.categories.result[i].name + '">' + response.categories.result[i].name + '</option>';
-                    }
-                    $('#categoriesDropDownListPModel').append(options);
+                if (response.success == true) {
+                    Success = true;
+                    ProductName.val(response.name);
+                    ProductPrice.val(response.price);
+                    ProductDiscount.val(response.discount);
+                    for (let i = 0; i < response.categories.length; i++)
+                        ProductCategories.val(response.categories[i]).attr('selected', true);
+                    for (let i = 0; i < response.images.length; i++) {
+                        ProductImages.append(`<div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id=${i} value="option1" checked><label class="form-check-label" for=${i}>${response.images[i]}</label></div>`)
+                    };
+                } else {
+                    Success = false;
                 }
             },
             error: function (result) {
                 console.log(result);
                 return false
             },
+            complete: function () {
+                $("#editProductModal").modal("show");
+                if (!Success) {
+                    $("#ProductErrorIcon").removeClass("d-none");
+                    $("#ProductErrorIcon").Text("Problem with getting product details");
+                }
+            },
             timeout: 5000,
         });
+        $("#editProductModal").modal("show");
     });
 
     $("#UploadImg").change(function () {
@@ -113,6 +139,37 @@
         });
     };
 
+    const addCategoriesToModal = (dropDownId) => {
+        $.ajax({
+            url: "/Categories/GetCategories/",
+            type: 'POST',
+            dataType: 'json',
+            data: null,
+            fail: function (xhr, textStatus, errorThrown) {
+                Success = false;
+                alert("Something went wrong in server")
+            },
+            success: function (response) {
+                Success = true;
+                console.log(response.categories.result);
+                if (response.categories.result.length > 0) {
+                    $(dropDownId).html('');
+                    var options = '';
+                    options += '<option value="Select">---</option>';
+                    for (var i = 0; i < response.categories.result.length; i++) {
+                        options += '<option value="' + response.categories.result[i].name + '">' + response.categories.result[i].name + '</option>';
+                    }
+                    $(dropDownId).append(options);
+                }
+            },
+            error: function (result) {
+                console.log(result);
+                return false
+            },
+            timeout: 5000,
+        });
+    }
+
     $("#addProductModalBtn").click(function () {
         $("#ProductloadingSpinner").removeClass("d-none");
         $("#addProductForm").addClass("d-none");
@@ -121,7 +178,6 @@
         var ProductName = $("#ProductName").val();
         var ProductPrice = $("#ProductPrice").val();
         var ProductCategories = $("#categoriesDropDownListPModel").val();
-        console.log(ProductCategories);
         var ProductDiscount = $("#ProductDiscount").val();
         var token = $('input[name="__RequestVerificationToken"]').val();
         var Success = false;
@@ -163,11 +219,20 @@
             },
             timeout: 10000
         });
+        var Success = addCategoriesToModal("#categoriesDropDownListPModel");
         return Success;
     });
 
     $('#closeProductBtn').click(function () {
         location.reload();
+    });
+
+    $('#closeEditProductBtn').click(function () {
+        var ProductName = $("#ProductEditName").val("");
+        var ProductPrice = $("#ProductEditPrice").val("");
+        var ProductDiscount = $("#ProductEditDiscount").val("");
+        var ProductCategories = $("#categoriesEditDropDownListPModel").val("");
+        var ProductImages = $("#imagesCheckBox").html("");
     });
 
     $('.btnDeleteProduct').click(function () {

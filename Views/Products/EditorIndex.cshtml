@@ -20,7 +20,7 @@
         </svg>
         Add new Category
     </button>
-    <select id="categoriesDropDownList" class="form-select" aria-label="Default select example">
+    <select id="categoriesDropDownList" class="form-select" style="margin: 5px" aria-label="Default select example">
         <option selected>Category Select</option>
     </select>
 </div>
@@ -67,14 +67,14 @@
                             </div>
 
                         }
-                    <div class="card-body">
-                        <p class="card-text category" category="@product.Name">
+                        <div class="card-body">
+                            <p class="card-text category" category="@product.Name">
 
-                        </p>
-                        <h5 class="card-title">@product.Name</h5>
-                        <p class="card-text"><strong>Discount: </strong> @product.DiscountPercentage%</p>
-                        <p class="card-text"><strong>Price (after discount): </strong> @{ var priceAfterDiscount = product.Price * ((100 - @product.DiscountPercentage) / 100); } @priceAfterDiscount</p>
-                    </div>
+                            </p>
+                            <h5 class="card-title">@product.Name</h5>
+                            <p class="card-text"><strong>Discount: </strong> @product.DiscountPercentage%</p>
+                            <p class="card-text"><strong>Price (after discount): </strong> @{ var priceAfterDiscount = product.Price * ((100 - @product.DiscountPercentage) / 100); } @priceAfterDiscount</p>
+                        </div>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">
                                 <strong>Colors: </strong>  @if (product.ProductTypes != null)
@@ -100,18 +100,38 @@
                             </li>
                         </ul>
                         <div class="card-body">
-                            <button type="button" id=@product.Name class="btn btn-primary btnAddGoods">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
-                                    <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
-                                </svg>
-                                Add goods
-                            </button>
-                            <button type="button" id=@product.Id class="btn btn-danger btnDeleteProduct">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
-                                    <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
-                                </svg>
-                                Delete product
-                            </button>
+                            <div class="accordion" id="editAccordion">
+                                <div class="accordion-iten">
+                                    <div class="d-grid gap-2">
+                                        <h2 class="accordion-header" id="editAccordion-headingOne">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                                                Editing Options
+                                            </button>
+                                            <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingOne">
+                                                <div class="accordion-body">
+                                                    <button type="button" id=@product.Name class="btn btn-primary btnAddGoods">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
+                                                        </svg>
+                                                        Add goods
+                                                    </button>
+                                                    <button type="button" id=@product.Id class="btn btn-secondary btnEditProduct">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
+                                                        </svg>
+                                                        Edit product
+                                                    </button>
+                                                    <button type="button" id=@product.Id class="btn btn-danger btnDeleteProduct">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
+                                                        </svg>
+                                                        Delete product
+                                                    </button>
+                                                </div>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -221,6 +241,65 @@
             </div>
             <div class="modal-footer">
                 <button type="button" id="closeProductBtn" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="addProductModalBtn" class="btn btn-success">Add Product</button>
+                <button type="button" id="deleteProductModalBtn" class="btn btn-danger d-none">Delete Product</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="editProductModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="title">Edit Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-success d-none" id="ProductSuccessIcon" role="alert">
+                    Success!
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                    </svg>
+                </div>
+                <div class="alert alert-danger d-none" id="ProductErrorIcon" role="alert">
+                    Something went wrong!
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
+                    </svg>
+                </div>
+                <div class="d-none d-flex justify-content-center" id="ProductloadingSpinner">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div class="form-group" id="editProductForm">
+                    <div class="form-group">
+                        <label value="ProductCategory" class="control-label">Product Category</label>
+                        <select id="categoriesEditDropDownListPModel" class="form-select" multiple aria-label="category select">
+                            <option selected>Category Select</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label value="ProductName" class="control-label">Product Name</label>
+                        <input id="ProductEditName" class="form-control productName" />
+                    </div>
+                    <div class="form-group">
+                        <label value="Product Price" class="control-label">Product Price</label>
+                        <input id="ProductEditPrice" class="form-control productPrice" min="0" type="number" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label value="Product Discount" class="control-label">Product Discount</label>
+                        <input id="ProductEditDiscount" min="0" max="99" class="form-control productDiscount" type="number" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label value="ProductCategory" class="control-label">Product Images - <span style="color: red">watch out! unselect image will delete it!</span></label>
+                        <button class="btn btn-success btn-sm" style="margin-right: 5px">add images</button><span id="imagesCheckBox"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeEditProductBtn" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" id="addProductModalBtn" class="btn btn-success">Add Product</button>
                 <button type="button" id="deleteProductModalBtn" class="btn btn-danger d-none">Delete Product</button>
             </div>

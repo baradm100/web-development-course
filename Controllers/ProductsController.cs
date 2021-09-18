@@ -68,6 +68,25 @@ namespace web_development_course.Controllers
             return View(product);
         }
 
+        // GET: Products/GetProduct/{name}
+        [HttpPost]
+        public async Task<IActionResult> GetProduct(int id)
+        {
+            var product = await _context.Product.Include(m => m.ProductImages)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            var categories = from q in _context.ProductCategory
+                                    join CategoryName in _context.Category on q.CategoryId equals CategoryName.Id
+                                    where q.ProductId == id
+                                    select CategoryName.Name;
+            var imagesNames = product.ProductImages.Select(m => m.Name).ToList();
+            if (product == null)
+            {
+                return Json(new { success = false });
+            }
+
+            return Json(new { success = true, name = product.Name, id = id, discount = product.DiscountPercentage, categories = categories.ToList(), price = product.Price, images = imagesNames });
+        }
+
         // GET: Products/Create
         [Authorize(Roles = "Admin,Editor")]
         public IActionResult Create()

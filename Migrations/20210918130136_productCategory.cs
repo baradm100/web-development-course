@@ -2,30 +2,26 @@
 
 namespace web_development_course.Migrations
 {
-    public partial class ProductCategory : Migration
+    public partial class productCategory : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_ProductCategory_Category_CategoryId",
-                table: "ProductCategory");
+            migrationBuilder.DropTable(
+                name: "CategoryProduct");
 
-            migrationBuilder.DropForeignKey(
-                name: "FK_ProductCategory_Product_ProductId",
-                table: "ProductCategory");
-
-            migrationBuilder.DropIndex(
-                name: "IX_ProductCategory_CategoryId",
-                table: "ProductCategory");
-
-            migrationBuilder.DropIndex(
-                name: "IX_ProductCategory_ProductId",
-                table: "ProductCategory");
-
-            migrationBuilder.RenameColumn(
-                name: "ProductCategoryId",
-                table: "ProductCategory",
-                newName: "Id");
+            migrationBuilder.CreateTable(
+                name: "ProductCategory",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductCategory", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "CategoryProductCategory",
@@ -94,36 +90,37 @@ namespace web_development_course.Migrations
             migrationBuilder.DropTable(
                 name: "ProductProductCategory");
 
-            migrationBuilder.RenameColumn(
-                name: "Id",
-                table: "ProductCategory",
-                newName: "ProductCategoryId");
+            migrationBuilder.DropTable(
+                name: "ProductCategory");
+
+            migrationBuilder.CreateTable(
+                name: "CategoryProduct",
+                columns: table => new
+                {
+                    CategoriesId = table.Column<int>(type: "int", nullable: false),
+                    ProductsId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CategoryProduct", x => new { x.CategoriesId, x.ProductsId });
+                    table.ForeignKey(
+                        name: "FK_CategoryProduct_Category_CategoriesId",
+                        column: x => x.CategoriesId,
+                        principalTable: "Category",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CategoryProduct_Product_ProductsId",
+                        column: x => x.ProductsId,
+                        principalTable: "Product",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductCategory_CategoryId",
-                table: "ProductCategory",
-                column: "CategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProductCategory_ProductId",
-                table: "ProductCategory",
-                column: "ProductId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ProductCategory_Category_CategoryId",
-                table: "ProductCategory",
-                column: "CategoryId",
-                principalTable: "Category",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ProductCategory_Product_ProductId",
-                table: "ProductCategory",
-                column: "ProductId",
-                principalTable: "Product",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                name: "IX_CategoryProduct_ProductsId",
+                table: "CategoryProduct",
+                column: "ProductsId");
         }
     }
 }

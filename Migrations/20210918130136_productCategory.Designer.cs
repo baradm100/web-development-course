@@ -10,8 +10,8 @@ using web_development_course.Data;
 namespace web_development_course.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210916073444_ProductCategory")]
-    partial class ProductCategory
+    [Migration("20210918130136_productCategory")]
+    partial class productCategory
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

@@ -59,7 +59,7 @@
 
                 </p>
                 <h5 class="card-title">@product.Name</h5>
-                <p class="card-text"><strong>Price: </strong> @product.Price</p>
+                <p class="card-text"><strong>Price: </strong> @{ var priceAfterDiscount = product.Price * ((100 - @product.DiscountPercentage) / 100); } @priceAfterDiscount</p>
             </div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">

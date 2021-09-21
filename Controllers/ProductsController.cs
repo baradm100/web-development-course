@@ -38,17 +38,24 @@ namespace web_development_course.Controllers
         }
 
         [Authorize(Roles = "Admin,Editor")]
-        public async Task<IActionResult> EditorIndex()
+        public async Task<IActionResult> EditorIndex(int? categoryId)
         {
-
+            if(categoryId != null)
+            {
+                Category category = await _context.Category.FirstOrDefaultAsync(q => q.Id == categoryId);
+                var products =   from q in _context.ProductCategory
+                                 join CategoryName in _context.Category on q.CategoryId equals CategoryName.Id
+                                 where q.CategoryId == category.Id
+                                 join p in _context.Product.Include(a => a.ProductImages).Include(a=>a.ProductTypes) on q.ProductId equals p.Id
+                                 where q.ProductId == p.Id
+                                 select p;
+                return View(await products.ToListAsync());
+            }
             return View(await _context.Product.Include(product => product.ProductImages)
                     .Include(product => product.ProductTypes).Include(product => product.ProductCategories)
                     .ToListAsync());
 
         }
-
-
-
 
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)

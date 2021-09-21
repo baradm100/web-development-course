@@ -12,12 +12,17 @@
             Success = true;
             console.log(response.categories.result);
             if (response.categories.result.length > 0) {
-               $('#categoriesDropDownList').html('');
+                $('#categoriesDropDownList').html('');
+                const params = new URLSearchParams(window.location.search);
+                const categoryId = params.get("categoryId");
                var options = '';
                 options += '<option value="Select">All</option>';
                 for (var i = 0; i < response.categories.result.length; i++) {
                     console.log(response.categories.result[i]);
-                    options += '<option value="' + response.categories.result[i].id + '">' + response.categories.result[i].name + '</option>';
+                    if (categoryId == response.categories.result[i].id)
+                        options += '<option selected value="' + response.categories.result[i].id + '">' + response.categories.result[i].name + '</option>';
+                    else
+                        options += '<option value="' + response.categories.result[i].id + '">' + response.categories.result[i].name + '</option>'
                }
                $('#categoriesDropDownList').append(options);
            }
@@ -30,16 +35,12 @@
    });
 
     $("#categoriesDropDownList").change(function () {
-        var selected = $("#categoriesDropDownList option:selected").text();
-        var cards = $("div.card");
-        for (let i = 0; i < cards.length; i++) {
-            var card = $(cards[i]);
-            if ($(card).find(".category").text().includes(selected) || selected == "All")
-                $(card).parent(".col").removeClass("d-none");
-            else
-                $(card).parent(".col").addClass("d-none");
-        }
-        
+        console.log($("#categoriesDropDownList option:selected").text());
+        console.log($("#categoriesDropDownList option:selected").val());
+        var categoryId = $("#categoriesDropDownList option:selected").val();
+        var token = $('input[name="__RequestVerificationToken"]').val();
+        var url = "/Products/EditorIndex?categoryId=" + categoryId + "&__RequestVerificationToken=" + token;
+        window.location.href = url;
     })
 
     $("#AddNewCategoryBtn").click(function () {

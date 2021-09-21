@@ -64,7 +64,6 @@
                                     @foreach (var pr in product.ProductTypes)
                                     {
                                         <button class="editProductType text-center" style="border-radius: 10px;  display: inline-block; background: @pr.Color; width: 20px; height: 20px; " id="color" name="@product.Name" data-bs-toggle="tooltip" data-bs-placement="top" quantity="@pr.Quantity" size="@pr.Size" title="Amount Available: @pr.Quantity  Size: @pr.Size">
-                                            <span style="color: antiquewhite; margin-bottom: 2px"> @pr.Size</span>
                                         </button>
                                     }
                                 }
@@ -85,38 +84,21 @@
                             @{var editAccordion = "editAccordion" + product.Id;
                                 var EditAccordionHeading = "editAccordionHeading" + product.Id;
                                 var Heading = "heading" + product.Id;}
-                            <div class="accordion" id="@editAccordion">
-                                <div class="accordion-item">
-                                    <div class="d-grid gap-2">
-                                        <h2 class="accordion-header" id="@EditAccordionHeading">
-                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#@Heading" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                                                Editing Options
-                                            </button>
-                                        </h2>
-                                        <div id="@Heading" class="accordion-collapse collapse" aria-labelledby="#@Heading">
-                                            <div class="accordion-body">
-                                                <button type="button" id=@product.Name class="btn btn-primary btnAddGoods">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
-                                                        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
-                                                    </svg>
-                                                    Add goods
-                                                </button>
-                                                <button type="button" id=@product.Id class="btn btn-secondary btnEditProduct">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
-                                                        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
-                                                    </svg>
-                                                    Edit product
-                                                </button>
-                                                <button type="button" id=@product.Id class="btn btn-danger btnDeleteProduct">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
-                                                        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
-                                                    </svg>
-                                                    Delete product
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Edit options
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                    <li><a class="dropdown-item btnAddGoods" href="#" style="border-radius: 18px;" id=@product.Name>
+                                        Add goods
+                                    </a></li>
+                                    <li><a class="dropdown-item btnEditProduct" href="#" id=@product.Id style="border-radius: 18px;">
+                                            Edit product
+                                    </a></li>
+                                    <li><a class="dropdown-item btnDeleteProduct" href="#" id=@product.Id style="border-radius: 18px;">
+                                        Delete product
+                                    </a></li>
+                                </ul>
                             </div>
                         </div>
                     </div>

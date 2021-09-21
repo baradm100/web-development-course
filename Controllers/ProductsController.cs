@@ -43,6 +43,8 @@ namespace web_development_course.Controllers
             if(categoryId != null)
             {
                 Category category = await _context.Category.FirstOrDefaultAsync(q => q.Id == categoryId);
+                if (category != null)
+                {
                 var products =   from q in _context.ProductCategory
                                  join CategoryName in _context.Category on q.CategoryId equals CategoryName.Id
                                  where q.CategoryId == category.Id
@@ -50,6 +52,7 @@ namespace web_development_course.Controllers
                                  where q.ProductId == p.Id
                                  select p;
                 return View(await products.ToListAsync());
+                }
             }
             return View(await _context.Product.Include(product => product.ProductImages)
                     .Include(product => product.ProductTypes).Include(product => product.ProductCategories)

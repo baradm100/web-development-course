@@ -7,9 +7,9 @@ namespace web_development_course.Models
 {
     public enum CurrencyTypes
     {
-        USD,
-        ILS,
-        EUR,
-        GBP
+        USD, // United state doller 
+        ILS, // Isreal new shekel
+        EUR, // Euro
+        GBP // Graet briten pound
     }
 }

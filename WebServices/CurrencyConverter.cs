@@ -12,7 +12,7 @@ namespace web_development_course.WebServices
     public class CurrencyConverter
     {
         #region Constants
-
+        // using currencyfreaks api 
         private const string START_URL = @"https://api.currencyfreaks.com";
         private string ALL_CURRENCY = "" + CurrencyTypes.ILS + "," + CurrencyTypes.EUR + "," + CurrencyTypes.GBP;
         private const string API_KEY = "618cc1d3ccf445fda4e621a37b480e66"; // remeber to hide it from the github
@@ -31,6 +31,7 @@ namespace web_development_course.WebServices
 
         public void initCurrencyRates()
         {
+            // make sure to ask only for ILS, EUR, GBP the default of the api and the web site is value is USD
             string url = $"{START_URL}/latest?apikey={API_KEY}&symbols={ALL_CURRENCY}";
             var client = new RestClient(url);
 
@@ -41,6 +42,8 @@ namespace web_development_course.WebServices
             parseRates(JObject.Parse(respone.Content)["rates"]);
 
         }
+
+        // parse the return format from Json to doubles
         private void parseRates(JToken obj)
         {
            this.Ils = JsonConvert.DeserializeObject<double>(obj[CurrencyTypes.ILS.ToString()].ToString());

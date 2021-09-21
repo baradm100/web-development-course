@@ -20,6 +20,7 @@ namespace web_development_course.Controllers
 
         public IActionResult Index()
         {
+
             return View();
         }
 

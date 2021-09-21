@@ -1,8 +1,10 @@
 ﻿$(function () {
     var dataImages = null;
     var product_names = $(".card-title");
-    var productEditId = null
-    var Changed = false
+    var productEditId = null;
+    var Changed = false;
+    var productPriceValid = true;
+    var productDiscountValid = true;
 
 
     const insertCategoriesToCards = (name) => {
@@ -24,7 +26,7 @@
                     Success = true;
                     var ProductName = response.name;
                     var Text = "Categories: ";
-                    for (let i = 0; i < response.categories.length; i++){
+                    for (let i = 0; i < response.categories.length; i++) {
                         Text += response.categories[i];
                         Text += ", ";
                     };
@@ -45,7 +47,7 @@
     $('#AddNewProductBtn').click(function () {
         $("#addProductModal").modal("show");
         addCategoriesToModal("#categoriesDropDownListPModel");
-       
+
     });
 
     $('.btnEditProduct').click(function () {
@@ -79,7 +81,7 @@
                     ProductDiscount.val(response.discount);
                     ProductImages.html("");
                     for (let i = 0; i < response.categories.length; i++)
-                        ProductCategories.find("[value='"+response.categories[i]+"']").attr('selected', true);
+                        ProductCategories.find("[value='" + response.categories[i] + "']").attr('selected', true);
                     for (let i = 0; i < response.images.length; i++) {
                         ProductImages.append(`<button type="button" style="margin-buttom=2px;" id="${response.images[i].id}" class="DeleteImage btn btn-danger btn-sm">Delete Image ${response.images[i].name}</button>`)
                         ProductImages.append(`<img src="data:image/png;base64,${response.images[i].imageData}" id="${response.images[i].id}" class="img-fluid img-thumbnail" />`);
@@ -104,7 +106,7 @@
         $("#editProductModal").modal("show");
     });
 
-    $("#imagesProduct").on("click",".DeleteImage", function() {
+    $("#imagesProduct").on("click", ".DeleteImage", function () {
         var ProductImages = $("#imagesProduct");
         var token = $('input[name="__RequestVerificationToken"]').val();
         var ImgId = $(this).attr("id");
@@ -139,8 +141,8 @@
                     $("#ProductEditloadingSpinner").addClass("d-none");
                     $("#editProductForm").removeClass("d-none");
                     $("#ProductEditErrorIcon").removeClass("d-none");
-                    };
-                },
+                };
+            },
             error: function (result) {
                 console.log(result);
                 return false
@@ -170,6 +172,10 @@
     }
 
     $("#editProductModalBtn").click(function () {
+        if (!productDiscountValid || !productPriceValid) {
+            $(this).parent("div").append("<span style='color: red' id='formAlert'>Values are not valid!</span >")
+            return false;
+        }
         var formData = new FormData();
         $("#ProductEditloadingSpinner").removeClass("d-none");
         $("#editProductForm").addClass("d-none");
@@ -263,14 +269,14 @@
             processData: false,
             contentType: false,
             success: function (response) {
-            if (response.success == true) {
-                Success = true;
-                $("#ProductSuccessIcon").removeClass("d-none");
-            } else {
-                Success = false;
-                $("#ProductErrorIcon").removeClass("d-none");
-                $("#ProductErrorIcon").Text("Image Uploading Problem");
-            };
+                if (response.success == true) {
+                    Success = true;
+                    $("#ProductSuccessIcon").removeClass("d-none");
+                } else {
+                    Success = false;
+                    $("#ProductErrorIcon").removeClass("d-none");
+                    $("#ProductErrorIcon").Text("Image Uploading Problem");
+                };
             },
             complete: function () {
                 return Success;
@@ -309,7 +315,12 @@
         });
     }
 
+
     $("#addProductModalBtn").click(function () {
+        if (!productDiscountValid || !productPriceValid) {
+            $(this).parent("div").append("<span style='color: red' id='formAlert'>Values are not valid!</span >")
+            return false;
+        }
         $("#ProductloadingSpinner").removeClass("d-none");
         $("#addProductForm").addClass("d-none");
         $("#ProductErrorIcon").addClass("d-none");
@@ -367,14 +378,32 @@
     });
 
     $('#closeEditProductBtn').click(function () {
-        var ProductName = $("#ProductEditName").val("");
-        var ProductPrice = $("#ProductEditPrice").val("");
-        var ProductDiscount = $("#ProductEditDiscount").val("");
-        var ProductCategories = $("#categoriesEditDropDownListPModel").val("");
-        var ProductImages = $("#imagesCheckBox").html("");
+        $("#ProductEditName").val("");
+        $("#ProductEditPrice").val("");
+        $("#ProductEditDiscount").val("");
+        $("#categoriesEditDropDownListPModel").val("");
+        $("#imagesCheckBox").html("");
         if (Changed)
             location.reload();
     });
+
+    const addWarningSmallerThanZero = (selector, warningId, alert) => {
+        if ($(selector).val() < 0) {
+            $(selector).parent("div").append("<span style='color: red' id=" + warningId + ">"+ alert + "</span >");
+            return false
+        }
+        else {
+            $(selector).siblings("#"+warningId).remove()
+            return true
+        }
+    };
+
+    $('#ProductPrice').change(() => productPriceValid = addWarningSmallerThanZero('#ProductPrice', 'priceAlert', 'Price cannot be lower than zero'));
+    $('#ProductDiscount').change(() => productDiscountValid = addWarningSmallerThanZero('#ProductDiscount', 'discountAlert', 'Discount cannot be lower than zero'));
+
+    $('#ProductEditPrice').change(() => productPriceValid = addWarningSmallerThanZero('#ProductEditPrice', 'priceAlert', 'Price cannot be lower than zero'));
+    $('#ProductEditDiscount').change(() => productDiscountValid = addWarningSmallerThanZero('#ProductEditDiscount', 'discountAlert', 'Discount cannot be lower than zero'));
+
 
     $('.btnDeleteProduct').click(function () {
         var formData = new FormData();

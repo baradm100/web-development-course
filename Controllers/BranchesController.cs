@@ -22,10 +22,8 @@ namespace web_development_course.Controllers
         // GET: Branches
         public async Task<IActionResult> Index()
         {
-
-
             var applicationDbContext = _context.Branch.Include(b => b.Address).Include(d=>d.OpeningHours);
-            return View(await applicationDbContext.ToListAsync());
+            return View("Index", await applicationDbContext.ToListAsync());
         }
 
         // GET: Branches/Details/5
@@ -66,7 +64,7 @@ namespace web_development_course.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,City,Street,BuildingNumber,Longitude,Latitude")] Address address, [Bind("Id,Name")] string name)
+        public async Task<IActionResult> Create([Bind("Id,City,Street,BuildingNumber,Longitude,Latitude")] Address address, [Bind("Id,Name")] string name, List<OpeningHour> openingHours)
         {
             if (ModelState.IsValid)
             {
@@ -75,11 +73,20 @@ namespace web_development_course.Controllers
                 branch.AddressId = address.Id;
                 branch.Address = address;
                 branch.Name = name;
+                foreach (var openHour in openingHours)
+                {
+                    openHour.BranchId = branch.Id;
+                    //openHour.Branch = branch;
+                    _context.Add(openHour);
+                }
+                branch.OpeningHours = openingHours;
                 _context.Add(branch);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                Console.WriteLine("Success");
+                return Json(new { success = true });
             }
-            return View();
+            Console.WriteLine("error");
+            return Json(new { success = false });
         }
 
         // GET: Branches/Edit/5
@@ -97,6 +104,11 @@ namespace web_development_course.Controllers
             }
 
             ViewData["Address"] = await _context.Address.FindAsync(branch.AddressId);
+             var temp = (from open in _context.OpeningHour
+                                              where open.BranchId == branch.Id
+                                              select open).ToList();
+            // sort the day of week
+            ViewData["OpeningHours"] = temp.OrderBy(o => o.DayOfWeek).ToList();
             return View(branch);
         }
 
@@ -105,7 +117,7 @@ namespace web_development_course.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,City,Street,BuildingNumber,Longitude,Latitude")] Address address, [Bind("Id,Name")] string name)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,City,Street,BuildingNumber,Longitude,Latitude")] Address address, [Bind("Id,Name")] string name, List<OpeningHour> openingHours)
         {
             var branchToEdit = (from branch in _context.Branch
                          where branch.Id == id
@@ -123,6 +135,7 @@ namespace web_development_course.Controllers
                     branchToEdit[0].Address = address;
                     branchToEdit[0].AddressId = address.Id;
                     branchToEdit[0].Name = name;
+                    branchToEdit[0].OpeningHours = openingHours;
                     _context.Update(branchToEdit[0]);
                     await _context.SaveChangesAsync();
                 }
@@ -137,10 +150,10 @@ namespace web_development_course.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return Json(new { success = true });
             }
-            ViewData["AddressId"] = new SelectList(_context.Address, "Id", "Name,City,Street,BuildingNumber,Longitude,Latitude", branchToEdit[0].AddressId);
-            return View(branchToEdit[0]);
+            return Json(new { success = false });
+
         }
 
         // GET: Branches/Delete/5
@@ -168,6 +181,17 @@ namespace web_development_course.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var branch = await _context.Branch.FindAsync(id);
+            var address = await _context.Address.FindAsync(branch.AddressId);
+            _context.Address.Remove(address);
+
+            var days = (from day in _context.OpeningHour
+                        where day.BranchId == branch.Id
+                        select day).ToList();
+            foreach (var day in days)
+            {
+                _context.OpeningHour.Remove(day);
+            }
+
             _context.Branch.Remove(branch);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

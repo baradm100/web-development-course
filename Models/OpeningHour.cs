@@ -24,7 +24,6 @@ namespace web_development_course.Models
 
         public int BranchId{ get; set; }
 
-        [Required]
         public Branch Branch { get; set; }
 
         public override string ToString()

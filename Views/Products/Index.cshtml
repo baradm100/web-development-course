@@ -2,7 +2,6 @@
 
 @{
     ViewData["Title"] = "Index";
-
 }
 
 <h1>Product's Page</h1>
@@ -12,14 +11,14 @@
         <option selected>Category Select</option>
     </select>
 </div>
-<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+<div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
     @{ foreach (var product in Model)
         {
         <div class="col">
                 <div class="card" style="width: 18rem;">
                     @if (product.ProductImages != null)
                     {
-                        <div id="carouselProducts" class="carousel slide" data-bs-ride="carousel">
+                        <div id="carouselProducts" class="carousel slide" data-bs-touch="false" data-bs-interval="false">
                             <div class="carousel-inner">
                                 @for (var i = 0; i < product.ProductImages.Count(); i++)
                                 {
@@ -68,7 +67,7 @@
                         @foreach (var pr in product.ProductTypes)
                         {
                             <div class="editProductType text-center" style="border-radius: 10px; display: inline-block; background: @pr.Color; width: 20px; height: 20px; " id="color" data-bs-toggle="tooltip" data-bs-placement="top">
-                                <span style="color: antiquewhite"> @pr.Size</span>
+                                <span style="color: antiquewhite; margin-bottom: 2px"> @pr.Size</span>
                             </div>
                         }
                     }

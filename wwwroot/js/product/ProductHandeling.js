@@ -44,7 +44,7 @@
 
     $('#AddNewProductBtn').click(function () {
         $("#addProductModal").modal("show");
-        var Success = addCategoriesToModal("#categoriesDropDownListPModel");
+        addCategoriesToModal("#categoriesDropDownListPModel");
        
     });
 
@@ -57,7 +57,7 @@
         var ProductPrice = $("#ProductEditPrice");
         var ProductDiscount = $("#ProductEditDiscount");
         var ProductCategories = $("#categoriesEditDropDownListPModel");
-        var ProductImages = $("#imagesCheckBox");
+        var ProductImages = $("#imagesProduct");
         formData.append("Id", ProductId);
         $.ajax({
             url: "/Products/GetProduct/",
@@ -77,10 +77,12 @@
                     ProductName.val(response.name);
                     ProductPrice.val(response.price);
                     ProductDiscount.val(response.discount);
+                    ProductImages.html("");
                     for (let i = 0; i < response.categories.length; i++)
-                        ProductCategories.val(response.categories[i]).attr('selected', true);
+                        ProductCategories.find("[value='"+response.categories[i]+"']").attr('selected', true);
                     for (let i = 0; i < response.images.length; i++) {
-                        ProductImages.append(`<div class="form-check form-check-inline editCheckBoxes"><input class="form-check-input" type="checkbox" id=${i} value=${response.images[i]} checked><label class="form-check-label" for=${i}>${response.images[i]}</label></div>`)
+                        ProductImages.append(`<button type="button" style="margin-buttom=2px;" id="${response.images[i].id}" class="DeleteImage btn btn-danger btn-sm">Delete Image ${response.images[i].name}</button>`)
+                        ProductImages.append(`<img src="data:image/png;base64,${response.images[i].imageData}" id="${response.images[i].id}" class="img-fluid img-thumbnail" />`);
                     };
                 } else {
                     Success = false;
@@ -102,8 +104,56 @@
         $("#editProductModal").modal("show");
     });
 
+    $("#imagesProduct").on("click",".DeleteImage", function() {
+        var ProductImages = $("#imagesProduct");
+        var token = $('input[name="__RequestVerificationToken"]').val();
+        var ImgId = $(this).attr("id");
+
+        var formData = new FormData();
+        formData.append("__RequestVerificationToken", token);
+        formData.append("id", ImgId);
+        $("#ProductEditloadingSpinner").removeClass("d-none");
+        $.ajax({
+            url: "/Products/DeleteProductImage/",
+            type: 'POST',
+            data: formData,
+            cache: false,
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            fail: function (xhr, textStatus, errorThrown) {
+                Success = false;
+                alert("Something went wrong in server")
+            },
+            success: function (response) {
+                if (response.success == true) {
+                    Success = true;
+                    ProductImages.children(`button#${ImgId}`).hide();
+                    ProductImages.children(`img#${ImgId}`).hide();
+                    $("#ProductEditloadingSpinner").addClass("d-none");
+                    $("#edotProductForm").removeClass("d-none");
+                    $("#ProductEditSuccessIcon").removeClass("d-none");
+                    Changed = true;
+                } else {
+                    Success = false;
+                    $("#ProductEditloadingSpinner").addClass("d-none");
+                    $("#editProductForm").removeClass("d-none");
+                    $("#ProductEditErrorIcon").removeClass("d-none");
+                    };
+                },
+            error: function (result) {
+                console.log(result);
+                return false
+            },
+            complete: function () {
+                $("#ProductEditloadingSpinner").addClass("d-none");
+            },
+            timeout: 5000,
+        });
+    });
+
     const findActiveCheckbox = (div) => {
-        var selected = [];
+        var actives = [];
         $(div).find(':checkbox').each(function () {
             if (jQuery(this).attr('checked') == true)
                 actives.add(jQuery(this).attr('value'));
@@ -127,7 +177,7 @@
         $("#ProductEditSuccessIcon").addClass("d-none");
         var ProductName = $("#ProductEditName").val();
         var ProductPrice = $("#ProductEditPrice").val();
-        var ProductCategories = findSelectedDropdown("#categoriesEditDropDownListPModel").forEach(a => formData.append("categories", a));
+        findSelectedDropdown("#categoriesEditDropDownListPModel").forEach(a => formData.append("categories", a));
         var ProductDiscount = $("#ProductEditDiscount").val();
         var token = $('input[name="__RequestVerificationToken"]').val();
 
@@ -148,11 +198,11 @@
             contentType: false,
             success: function (response) {
                 if (response.success == true) {
-                    /*var imagesUploading = uploadImages(dataImages, response.productId);*/
                     $("#ProductEditloadingSpinner").addClass("d-none");
-                    $("#edotProductForm").removeClass("d-none");
-                    Success = true;
+                    $("#editProductForm").removeClass("d-none");
                     $("#ProductEditSuccessIcon").removeClass("d-none");
+                    Success = true;
+                    uploadImages(dataImages, productEditId);
                     Changed = true;
                 } else {
                     Success = false;
@@ -176,6 +226,16 @@
         });
         var Success = addCategoriesToModal("#categoriesDropDownListPModel");
         return Success;
+    });
+
+    $(".EditUploadNewImages").children("#EditImageUpload").on("change", function () {
+        var formData = new FormData();
+        var totalFiles = $("#EditImageUpload").prop("files");
+        for (var i = 0; i < totalFiles.length; i++) {
+            var file = totalFiles[i];
+            formData.append('file', file);
+        };
+        dataImages = formData;
     });
 
     $("#UploadImg").change(function () {
@@ -273,9 +333,9 @@
             },
             success: function (response) {
                 if (response.success == true) {
-                    var imagesUploading = uploadImages(dataImages, response.productId);
                     $("#ProductloadingSpinner").addClass("d-none");
                     $("#addProductForm").removeClass("d-none");
+                    uploadImages(dataImages, response.productId);
                     Success = true;
                     $("#ProductSuccessIcon").removeClass("d-none");
                 } else {

@@ -78,7 +78,7 @@ namespace web_development_course.Controllers
                                     join CategoryName in _context.Category on q.CategoryId equals CategoryName.Id
                                     where q.ProductId == id
                                     select CategoryName.Name;
-            var imagesNames = product.ProductImages.Select(m => m.Name).ToList();
+            var imagesNames = product.ProductImages.Select(m => new { m.Name, m.ImageData, m.Id }).ToList();
             if (product == null)
             {
                 return Json(new { success = false });
@@ -162,6 +162,35 @@ namespace web_development_course.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Editor")]
+        public async Task<IActionResult> DeleteProductImage(int id)
+        {
+            try
+            {
+                var productImage = _context.ProductImage.Include(p => p.Product).FirstOrDefault(p => p.Id == id);
+                _context.ProductImage.Remove(productImage);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true });
+            }
+            catch
+            {
+                return Json(new { success = false });
+            }
+        }
+
+        public ProductImage UploadImageToDb(IFormFile files)
+        {
+            var fileName = Path.GetFileName(files.FileName);
+            ProductImage img = new ProductImage();
+            img.Name = fileName;
+            var ms = new MemoryStream();
+            files.CopyTo(ms);
+            img.ImageData = ms.ToArray();
+            return img;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> deleteProduct(int id)
         {
             try
@@ -185,16 +214,7 @@ namespace web_development_course.Controllers
             }
         }
 
-        public ProductImage UploadImageToDb(IFormFile files)
-        {
-            var fileName = Path.GetFileName(files.FileName);
-            ProductImage img = new ProductImage();
-            img.Name = fileName;
-            var ms = new MemoryStream();
-            files.CopyTo(ms);
-            img.ImageData = ms.ToArray();
-            return img;
-        }
+        
 
         public ActionResult GetLastProductId()
         {

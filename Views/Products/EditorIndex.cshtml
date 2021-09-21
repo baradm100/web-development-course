@@ -25,115 +25,120 @@
     </select>
 </div>
 <div class="container">
-    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 align-items-start">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4 align-items-start">
         @{ foreach (var product in Model)
             {
                 <div class="col">
-                    <div class="card" style="width: 18rem;">
-                        @if (product.ProductImages != null)
-                        {
-                            <div id="carouselPrdoucts" class="carousel slide" data-bs-ride="carousel">
-                                <div class="carousel-inner">
-                                    @for (var i = 0; i < product.ProductImages.Count(); i++)
-                                    {
-                                        if (i == 0)
-                                        {
-                                            <div class="carousel-item active">
-                                                @{
-                                                    string img = Convert.ToBase64String(product.ProductImages.ElementAt(i).ImageData);
-                                                    <img src="data:image/png;base64,@img" class="card-img-top d-block w-100" width="100" height="250" />
-                                                }
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <div class="carousel-item">
-                                                @{
-                                                    string img = Convert.ToBase64String(product.ProductImages.ElementAt(i).ImageData);
-                                                    <img src="data:image/png;base64,@img" class="card-img-top d-block w-100" width="100" height="250" />
-                                                }
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                                <button class="carousel-control-prev" type="button" data-bs-target="#carouselPrdoucts" data-bs-slide="prev">
-                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden">Previous</span>
-                                </button>
-                                <button class="carousel-control-next" type="button" data-bs-target="#carouselPrdoucts" data-bs-slide="next">
-                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden">Next</span>
-                                </button>
-                            </div>
-
-                        }
-                        <div class="card-body">
-                            <p class="card-text category" category="@product.Name">
-
-                            </p>
-                            <h5 class="card-title">@product.Name</h5>
-                            <p class="card-text"><strong>Discount: </strong> @product.DiscountPercentage%</p>
-                            <p class="card-text"><strong>Price (after discount): </strong> @{ var priceAfterDiscount = product.Price * ((100 - @product.DiscountPercentage) / 100); } @priceAfterDiscount</p>
-                        </div>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">
-                                <strong>Colors: </strong>  @if (product.ProductTypes != null)
+                            <div class="card" style="width: 18rem;">
+                                @{ var carouselId = "carousel" + product.Id;}
+                                @if (product.ProductImages != null)
                                 {
-                                    @foreach (var pr in product.ProductTypes)
-                                    {
-                                        <button class="editProductType text-center" style="border-radius: 10px;  display: inline-block; background: @pr.Color; width: 20px; height: 20px; " id="color" name="@product.Name" data-bs-toggle="tooltip" data-bs-placement="top" quantity="@pr.Quantity" size="@pr.Size" title="Amount Available: @pr.Quantity  Size: @pr.Size">
-                                            <span style="color: antiquewhite"> @pr.Size</span>
+                                    <div id=@carouselId class="carousel slide" data-bs-touch="false" data-bs-interval="false">
+                                        <div class="carousel-inner">
+                                            @for (var i = 0; i < product.ProductImages.Count(); i++)
+                                            {
+                                                if (i == 0)
+                                                {
+                                                    <div class="carousel-item active">
+                                                        @{
+                                                            string img = Convert.ToBase64String(product.ProductImages.ElementAt(i).ImageData);
+                                                            <img src="data:image/png;base64,@img" class="card-img-top d-block w-100" width="100" height="250"  />
+                                                        }
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="carousel-item">
+                                                        @{
+                                                            string img = Convert.ToBase64String(product.ProductImages.ElementAt(i).ImageData);
+                                                            <img src="data:image/png;base64,@img" class="card-img-top d-block w-100" width="100" height="250" />
+                                                        }
+                                                    </div>
+                                                }
+                                            }
+                                        </div>
+                                        <button class="carousel-control-prev" type="button" data-bs-target="#@carouselId" data-bs-slide="prev">
+                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Previous</span>
                                         </button>
-                                    }
+                                        <button class="carousel-control-next" type="button" data-bs-target="#@carouselId" data-bs-slide="next">
+                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Next</span>
+                                        </button>
+                                    </div>
+
                                 }
-                            </li>
-                            <li class="list-group-item">
-                                <strong>Total Stock Amount: </strong>  @if (product.ProductTypes != null)
-                                {
-                                    var totalAmount = 0;
-                                    @foreach (var pr in product.ProductTypes)
-                                    {
-                                        totalAmount = totalAmount + pr.Quantity;
-                                    }
-                                    @totalAmount
-                                }
-                            </li>
-                        </ul>
-                        <div class="card-body">
-                            <div class="accordion" id="editAccordion">
-                                <div class="accordion-iten">
-                                    <div class="d-grid gap-2">
-                                        <h2 class="accordion-header" id="editAccordion-headingOne">
-                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                                                Editing Options
-                                            </button>
-                                            <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingOne">
-                                                <div class="accordion-body">
-                                                    <button type="button" id=@product.Name class="btn btn-primary btnAddGoods">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
-                                                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
-                                                        </svg>
-                                                        Add goods
+                                <div class="card-body">
+                                    <p class="card-text category" category="@product.Name">
+
+                                    </p>
+                                    <h5 class="card-title">@product.Name</h5>
+                                    <p class="card-text"><strong>Discount: </strong> @product.DiscountPercentage%</p>
+                                    <p class="card-text"><strong>Price (after discount): </strong> @{ var priceAfterDiscount = product.Price * ((100 - @product.DiscountPercentage) / 100); } @priceAfterDiscount</p>
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <strong>Colors: </strong>  @if (product.ProductTypes != null)
+                                        {
+                                            @foreach (var pr in product.ProductTypes)
+                                            {
+                                                <button class="editProductType text-center" style="border-radius: 10px;  display: inline-block; background: @pr.Color; width: 20px; height: 20px; " id="color" name="@product.Name" data-bs-toggle="tooltip" data-bs-placement="top" quantity="@pr.Quantity" size="@pr.Size" title="Amount Available: @pr.Quantity  Size: @pr.Size">
+                                                    <span style="color: antiquewhite; margin-bottom: 2px"> @pr.Size</span>
+                                                </button>
+                                            }
+                                        }
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Total Stock Amount: </strong>  @if (product.ProductTypes != null)
+                                        {
+                                            var totalAmount = 0;
+                                            @foreach (var pr in product.ProductTypes)
+                                            {
+                                                totalAmount = totalAmount + pr.Quantity;
+                                            }
+                                            @totalAmount
+                                        }
+                                    </li>
+                                </ul>
+                                <div class="card-body">
+                                    @{var editAccordion = "editAccordion" + product.Id;
+                                      var EditAccordionHeading = "editAccordionHeading" + product.Id;
+                                      var Heading = "heading" + product.Id;}
+                                    <div class="accordion" id="@editAccordion">
+                                        <div class="accordion-item">
+                                            <div class="d-grid gap-2">
+                                                <h2 class="accordion-header" id="@EditAccordionHeading">
+                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#@Heading" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                                                        Editing Options
                                                     </button>
-                                                    <button type="button" id=@product.Id class="btn btn-secondary btnEditProduct">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
-                                                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
-                                                        </svg>
-                                                        Edit product
-                                                    </button>
-                                                    <button type="button" id=@product.Id class="btn btn-danger btnDeleteProduct">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
-                                                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
-                                                        </svg>
-                                                        Delete product
-                                                    </button>
-                                                </div>
+                                                </h2>
+                                                    <div id="@Heading" class="accordion-collapse collapse" aria-labelledby="#@Heading">
+                                                        <div class="accordion-body">
+                                                            <button type="button" id=@product.Name class="btn btn-primary btnAddGoods">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                                                    <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
+                                                                </svg>
+                                                                Add goods
+                                                            </button>
+                                                            <button type="button" id=@product.Id class="btn btn-secondary btnEditProduct">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                                                    <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
+                                                                </svg>
+                                                                Edit product
+                                                            </button>
+                                                            <button type="button" id=@product.Id class="btn btn-danger btnDeleteProduct">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                                                    <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
+                                                                </svg>
+                                                                Delete product
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                             </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
                 </div>
             }
         }
@@ -249,7 +254,7 @@
 </div>
 
 <div class="modal" id="editProductModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="title">Edit Product</h5>
@@ -276,7 +281,7 @@
                 <div class="form-group" id="editProductForm">
                     <div class="form-group">
                         <label value="ProductCategory" class="control-label">Product Category</label>
-                        <select id="categoriesEditDropDownListPModel" class="form-select" multiple aria-label="category select">
+                        <select id="categoriesEditDropDownListPModel" class="form-select" aria-label="category select" multiple>
                             <option selected>Category Select</option>
                         </select>
                     </div>
@@ -292,16 +297,36 @@
                         <label value="Product Discount" class="control-label">Product Discount</label>
                         <input id="ProductEditDiscount" min="0" max="99" class="form-control productDiscount" type="number" value="0" />
                     </div>
-                    <div class="form-group">
-                        <label value="ProductCategory" class="control-label">Product Images - <span style="color: red">watch out! unselect image will delete it!</span></label>
-                        <input class="form-control" type="file" id="UploadNewImages" multiple/><span id="imagesCheckBox"></span>
+                    <div class="accordion" id="editImageAccordion" style="margin-top: 5px">
+                        <div class="accordion-item">
+                            <div class="d-grid gap-2">
+                                <h2 class="accordion-header" id="editImageAccordion-headingOne">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls=collapseOne">
+                                        Edit Images
+                                    </button>
+                                </h2>
+                                    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingOne">
+                                        <div class="accordion-body">
+                                            <div class="form-group">
+                                                <div class="EditUploadNewImages">
+                                                    <h4>Add New Images</h4>
+                                                    <input class="form-control" type="file" id="EditImageUpload" accept="image/*" multiple />
+                                                    <br />
+                                                </div>
+                                                <h4>Editing Exist Images</h4>
+                                                <span id="imagesProduct" style="margin: 5px;">
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" id="closeEditProductBtn" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" id="editProductModalBtn" class="btn btn-success">Edit Product</button>
-                <button type="button" id="deleteProductModalBtn" class="btn btn-danger d-none">Delete Product</button>
             </div>
         </div>
     </div>

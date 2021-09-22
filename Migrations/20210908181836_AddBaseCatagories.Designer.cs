@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using web_development_course.Data;
 
 namespace web_development_course.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210908181836_AddBaseCatagories")]
+    partial class AddBaseCatagories
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -19,19 +21,19 @@ namespace web_development_course.Migrations
                 .HasAnnotation("ProductVersion", "5.0.9")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("CategoryProductCategory", b =>
+            modelBuilder.Entity("CategoryProduct", b =>
                 {
                     b.Property<int>("CategoriesId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProductCategoriesId")
+                    b.Property<int>("ProductsId")
                         .HasColumnType("int");
 
-                    b.HasKey("CategoriesId", "ProductCategoriesId");
+                    b.HasKey("CategoriesId", "ProductsId");
 
-                    b.HasIndex("ProductCategoriesId");
+                    b.HasIndex("ProductsId");
 
-                    b.ToTable("CategoryProductCategory");
+                    b.ToTable("CategoryProduct");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -232,21 +234,6 @@ namespace web_development_course.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
-                });
-
-            modelBuilder.Entity("ProductProductCategory", b =>
-                {
-                    b.Property<int>("ProductCategoriesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ProductCategoriesId", "ProductsId");
-
-                    b.HasIndex("ProductsId");
-
-                    b.ToTable("ProductProductCategory");
                 });
 
             modelBuilder.Entity("web_development_course.Models.Address", b =>
@@ -459,121 +446,6 @@ namespace web_development_course.Migrations
                     b.ToTable("Product");
                 });
 
-            modelBuilder.Entity("web_development_course.Models.ProductModels.ProductCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ProductCategory");
-                });
-
-            modelBuilder.Entity("web_development_course.Models.ProductModels.ProductColor", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Color")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ProductColor");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Color = "EE2A00",
-                            Name = "Red"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Color = "000000",
-                            Name = "Black"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Color = "FFFFFF",
-                            Name = "White"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Color = "B9B9B9",
-                            Name = "Grey"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Color = "FFF704",
-                            Name = "Yellow"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Color = "BF08E3",
-                            Name = "Purple"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Color = "0851E3",
-                            Name = "Blue"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Color = "26E308",
-                            Name = "Green"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Color = "E308CF",
-                            Name = "Pink"
-                        });
-                });
-
-            modelBuilder.Entity("web_development_course.Models.ProductModels.ProductImage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<byte[]>("ImageData")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("ProductImage");
-                });
-
             modelBuilder.Entity("web_development_course.Models.ProductType", b =>
                 {
                     b.Property<int>("Id")
@@ -581,8 +453,9 @@ namespace web_development_course.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("ColorId")
-                        .HasColumnType("int");
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
@@ -594,8 +467,6 @@ namespace web_development_course.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ColorId");
 
                     b.HasIndex("ProductId");
 
@@ -650,7 +521,7 @@ namespace web_development_course.Migrations
                         });
                 });
 
-            modelBuilder.Entity("CategoryProductCategory", b =>
+            modelBuilder.Entity("CategoryProduct", b =>
                 {
                     b.HasOne("web_development_course.Models.Category", null)
                         .WithMany()
@@ -658,9 +529,9 @@ namespace web_development_course.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("web_development_course.Models.ProductModels.ProductCategory", null)
+                    b.HasOne("web_development_course.Models.Product", null)
                         .WithMany()
-                        .HasForeignKey("ProductCategoriesId")
+                        .HasForeignKey("ProductsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -712,21 +583,6 @@ namespace web_development_course.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ProductProductCategory", b =>
-                {
-                    b.HasOne("web_development_course.Models.ProductModels.ProductCategory", null)
-                        .WithMany()
-                        .HasForeignKey("ProductCategoriesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("web_development_course.Models.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -788,32 +644,13 @@ namespace web_development_course.Migrations
                     b.Navigation("ProductType");
                 });
 
-            modelBuilder.Entity("web_development_course.Models.ProductModels.ProductImage", b =>
-                {
-                    b.HasOne("web_development_course.Models.Product", "Product")
-                        .WithMany("ProductImages")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("web_development_course.Models.ProductType", b =>
                 {
-                    b.HasOne("web_development_course.Models.ProductModels.ProductColor", "Color")
-                        .WithMany()
-                        .HasForeignKey("ColorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("web_development_course.Models.Product", "Product")
                         .WithMany("ProductTypes")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Color");
 
                     b.Navigation("Product");
                 });
@@ -830,8 +667,6 @@ namespace web_development_course.Migrations
 
             modelBuilder.Entity("web_development_course.Models.Product", b =>
                 {
-                    b.Navigation("ProductImages");
-
                     b.Navigation("ProductTypes");
                 });
 

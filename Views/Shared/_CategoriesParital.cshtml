@@ -1,0 +1,30 @@
+@inject web_development_course.Models.ProductModels.CategoryModelService CategoryModelService
+
+@foreach (var item in @CategoryModelService.GetCategoryTrees())
+{
+    <li class="nav-item dropdown">
+    <a class="nav-link text-dark nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"
+        id="catagory-@item.Category.Id" href="#">@item.Category.Name</a>
+
+    <ul class="dropdown-menu" aria-labelledby="catagory-@item.Category.Id">
+        @foreach (var subItem in item.SubCategories)
+            {
+                <li>
+                    <a class="dropdown-item" asp-area="" asp-controller="Categories" asp-action="Details"
+                asp-route-id="@subItem.Id">
+                        @subItem.Name
+                    </a>
+                </li>
+            }
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            <li>
+                <a class="dropdown-item" asp-area="" asp-controller="Categories" asp-action="Details"
+                asp-route-id="@item.Category.Id">
+                    View All
+                </a>
+            </li>
+        </ul>
+    </li>
+}

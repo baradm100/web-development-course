@@ -45,11 +45,16 @@ namespace web_development_course.Data
             modelBuilder.Entity<ProductColor>().HasData(new ProductColor { Id = 7, Name = "Blue", Color = "0851E3" });
             modelBuilder.Entity<ProductColor>().HasData(new ProductColor { Id = 8, Name = "Green", Color = "26E308" });
             modelBuilder.Entity<ProductColor>().HasData(new ProductColor { Id = 9, Name = "Pink", Color = "E308CF" });
-
-
-
-
-
+            modelBuilder.Entity<Category>().HasData(
+                new Category { Id = 1, Name = "Men" },
+                new Category { Id = 2, Name = "Women" },
+                new Category { Id = 3, Name = "Men Shirts", ParentCategoryId = 1 },
+                new Category { Id = 4, Name = "Women Shirts", ParentCategoryId = 2 },
+                new Category { Id = 5, Name = "Men Pants", ParentCategoryId = 1 },
+                new Category { Id = 6, Name = "Women Pants", ParentCategoryId = 2 },
+                new Category { Id = 7, Name = "Men Hats", ParentCategoryId = 1 },
+                new Category { Id = 8, Name = "Women Hats", ParentCategoryId = 2 }
+            );
         }
 
     }

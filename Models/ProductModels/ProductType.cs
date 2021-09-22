@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using web_development_course.Common;
+using web_development_course.Models.ProductModels;
 
 namespace web_development_course.Models
 {
@@ -34,7 +35,8 @@ namespace web_development_course.Models
         public int Quantity { get; set; } = 0;
 
         [Required]
-        public string Color { get; set; }
+        public int ColorId { get; set; }
+        public ProductColor Color { get; set; }
 
     }
 }

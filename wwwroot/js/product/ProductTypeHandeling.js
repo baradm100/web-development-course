@@ -17,6 +17,36 @@
     $('.btnAddGoods').click(function () {
         productName = $(this).get(0).id;
         $("#addGoodsModal").modal("show");
+        $.ajax({
+            url: "/ProductTypes/GetColors/",
+            type: 'GET',
+            dataType: 'json',
+            data: null,
+            fail: function (xhr, textStatus, errorThrown) {
+                Success = false;
+                alert("Something went wrong in server")
+            },
+            success: function (response) {
+                Success = true;
+                console.log(response.colors.result);
+                if (response.colors.result.length > 0) {
+                    $('#Color').html('');
+                    var options = '';
+                    for (var i = 0; i < response.colors.result.length; i++) {
+                        if (response.colors.result[i].name == "White")
+                            options += `<div class="form-check form-check-inline"><input class="form-check-input" style="background:#${response.colors.result[i].color};" type="radio" id="${response.colors.result[i].name}" value="${response.colors.result[i].id}"></div>`
+                        else
+                            options += `<div class="form-check form-check-inline"><input class="form-check-input" style="background:#${response.colors.result[i].color}; border-color:transparent" type="radio" id="${response.colors.result[i].name}" value="${response.colors.result[i].id}"></div>`
+                    }
+                    $('#Color').append(options);
+                }
+            },
+            error: function (result) {
+                console.log(result);
+                return false
+            },
+            timeout: 5000,
+        });
     });
 
     $(".editProductType").click(function () {
@@ -28,7 +58,7 @@
         console.log(color + " " + size + " " + quantity);
         $("#addGoodsModal").modal("show");
         $("#deleteGoodsModalBtn").removeClass("d-none");
-        $("#Color").val(rgb2hex(color));
+        $("#Color").css("background", rgb2hex(color));
         $("#Color").attr("disabled", true);
         $("#Size").val(PRODUCT_SIZES[size]).change();
         $("#Size").attr("disabled", true);
@@ -43,7 +73,7 @@
         $("#addGoodsForm").addClass("d-none");
         $("#errorIcon").addClass("d-none");
         $("#successIcon").addClass("d-none");
-        var color = $("#Color").val();
+        var color = $('input:checked').val();
         var size = $("#Size").val();
         var quantity = $("#Quantity").val();
         var token = $('input[name="__RequestVerificationToken"]').val();
@@ -93,30 +123,32 @@
 
 
     $("#addGoodsModalBtn").click(function () {
+        var formData = new FormData();
         $("#loadingSpinner").removeClass("d-none");
         $("#addGoodsForm").addClass("d-none");
         $("#errorIcon").addClass("d-none");
         $("#successIcon").addClass("d-none");
-        var color = $("#Color").val();
+        var color = $('input:checked').val();
         var size = $("#Size").val();
         var quantity = $("#Quantity").val();
         if (isEdit) {
             quantity = startQuantity + (quantity - startQuantity);
         }
-        console.log(color + " " + size + " " + quantity);
         var token = $('input[name="__RequestVerificationToken"]').val();
         var Success = false;
+        formData.append("__RequestVerificationToken", token);
+        formData.append("Quantity", quantity);
+        formData.append("ColorId", color);
+        formData.append("productName", productName);
+        formData.append("Size", size);
         $.ajax({
             url: "/ProductTypes/AddGoods/",
             type: 'POST',
             dataType: 'json',
-            data: {
-                __RequestVerificationToken: token,
-                ProductName: productName,
-                Size: size,
-                Quantity: quantity,
-                Color: color,
-            },
+            data: formData,
+            cache: false,
+            processData: false,
+            contentType: false,
             success: function (result) {
                 if (result.success == true) {
                     Success = true;

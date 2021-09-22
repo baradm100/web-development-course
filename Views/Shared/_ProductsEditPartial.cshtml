@@ -3,6 +3,7 @@
     var authanticated = Context.User.Identity.IsAuthenticated;
     var userAuthLevel = Context.User.Identity.AuthenticationType;
     var Products = (IEnumerable<web_development_course.Models.Product>)ViewData["Products"];
+    var ProductColors = (IEnumerable<web_development_course.Models.ProductModels.ProductColor>)ViewData["Colors"];
 }
 
 <div class="container">
@@ -59,11 +60,18 @@
                         </div>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">
-                                <strong>Colors: </strong>  @if (product.ProductTypes != null)
+                                <strong>Colors: </strong>  
+                                @if (product.ProductTypes != null)
                                 {
-                                    @foreach (var pr in product.ProductTypes)
+                                    foreach (var pr in product.ProductTypes)
                                     {
-                                        <button class="editProductType text-center" style="border-radius: 10px;  display: inline-block; background: @pr.Color; width: 20px; height: 20px; " id="color" name="@product.Name" data-bs-toggle="tooltip" data-bs-placement="top" quantity="@pr.Quantity" size="@pr.Size" title="Amount Available: @pr.Quantity  Size: @pr.Size">
+                                        var color = "";
+                                        foreach (var col in ProductColors)
+                                            {
+                                                if (col.Id == pr.ColorId)
+                                                    color = col.Color;
+                                            }
+                                        <button class="editProductType text-center" style="border-radius: 10px;  display: inline-block; background:#@color; width: 20px; height: 20px; " id="color" name="@product.Name" data-bs-toggle="tooltip" data-bs-placement="top" quantity="@pr.Quantity" size="@pr.Size" title="Amount Available: @pr.Quantity  Size: @pr.Size">
                                         </button>
                                     }
                                 }
@@ -89,7 +97,7 @@
                                     Edit options
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                    <li><a class="dropdown-item btnAddGoods" href="#" style="border-radius: 18px;" id=@product.Name>
+                                    <li><a class="dropdown-item btnAddGoods" href="#" style="border-radius: 18px;" id="@product.Name">
                                         Add goods
                                     </a></li>
                                     <li><a class="dropdown-item btnEditProduct" href="#" id=@product.Id style="border-radius: 18px;">

@@ -15,7 +15,7 @@
                 $('#categoriesDropDownList').html('');
                 const params = new URLSearchParams(window.location.search);
                 const categoryId = params.get("categoryId");
-               var options = '';
+                var options = '';
                 options += '<option value="Select">All Categories</option>';
                 for (var i = 0; i < response.categories.result.length; i++) {
                     console.log(response.categories.result[i]);

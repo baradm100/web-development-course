@@ -30,7 +30,7 @@ namespace web_development_course.Controllers
 
             if (User.IsInRole("Admin") || User.IsInRole("Edtior"))
                 return RedirectToAction("EditorIndex", "Products");
-
+            ViewBag.Colors = await _context.ProductColor.ToListAsync();
             return View(await _context.Product.Include(product => product.ProductImages)
                     .Include(product => product.ProductTypes).Include(product => product.ProductCategories)
                     .ToListAsync());
@@ -48,15 +48,17 @@ namespace web_development_course.Controllers
                 var products =   from q in _context.ProductCategory
                                  join CategoryName in _context.Category on q.CategoryId equals CategoryName.Id
                                  where q.CategoryId == category.Id
-                                 join p in _context.Product.Include(a => a.ProductImages).Include(a=>a.ProductTypes) on q.ProductId equals p.Id
+                                 join p in _context.Product.Include(a => a.ProductImages).Include(a=>a.ProductTypes)
+                                 on q.ProductId equals p.Id
                                  where q.ProductId == p.Id
                                  select p;
-                return View(await products.ToListAsync());
+                    ViewBag.Colors = await _context.ProductColor.ToListAsync();
+                    return View(await products.ToListAsync());
                 }
             }
+            ViewBag.Colors = await _context.ProductColor.ToListAsync();
             return View(await _context.Product.Include(product => product.ProductImages)
-                    .Include(product => product.ProductTypes).Include(product => product.ProductCategories)
-                    .ToListAsync());
+                    .Include(product => product.ProductTypes).Include(product => product.ProductCategories).ToListAsync());
 
         }
 

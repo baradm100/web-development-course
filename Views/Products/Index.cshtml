@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Index";
+    var ProductColors = (IEnumerable<web_development_course.Models.ProductModels.ProductColor>)ViewData["Colors"];
 }
 
 <h1>Product's Page</h1>
@@ -63,13 +64,19 @@
                     </div>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">
-                            <strong>Colors: </strong>  @if (product.ProductTypes != null)
+                            <strong>Colors: </strong>  
+                            @if (product.ProductTypes != null)
                             {
-                                @foreach (var pr in product.ProductTypes)
+                                foreach (var pr in product.ProductTypes)
                                 {
-                                    <div class="editProductType text-center" style="border-radius: 10px; display: inline-block; background: @pr.Color; width: 20px; height: 20px; " id="color" data-bs-toggle="tooltip" data-bs-placement="top">
-                                        <span style="color: antiquewhite; margin-bottom: 2px"> @pr.Size</span>
-                                    </div>
+                                    var color = "";
+                                    foreach (var col in ProductColors)
+                                    {
+                                        if (col.Id == pr.ColorId)
+                                            color = col.Color;
+                                    }
+                                    <dic class="editProductType text-center" style="border-radius: 10px;  display: inline-block; background:#@color; width: 20px; height: 20px; " id="color" name="@product.Name" data-bs-toggle="tooltip" data-bs-placement="top" quantity="@pr.Quantity" size="@pr.Size" title="Amount Available: @pr.Quantity  Size: @pr.Size">
+                                    </dic>
                                 }
                             }
                         </li>

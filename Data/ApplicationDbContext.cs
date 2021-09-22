@@ -25,6 +25,7 @@ namespace web_development_course.Data
         public DbSet<ProductType> ProductType { get; set; }
         public DbSet<ProductImage> ProductImage { get; set; }
         public DbSet<ProductCategory> ProductCategory { get; set; }
+        public DbSet<ProductColor> ProductColor { get; set; }
         public DbSet<User> User { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -35,6 +36,20 @@ namespace web_development_course.Data
             // Add your customizations after calling base.OnModelCreating(builder);
 
             modelBuilder.Entity<User>().HasData(new User { Id = 1, FirstName = "Admin", LastName = "Admin", Email = "admin@admin.com", Password = "1234", UserType = UserLevel.Admin });
+            modelBuilder.Entity<ProductColor>().HasData(new ProductColor { Id = 1, Name = "Red", Color = "EE2A00" });
+            modelBuilder.Entity<ProductColor>().HasData(new ProductColor { Id = 2, Name = "Black", Color = "000000" });
+            modelBuilder.Entity<ProductColor>().HasData(new ProductColor { Id = 3, Name = "White", Color = "FFFFFF" });
+            modelBuilder.Entity<ProductColor>().HasData(new ProductColor { Id = 4, Name = "Grey", Color = "B9B9B9" });
+            modelBuilder.Entity<ProductColor>().HasData(new ProductColor { Id = 5, Name = "Yellow", Color = "FFF704" });
+            modelBuilder.Entity<ProductColor>().HasData(new ProductColor { Id = 6, Name = "Purple", Color = "BF08E3" });
+            modelBuilder.Entity<ProductColor>().HasData(new ProductColor { Id = 7, Name = "Blue", Color = "0851E3" });
+            modelBuilder.Entity<ProductColor>().HasData(new ProductColor { Id = 8, Name = "Green", Color = "26E308" });
+            modelBuilder.Entity<ProductColor>().HasData(new ProductColor { Id = 9, Name = "Pink", Color = "E308CF" });
+
+
+
+
+
         }
 
     }

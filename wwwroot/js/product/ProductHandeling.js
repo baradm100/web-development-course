@@ -14,7 +14,7 @@
             form.append("name", Name);
             $.ajax({
                 url: "/Categories/ProductCategories/",
-                type: 'Get',
+                type: 'POST',
                 dataType: 'json',
                 processData: false,
                 contentType: false,
@@ -398,11 +398,24 @@
         }
     };
 
+    const addWarningSmallerbiggerHundred = (selector, warningId, alert) => {
+        if ($(selector).val() > 0) {
+            $(selector).parent("div").append("<span style='color: red' id=" + warningId + ">" + alert + "</span >");
+            return false
+        }
+        else {
+            $(selector).siblings("#" + warningId).remove()
+            return true
+        }
+    };
+
     $('#ProductPrice').change(() => productPriceValid = addWarningSmallerThanZero('#ProductPrice', 'priceAlert', 'Price cannot be lower than zero'));
     $('#ProductDiscount').change(() => productDiscountValid = addWarningSmallerThanZero('#ProductDiscount', 'discountAlert', 'Discount cannot be lower than zero'));
+    $('#ProductDiscount').change(() => productDiscountValid = addWarningSmallerbiggerHundred('#ProductDiscount', 'discountAlert', 'Discount cannot be biger than zero'));
 
     $('#ProductEditPrice').change(() => productPriceValid = addWarningSmallerThanZero('#ProductEditPrice', 'priceAlert', 'Price cannot be lower than zero'));
     $('#ProductEditDiscount').change(() => productDiscountValid = addWarningSmallerThanZero('#ProductEditDiscount', 'discountAlert', 'Discount cannot be lower than zero'));
+    $('#ProductEditDiscount').change(() => productDiscountValid = addWarningSmallerbiggerHundred('#ProductEditDiscount', 'discountAlert', 'Discount cannot be biger than zero'));
 
 
     $('.btnDeleteProduct').click(function () {

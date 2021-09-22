@@ -225,18 +225,9 @@ namespace web_development_course.Controllers
             }
             catch
             {
-                return Json(new { success = false });
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
-
-        
-
-        public ActionResult GetLastProductId()
-        {
-            int lastId = _context.Product.OrderByDescending(p => p.Id).First().Id;
-            return Json(new { Id = lastId });
-        }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]

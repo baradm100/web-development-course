@@ -21,15 +21,17 @@ namespace web_development_course.Controllers
         }
 
         // GET: /Categories/json
-        [HttpGet, ActionName("json")]
+        [HttpGet]
+        [Route("Categories/json")]
         public async Task<IActionResult> GetCategories()
         {
             Category[] Categories = await _context.Category.ToArrayAsync();
             return Json(new { success = true, Categories });
         }
 
-        [HttpGet, ActionName("ProductCategories")]
-        public async Task<IActionResult> GetProductCategories(string name)
+        [HttpPost]
+        [Route("Categories/ProductCategories")]
+        public async Task<IActionResult> GetProductCategories([FromForm]string name)
         {
             var NametoId = await _context.Product.FirstAsync(p => p.Name == name);
             int id = NametoId.Id;
@@ -82,7 +84,7 @@ namespace web_development_course.Controllers
         {
             try
             {
-                Category c = _context.Category.FirstOrDefault(c => c.Name.ToLower() == category.Name.ToLower());
+                Category c = await _context.Category.FirstOrDefaultAsync(c => c.Name.ToLower() == category.Name.ToLower());
                 if (c != null)
                 {
                     return Json(new { fail = true, success = false, textStatus = "Category is already exist!" });

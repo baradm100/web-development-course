@@ -52,6 +52,7 @@
     });
 
     $('.btnEditProduct').click(function () {
+        productNameValid = true;
         productEditId = $(this).attr("id");
         var Success = addCategoriesToModal("#categoriesEditDropDownListPModel");
         var formData = new FormData();
@@ -301,7 +302,7 @@
             },
             success: function (response) {
                 Success = true;
-                if (resonse.success == true) {
+                if (response.success == true) {
                     if (response.categories.length > 0) {
                         $(dropDownId).html('');
                         var options = '';
@@ -401,6 +402,7 @@
         $("#ProductEditDiscount").val("");
         $("#categoriesEditDropDownListPModel").val("");
         $("#imagesCheckBox").html("");
+        productNameValid = false;
         if (Changed)
             location.reload();
     });

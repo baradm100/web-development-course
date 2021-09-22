@@ -56,7 +56,6 @@
         var quantity = $(this).attr("quantity");
         productName = $(this).attr("name");
         console.log(productName);
-        console.log(color + " " + size + " " + quantity);
         $("#addGoodsModal").modal("show");
         $("#deleteGoodsModalBtn").removeClass("d-none");
         $("#Color").css("background", rgb2hex(color));

@@ -234,11 +234,12 @@ namespace web_development_course.Controllers
         [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> EditProduct(int id, int Price, string Name, int DiscountPercentage, List<string> Categories)
         {
+            // Getting: all attributes of product and compare it to the exist one. if something had been change Update the exist product.
             try
             {
                 var product = await _context.Product.FirstOrDefaultAsync(p => p.Id == id);
                 if (product == null)
-                    return Json(new { success = false, errorDetails = "sorry, we had a problem in server" });
+                    return NotFound();
                 product.Name = Name;
                 product.Price = Price;
                 product.DiscountPercentage = DiscountPercentage;

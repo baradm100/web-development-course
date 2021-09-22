@@ -28,6 +28,7 @@ namespace web_development_course.Controllers
             return Json(new { success = true, Categories });
         }
 
+        [HttpGet, ActionName("ProductCategories")]
         public async Task<IActionResult> GetProductCategories(string name)
         {
             var NametoId = await _context.Product.FirstAsync(p => p.Name == name);

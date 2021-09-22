@@ -13,8 +13,8 @@
             var Name = name[i].textContent;
             form.append("name", Name);
             $.ajax({
-                url: "/Categories/GetProductCategories/",
-                type: 'POST',
+                url: "/Categories/ProductCategories/",
+                type: 'Get',
                 dataType: 'json',
                 processData: false,
                 contentType: false,

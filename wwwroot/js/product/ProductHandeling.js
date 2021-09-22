@@ -5,7 +5,7 @@
     var Changed = false;
     var productPriceValid = true;
     var productDiscountValid = true;
-
+    var productNameValid = false;
 
     const insertCategoriesToCards = (name) => {
         for (let i = 0; i < name.length; i++) {
@@ -171,9 +171,11 @@
     }
 
     $("#editProductModalBtn").click(function () {
-        if (!productDiscountValid || !productPriceValid) {
+        if (!productDiscountValid || !productPriceValid || !productNameValid) {
             $(this).parent("div").append("<span style='color: red' id='formAlert'>Values are not valid!</span >")
             return false;
+        } else {
+            $(this).siblings("#formAlert").remove();
         }
         var formData = new FormData();
         $("#ProductEditloadingSpinner").removeClass("d-none");
@@ -316,9 +318,17 @@
 
 
     $("#addProductModalBtn").click(function () {
-        if (!productDiscountValid || !productPriceValid) {
-            $(this).parent("div").append("<span style='color: red' id='formAlert'>Values are not valid!</span >")
+        if (!productDiscountValid || !productPriceValid || !productNameValid) {
+            $(this).parent("div").append("<span style='color: red' id='formAlert'>Values are not valid!</span >");
             return false;
+        } else {
+            $(this).siblings("#formAlert").remove();
+        }
+        if (dataImages == null) {
+            $(this).parent("div").append("<span style='color: red' id='DataFormAlert'>Must Add at least one image</span>");
+            return false;
+        } else {
+            $(this).siblings("#DataFormAlert").remove();
         }
         $("#ProductloadingSpinner").removeClass("d-none");
         $("#addProductForm").addClass("d-none");
@@ -348,6 +358,7 @@
                     uploadImages(dataImages, response.productId);
                     Success = true;
                     $("#ProductSuccessIcon").removeClass("d-none");
+                    Changed = true;
                 } else {
                     Success = false;
                     $("#ProductloadingSpinner").addClass("d-none");
@@ -409,13 +420,27 @@
         }
     };
 
+    const stringNotNullWarning = (selector, warningId, alert) => {
+        if ($(selector).val() == null || $(selector).val().length == 0) {
+            $(selector).parent("div").append("<span style='color: red' id=" + warningId + ">" + alert + "</span >");
+            return false
+        }
+        else {
+            $(selector).siblings("#" + warningId).remove()
+            return true
+        }
+    };
+
     $('#ProductPrice').change(() => productPriceValid = addWarningSmallerThanZero('#ProductPrice', 'priceAlert', 'Price cannot be lower than zero'));
     $('#ProductDiscount').change(() => productDiscountValid = addWarningSmallerThanZero('#ProductDiscount', 'discountAlert', 'Discount cannot be lower than zero'));
     $('#ProductDiscount').change(() => productDiscountValid = addWarningSmallerbiggerHundred('#ProductDiscount', 'discountBiggerAlert', 'Discount cannot be biger than zero'));
+    $('#ProductName').change(() => productNameValid = stringNotNullWarning('#ProductName', 'nameAlert', 'Name cannot be empty'));
+
 
     $('#ProductEditPrice').change(() => productPriceValid = addWarningSmallerThanZero('#ProductEditPrice', 'priceAlert', 'Price cannot be lower than zero'));
     $('#ProductEditDiscount').change(() => productDiscountValid = addWarningSmallerThanZero('#ProductEditDiscount', 'discountAlert', 'Discount cannot be lower than zero'));
     $('#ProductEditDiscount').change(() => productDiscountValid = addWarningSmallerbiggerHundred('#ProductEditDiscount', 'discountBiggerAlert', 'Discount cannot be biger than zero'));
+    $('#ProductEditName').change(() => productNameValid = stringNotNullWarning('#ProductEditName', 'nameAlert', 'Name cannot be empty'));
 
 
     $('.btnDeleteProduct').click(function () {

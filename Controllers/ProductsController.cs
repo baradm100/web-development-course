@@ -125,6 +125,7 @@ namespace web_development_course.Controllers
                 if (product.ProductTypes == null)
                     product.ProductTypes = new List<ProductType>();
                 _context.Product.Add(product);
+                await _context.SaveChangesAsync();
                 foreach (var cat in categories)
                 {
                     Category category = _context.Category.FirstOrDefault(c => c.Name == cat);

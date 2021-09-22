@@ -172,7 +172,8 @@
 
     $("#editProductModalBtn").click(function () {
         if (!productDiscountValid || !productPriceValid || !productNameValid) {
-            $(this).parent("div").append("<span style='color: red' id='formAlert'>Values are not valid!</span >")
+            if ($(this).siblings("#formAlert").length == 0)
+                $(this).parent("div").append("<span style='color: red' id='formAlert'>Values are not valid!</span >")
             return false;
         } else {
             $(this).siblings("#formAlert").remove();
@@ -319,13 +320,15 @@
 
     $("#addProductModalBtn").click(function () {
         if (!productDiscountValid || !productPriceValid || !productNameValid) {
-            $(this).parent("div").append("<span style='color: red' id='formAlert'>Values are not valid!</span >");
+            if ($(this).siblings("#formAlert").length == 0)
+                $(this).parent("div").append("<span style='color: red' id='formAlert'>Values are not valid!</span >");
             return false;
         } else {
             $(this).siblings("#formAlert").remove();
         }
         if (dataImages == null) {
-            $(this).parent("div").append("<span style='color: red' id='DataFormAlert'>Must Add at least one image</span>");
+            if ($(this).siblings("#DataFormAlert").length == 0)
+                $(this).parent("div").append("<span style='color: red' id='DataFormAlert'>Must Add at least one image</span>");
             return false;
         } else {
             $(this).siblings("#DataFormAlert").remove();

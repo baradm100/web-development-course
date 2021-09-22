@@ -125,10 +125,6 @@ namespace web_development_course.Controllers
                 if (product.ProductTypes == null)
                     product.ProductTypes = new List<ProductType>();
                 _context.Product.Add(product);
-                await _context.SaveChangesAsync();
-                
-                // Query for the product to validate it got insert to DB and get the right ID
-                Product p = _context.Product.First(p => p.Name.ToLower() == product.Name.ToLower());
                 foreach (var cat in categories)
                 {
                     Category category = _context.Category.FirstOrDefault(c => c.Name == cat);
@@ -138,8 +134,8 @@ namespace web_development_course.Controllers
                         ProductCategory bind = new ProductCategory();
                         bind.CategoryId = category.Id;
                         bind.Categories.Append(category);
-                        bind.ProductId = p.Id;
-                        bind.Products.Append(p);
+                        bind.ProductId = product.Id;
+                        bind.Products.Append(product);
                         category.ProductCategories.Append(bind);
                         product.ProductCategories.Append(bind);
                         _context.Category.Update(category);

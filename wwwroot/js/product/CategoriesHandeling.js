@@ -10,19 +10,17 @@
         },
         success: function (response) {
             Success = true;
-            console.log(response.categories.result);
-            if (response.categories.result.length > 0) {
+            if (response.categories.length > 0) {
                 $('#categoriesDropDownList').html('');
                 const params = new URLSearchParams(window.location.search);
                 const categoryId = params.get("categoryId");
                 var options = '';
                 options += '<option value="Select">All Categories</option>';
-                for (var i = 0; i < response.categories.result.length; i++) {
-                    console.log(response.categories.result[i]);
-                    if (categoryId == response.categories.result[i].id)
-                        options += '<option selected value="' + response.categories.result[i].id + '">' + response.categories.result[i].name + '</option>';
+                for (var i = 0; i < response.categories.length; i++) {
+                    if (categoryId == response.categories[i].id)
+                        options += '<option selected value="' + response.categories[i].id + '">' + response.categories[i].name + '</option>';
                     else
-                        options += '<option value="' + response.categories.result[i].id + '">' + response.categories.result[i].name + '</option>'
+                        options += '<option value="' + response.categories[i].id + '">' + response.categories[i].name + '</option>'
                }
                $('#categoriesDropDownList').append(options);
            }

@@ -296,13 +296,12 @@
             },
             success: function (response) {
                 Success = true;
-                console.log(response.categories.result);
-                if (response.categories.result.length > 0) {
+                if (response.categories.length > 0) {
                     $(dropDownId).html('');
                     var options = '';
                     options += '<option value="Select">---</option>';
-                    for (var i = 0; i < response.categories.result.length; i++) {
-                        options += '<option value="' + response.categories.result[i].name + '">' + response.categories.result[i].name + '</option>';
+                    for (var i = 0; i < response.categories.length; i++) {
+                        options += '<option value="' + response.categories[i].name + '">' + response.categories[i].name + '</option>';
                     }
                     $(dropDownId).append(options);
                 }

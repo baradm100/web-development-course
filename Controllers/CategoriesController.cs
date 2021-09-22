@@ -80,6 +80,7 @@ namespace web_development_course.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Editor")]
+        [Route("Categories")]
         public async Task<IActionResult> AddCategory([Bind("Id,Name")] Category category)
         {
             try

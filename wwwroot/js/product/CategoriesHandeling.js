@@ -54,7 +54,7 @@
         var token = $('input[name="__RequestVerificationToken"]').val();
         var Success = false;
         $.ajax({
-            url: "/Categories/AddCategory/",
+            url: "/Categories/",
             type: 'POST',
             dataType: 'json',
             data: {

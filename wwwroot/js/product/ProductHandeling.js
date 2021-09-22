@@ -286,8 +286,8 @@
 
     const addCategoriesToModal = (dropDownId) => {
         $.ajax({
-            url: "/Categories/GetCategories/",
-            type: 'POST',
+            url: "/Categories/json/",
+            type: 'Get',
             dataType: 'json',
             data: null,
             fail: function (xhr, textStatus, errorThrown) {

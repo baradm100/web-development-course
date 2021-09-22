@@ -1,6 +1,6 @@
 ﻿$(function () {
    $.ajax({
-        url: "/Categories/GetCategories/",
+        url: "/Categories/json/",
         type: 'GET',
         dataType: 'json',
         data: null,

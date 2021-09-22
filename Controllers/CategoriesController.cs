@@ -20,7 +20,8 @@ namespace web_development_course.Controllers
             _context = context;
         }
 
-        // GET: Json Categories
+        // GET: /Categories/json
+        [HttpGet, ActionName("json")]
         public async Task<IActionResult> GetCategories()
         {
             Category[] Categories = await _context.Category.ToArrayAsync();

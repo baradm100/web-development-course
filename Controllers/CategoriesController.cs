@@ -21,7 +21,7 @@ namespace web_development_course.Controllers
         }
 
         // GET: Json Categories
-        public async Task<IActionResult> GetCategories()
+        public IActionResult GetCategories()
         {
             var Categories = _context.Category.ToArrayAsync();
             return Json(new { success = true, Categories });

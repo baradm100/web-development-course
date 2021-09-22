@@ -1,7 +1,7 @@
 ﻿$(function () {
    $.ajax({
         url: "/Categories/GetCategories/",
-        type: 'POST',
+        type: 'GET',
         dataType: 'json',
         data: null,
         fail: function (xhr, textStatus, errorThrown) {

@@ -111,11 +111,12 @@ namespace web_development_course.Controllers
         [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> AddProduct([Bind("Id,Price,Name,DiscountPercentage")] Product product, List<string> categories)
         {
-            {
+            try {
+                // adding the product to the DB
                 var pro = _context.Product.FirstOrDefault(p => p.Name.ToLower() == product.Name.ToLower());
                 if (pro != null)
                 {
-                    return Json(new { success = false });
+                    return Json(new { success = false, errorDetails = "Product name already exist" });
                 }
                 if (product.ProductImages == null)
                     product.ProductImages = new List<ProductImage>();
@@ -123,12 +124,15 @@ namespace web_development_course.Controllers
                     product.ProductTypes = new List<ProductType>();
                 _context.Product.Add(product);
                 await _context.SaveChangesAsync();
+                
+                // Query for the product to validate it got insert to DB and get the right ID
                 Product p = _context.Product.First(p => p.Name.ToLower() == product.Name.ToLower());
                 foreach (var cat in categories)
                 {
                     Category category = _context.Category.FirstOrDefault(c => c.Name == cat);
                     if (category != null)
                     {
+                        // adding category and product to the many to many table: ProductCategory.
                         ProductCategory bind = new ProductCategory();
                         bind.CategoryId = category.Id;
                         bind.Categories.Append(category);
@@ -142,6 +146,9 @@ namespace web_development_course.Controllers
                 }
                 await _context.SaveChangesAsync();
                 return Json(new { success = true, productId = product.Id });
+            } catch
+            {
+                return Json(new { success = false, errorDetails = "sorry, we had a problem in server" });
             }
         }
 
@@ -187,7 +194,7 @@ namespace web_development_course.Controllers
             }
         }
 
-        public ProductImage UploadImageToDb(IFormFile files)
+        private ProductImage UploadImageToDb(IFormFile files)
         {
             var fileName = Path.GetFileName(files.FileName);
             ProductImage img = new ProductImage();
@@ -238,35 +245,41 @@ namespace web_development_course.Controllers
         [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> EditProduct(int id, int Price, string Name, int DiscountPercentage, List<string> Categories)
         {
-            var product = await _context.Product.FirstOrDefaultAsync(p => p.Id == id);
-            if (product == null)
-                return Json(new { success = false });
-            product.Name = Name;
-            product.Price = Price;
-            product.DiscountPercentage = DiscountPercentage;
-            var pc =_context.ProductCategory.Where(q => q.ProductId == id);
-            foreach(var cat in pc)
+            try
             {
-             _context.ProductCategory.Remove(cat);
-            }
-            foreach (var cat in Categories)
-            {
-                Category category = _context.Category.FirstOrDefault(c => c.Name == cat);
-                if (category != null)
+                var product = await _context.Product.FirstOrDefaultAsync(p => p.Id == id);
+                if (product == null)
+                    return Json(new { success = false, errorDetails = "sorry, we had a problem in server" });
+                product.Name = Name;
+                product.Price = Price;
+                product.DiscountPercentage = DiscountPercentage;
+                var pc =_context.ProductCategory.Where(q => q.ProductId == id);
+                foreach(var cat in pc)
                 {
-                    ProductCategory bind = new ProductCategory();
-                    bind.CategoryId = category.Id;
-                    bind.Categories.Append(category);
-                    bind.ProductId = product.Id;
-                    bind.Products.Append(product);
-                    category.ProductCategories.Append(bind);
-                    product.ProductCategories.Append(bind);
-                    _context.Category.Update(category);
-                    _context.ProductCategory.Add(bind);
+                 _context.ProductCategory.Remove(cat);
                 }
+                foreach (var cat in Categories)
+                {
+                    Category category = _context.Category.FirstOrDefault(c => c.Name == cat);
+                    if (category != null)
+                    {
+                        ProductCategory bind = new ProductCategory();
+                        bind.CategoryId = category.Id;
+                        bind.Categories.Append(category);
+                        bind.ProductId = product.Id;
+                        bind.Products.Append(product);
+                        category.ProductCategories.Append(bind);
+                        product.ProductCategories.Append(bind);
+                        _context.Category.Update(category);
+                        _context.ProductCategory.Add(bind);
+                    }
+                }
+                await _context.SaveChangesAsync();
+                return Json(new { success = true });
+            } catch
+            {
+                return Json(new { success = false, errorDetails = "sorry, we had a problem in server" });
             }
-            await _context.SaveChangesAsync();
-            return Json(new { success = true });
         }
 
 

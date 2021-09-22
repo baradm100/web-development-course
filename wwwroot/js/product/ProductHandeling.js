@@ -47,7 +47,6 @@
     $('#AddNewProductBtn').click(function () {
         $("#addProductModal").modal("show");
         addCategoriesToModal("#categoriesDropDownListPModel");
-
     });
 
     $('.btnEditProduct').click(function () {
@@ -214,6 +213,7 @@
                     Success = false;
                     $("#ProductEditloadingSpinner").addClass("d-none");
                     $("#editProductForm").removeClass("d-none");
+                    $("#ProductEditErrorIcon").text(response.errorDetails);
                     $("#ProductEditErrorIcon").removeClass("d-none");
                 }
             },
@@ -353,6 +353,7 @@
                     Success = false;
                     $("#ProductloadingSpinner").addClass("d-none");
                     $("#addProductForm").removeClass("d-none");
+                    $("#ProductErrorIcon").text(response.errorDetails);
                     $("#ProductErrorIcon").removeClass("d-none");
                 }
             },

@@ -20,6 +20,28 @@ namespace web_development_course.Controllers
             _context = context;
         }
 
+        // GET: /Categories/json
+        [HttpGet]
+        [Route("Categories/json")]
+        public async Task<IActionResult> GetCategories()
+        {
+            Category[] Categories = await _context.Category.ToArrayAsync();
+            return Json(new { success = true, Categories });
+        }
+
+        [HttpPost]
+        [Route("Categories/ProductCategories")]
+        public async Task<IActionResult> GetProductCategories([FromForm]string name)
+        {
+            var NametoId = await _context.Product.FirstAsync(p => p.Name == name);
+            int id = NametoId.Id;
+            var Categories = from q in _context.ProductCategory
+                             join CategoryName in _context.Category on q.CategoryId equals CategoryName.Id
+                             where q.ProductId == id
+                             select CategoryName.Name;
+            return Json(new { success = true, categories = Categories.ToList(), Name = NametoId.Name });
+        }
+
         // GET: Categories
         public async Task<IActionResult> Index()
         {
@@ -58,15 +80,23 @@ namespace web_development_course.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Editor")]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Category category)
+        [Route("Categories")]
+        public async Task<IActionResult> AddCategory([Bind("Id,Name")] Category category)
         {
-            if (ModelState.IsValid)
+            try
             {
+                Category c = await _context.Category.FirstOrDefaultAsync(c => c.Name.ToLower() == category.Name.ToLower());
+                if (c != null)
+                {
+                    return Json(new { fail = true, success = false, textStatus = "Category is already exist!" });
+                }
                 _context.Add(category);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return Json(new { success = true });
+            } catch
+            {
+                return Json( new { success = false });
             }
-            return View(category);
         }
 
         // GET: Categories/Edit/5

@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using web_development_course.Models.ProductModels;
 
 namespace web_development_course
 {
@@ -43,6 +44,8 @@ namespace web_development_course
                  options.LoginPath = "/Home/Index";
                  options.AccessDeniedPath = "/Home/Index"; //TODO: create a relevant page
              });
+
+             services.AddScoped<CategoryModelService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

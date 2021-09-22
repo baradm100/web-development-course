@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using web_development_course.Data;
 
 namespace web_development_course.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210922064739_Added-To-Type-ColorId")]
+    partial class AddedToTypeColorId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -303,62 +305,9 @@ namespace web_development_course.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int?>("ParentCategoryId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ParentCategoryId");
-
                     b.ToTable("Category");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Men"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Women"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Men Shirts",
-                            ParentCategoryId = 1
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Women Shirts",
-                            ParentCategoryId = 2
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "Men Pants",
-                            ParentCategoryId = 1
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "Women Pants",
-                            ParentCategoryId = 2
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "Men Hats",
-                            ParentCategoryId = 1
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "Women Hats",
-                            ParentCategoryId = 2
-                        });
                 });
 
             modelBuilder.Entity("web_development_course.Models.OpeningHour", b =>
@@ -740,15 +689,6 @@ namespace web_development_course.Migrations
                         .IsRequired();
 
                     b.Navigation("Address");
-                });
-
-            modelBuilder.Entity("web_development_course.Models.Category", b =>
-                {
-                    b.HasOne("web_development_course.Models.Category", "ParentCategory")
-                        .WithMany()
-                        .HasForeignKey("ParentCategoryId");
-
-                    b.Navigation("ParentCategory");
                 });
 
             modelBuilder.Entity("web_development_course.Models.OpeningHour", b =>

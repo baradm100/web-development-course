@@ -68,6 +68,94 @@ namespace web_development_course.Controllers
             return View(productType);
         }
 
+        // GET: Json Colors
+        public IActionResult GetColors()
+        {
+            var Colors = _context.ProductColor.ToArrayAsync();
+            return Json(new { success = true, Colors });
+        }
+
+        [Authorize(Roles = "Admin,Editor")]
+        public async Task<IActionResult> AddGoodsAsync(int? id)
+        {
+            var product = await _context.Product.FirstOrDefaultAsync(p => p.Id == id);
+            if (product == null)
+            {
+                return View("Create");
+            }
+
+            return View(product.Id);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Editor")]
+        public async Task<IActionResult> AddGoods(int Quantity,ProductSize Size,int ColorId, string productName)
+        {
+            try
+            {
+                var product = await _context.Product.Include(p => p.ProductTypes).FirstOrDefaultAsync(p => p.Name.ToLower() == productName.ToLower());
+                var Color = await _context.ProductColor.FirstOrDefaultAsync(p => p.Id == ColorId);
+                ProductType pt = new ProductType() { ColorId = ColorId, Color = Color, Size = Size, Quantity = Quantity};
+                if (product != null)
+                {
+                    foreach (var p in product.ProductTypes)
+                    {
+                        if (p.Size == pt.Size && p.ColorId == pt.ColorId)
+                        {
+                            p.Quantity = pt.Quantity;
+                            _context.Update(p);
+                            await _context.SaveChangesAsync();
+                            return Json(new { success = true });
+                        }
+                    }
+                    pt.Product = product;
+                    if (product.ProductTypes == null)
+                        product.ProductTypes = new List<ProductType>();
+                    product.ProductTypes.Append(pt);
+                    _context.Add(pt);
+                    _context.Update(product);
+                    await _context.SaveChangesAsync();
+                    return Json(new { success = true});
+                }
+            }
+            catch
+            {
+                return Json(new { success = false});
+            }
+            return Json(new { success = false});
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Editor")]
+        public async Task<IActionResult> DeleteGoods([Bind("id,Quantity,Size,Color")] ProductType pt, string productName)
+        {
+            try
+            {
+                var product = await _context.Product.Include(p => p.ProductTypes).FirstOrDefaultAsync(p => p.Name.ToLower() == productName.ToLower());
+                if (product != null)
+                {
+                    foreach (var p in product.ProductTypes)
+                    {
+                        if (p.Size == pt.Size && p.Color == pt.Color)
+                        {
+                            _context.ProductType.Remove(p);
+                            _context.Product.Update(product);
+                            await _context.SaveChangesAsync();
+                            return Json(new { success = true });
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                return Json(new { success = false });
+            }
+            return Json(new { success = false });
+        }
+
+
         // GET: ProductTypes/Edit/5
         [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> Edit(int? id)

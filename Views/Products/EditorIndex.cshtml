@@ -1,0 +1,266 @@
+﻿@model IEnumerable<web_development_course.Models.Product>
+
+@{
+    ViewData["Title"] = "Index";
+    ViewData["Products"] = Model.ToList();
+}
+
+
+<nav class="navbar navbar-light">
+        <h2>Product Managment Page</h2>
+        <form class="container-fluid justify-content-start">
+            <button type="button" id="AddNewProductBtn" class="btn btn-outline-success me-2" style="border-radius: 18px;">
+
+                Add new Product
+            </button>
+            <button type="button" id="AddNewCategoryBtn" class="btn btn-outline-secondary" style="border-radius: 18px;">
+
+                Add new Category
+            </button>
+            <div class="form-group">
+                <select id="categoriesDropDownList" class="form-select" style="margin: 5px; border-radius: 18px;" aria-label="Default select example">
+                    <option selected multiple>Category Select</option>
+                </select>
+            </div>
+        </form>
+</nav>
+    
+    
+  
+
+    <partial name="_ProductsEditPartial" model="Model" view-data="ViewData" />
+    
+<div class="modal" id="addGoodsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="title">Add Goods</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-success d-none" id="successIcon" role="alert">
+                    Success!
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                    </svg>
+                </div>
+                <div class="alert alert-danger d-none" id="errorIcon" role="alert">
+                    Something went wrong!
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
+                    </svg>
+                </div>
+                <div class="d-none d-flex justify-content-center" id="loadingSpinner">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div class="form-group" id="addGoodsForm">
+                    <div class="form-group">
+                        <label class="control-label">Product Size </label>
+                        <select id="Size" name="Size" asp-items="Html.GetEnumSelectList<ProductSize>()" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Product Amount</label>
+                        <input id="Quantity" value="0" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Color</label>
+                        <div id="Color" class="d-flex form-control justify-content-between"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeBtn" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="addGoodsModalBtn" class="btn btn-success">Add goods</button>
+                <button type="button" id="deleteGoodsModalBtn" class="btn btn-danger d-none">delete this product type</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal" id="addProductModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="title">Add Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-success d-none" id="ProductSuccessIcon" role="alert">
+                    Success!
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                    </svg>
+                </div>
+                <div class="alert alert-danger d-none" id="ProductErrorIcon" role="alert">
+                    Something went wrong!
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
+                    </svg>
+                </div>
+                <div class="d-none d-flex justify-content-center" id="ProductloadingSpinner">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div class="form-group" id="addProductForm">
+                    <div class="form-group">
+                        <label value="ProductCategory" class="control-label">Product Category</label>
+                        <select id="categoriesDropDownListPModel" class="form-select" multiple aria-label="category select">
+                            <option selected>Category Select</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label value="ProductName" class="control-label">Product Name</label>
+                        <input id="ProductName" class="form-control productName" />
+                    </div>
+                    <div class="form-group">
+                        <label value="Product Price" class="control-label">Product Price</label>
+                        <input id="ProductPrice" class="form-control productPrice" min="0" type="number" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label value="Product Discount" class="control-label">Product Discount</label>
+                        <input id="ProductDiscount" min="0" max="99" class="form-control productDiscount" type="number" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label value="upload images" class="control-label"></label>
+                        <input id="UploadImg" type="file" class="form-control files" accept="image/*" multiple />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeProductBtn" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="addProductModalBtn" class="btn btn-success">Add Product</button>
+                <button type="button" id="deleteProductModalBtn" class="btn btn-danger d-none">Delete Product</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="editProductModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="title">Edit Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-success d-none" id="ProductEditSuccessIcon" role="alert">
+                    Success!
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                    </svg>
+                </div>
+                <div class="alert alert-danger d-none" id="ProductEditErrorIcon" role="alert">
+                    Something went wrong!
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
+                    </svg>
+                </div>
+                <div class="d-none d-flex justify-content-center" id="ProductEditloadingSpinner">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div class="form-group" id="editProductForm">
+                    <div class="form-group">
+                        <label value="ProductCategory" class="control-label">Product Category</label>
+                        <select id="categoriesEditDropDownListPModel" class="form-select" aria-label="category select" multiple>
+                            <option selected>Category Select</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label value="ProductName" class="control-label">Product Name</label>
+                        <input id="ProductEditName" class="form-control productName" />
+                    </div>
+                    <div class="form-group">
+                        <label value="Product Price" class="control-label">Product Price</label>
+                        <input id="ProductEditPrice" class="form-control productPrice" min="0" type="number" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label value="Product Discount" class="control-label">Product Discount</label>
+                        <input id="ProductEditDiscount" min="0" max="99" class="form-control productDiscount" type="number" value="0" />
+                    </div>
+                    <div class="accordion" id="editImageAccordion" style="margin-top: 5px">
+                        <div class="accordion-item">
+                            <div class="d-grid gap-2">
+                                <h2 class="accordion-header" id="editImageAccordion-headingOne">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls=collapseOne">
+                                        Edit Images
+                                    </button>
+                                </h2>
+                                    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingOne">
+                                        <div class="accordion-body">
+                                            <div class="form-group">
+                                                <div class="EditUploadNewImages">
+                                                    <h4>Add New Images</h4>
+                                                    <input class="form-control" type="file" id="EditImageUpload" accept="image/*" multiple />
+                                                    <br />
+                                                </div>
+                                                <h4>Editing Exist Images</h4>
+                                                <span id="imagesProduct" style="margin: 5px;">
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeEditProductBtn" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="editProductModalBtn" class="btn btn-success">Edit Product</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="addCategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="title">Add Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-success d-none" id="CategorySuccessIcon" role="alert">
+                    Success!
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                    </svg>
+                </div>
+                <div class="alert alert-danger d-none" id="CategoryErrorIcon" role="alert">
+                    Something went wrong!
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
+                    </svg>
+                </div>
+                <div class="d-none d-flex justify-content-center" id="CategoryloadingSpinner">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div class="form-group" id="addCategoryForm">
+                    <div class="form-group">
+                        <label value="CategoryName" class="control-label">Category Name</label>
+                        <input id="CategoryName" class="form-control" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeCategoryBtn" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="addCategoryBtn" class="btn btn-success">Add Category</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/js/product/ProductTypeHandeling.js"></script>
+    <script src="~/js/product/ProductHandeling.js"></script>
+    <script src="~/js/product/CategoriesHandeling.js"></script>
+}

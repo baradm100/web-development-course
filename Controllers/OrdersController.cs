@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using web_development_course.Data;
+using web_development_course.Models;
 using web_development_course.Models.OrderModels;
 
 namespace web_development_course.Controllers
@@ -14,6 +17,9 @@ namespace web_development_course.Controllers
     public class OrdersController : Controller
     {
         private readonly ApplicationDbContext _context;
+
+        private readonly UserManager<User> _userManager;
+
 
         public OrdersController(ApplicationDbContext context)
         {
@@ -25,6 +31,43 @@ namespace web_development_course.Controllers
         public async Task<IActionResult> Index()
         {
             return View(await _context.Order.ToListAsync());
+        }
+
+        public void MyMethod(Microsoft.AspNetCore.Http.HttpContext context)
+        {
+           
+
+            // Other code
+        }
+
+        // GET: Orders/Cart
+        //<summary> the context use for know the current loged in user
+        public async Task<IActionResult> Cart()
+        {
+            string user = HttpContext.User.Identity.Name;
+            var authanticated = HttpContext.User.Identity.IsAuthenticated;
+            var userAuthLevel = HttpContext.User.Identity.AuthenticationType;
+             
+            if (user != null) {
+                List<int> userId = await (from u in _context.User
+                              where user == (u.FirstName + " " + u.LastName)
+                              select u.Id).ToListAsync();
+
+                // suppose to get all the product that the loggon user add to cart
+                var model = await (from order in _context.Order
+                                   join item in _context.OrderItem on order.Id equals item.OrderId
+                                   join productType in _context.ProductType on item.ProductTypeID equals productType.Id
+                                   join product in _context.Product on productType.ProductId equals product.Id
+                                   where (order.UserId == userId[0] && order.IsCart == true)
+                                   select order).ToListAsync();
+                return View(model);
+
+            }
+            else
+            {
+                return View(await _context.Order.ToListAsync());
+                // dont know
+            }
         }
 
         // GET: Orders/Details/5

@@ -12,6 +12,8 @@ namespace web_development_course.Models.OrderModels
     {
         public int Id { get; set; }
 
+        public int OrderId{ get; set; }
+
         [Required]
         public Order Order { get; set; }
 

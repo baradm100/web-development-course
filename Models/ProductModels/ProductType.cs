@@ -25,6 +25,8 @@ namespace web_development_course.Models
     {
         public int Id { get; set; }
 
+        public int ProductId{ get; set; }
+
         [Required]
         public Product Product { get; set; }
 

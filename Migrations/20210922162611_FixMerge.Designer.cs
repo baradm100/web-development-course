@@ -3,21 +3,38 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using web_development_course.Data;
 
 namespace web_development_course.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210922162611_FixMerge")]
+    partial class FixMerge
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.9")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("CategoryProductCategory", b =>
+                {
+                    b.Property<int>("CategoriesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductCategoriesId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CategoriesId", "ProductCategoriesId");
+
+                    b.HasIndex("ProductCategoriesId");
+
+                    b.ToTable("CategoryProductCategory");
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -217,6 +234,21 @@ namespace web_development_course.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("ProductProductCategory", b =>
+                {
+                    b.Property<int>("ProductCategoriesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProductCategoriesId", "ProductsId");
+
+                    b.HasIndex("ProductsId");
+
+                    b.ToTable("ProductProductCategory");
                 });
 
             modelBuilder.Entity("web_development_course.Models.Address", b =>
@@ -449,10 +481,6 @@ namespace web_development_course.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("ProductId");
-
                     b.ToTable("ProductCategory");
                 });
 
@@ -629,6 +657,21 @@ namespace web_development_course.Migrations
                         });
                 });
 
+            modelBuilder.Entity("CategoryProductCategory", b =>
+                {
+                    b.HasOne("web_development_course.Models.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoriesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("web_development_course.Models.ProductModels.ProductCategory", null)
+                        .WithMany()
+                        .HasForeignKey("ProductCategoriesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -676,6 +719,21 @@ namespace web_development_course.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ProductProductCategory", b =>
+                {
+                    b.HasOne("web_development_course.Models.ProductModels.ProductCategory", null)
+                        .WithMany()
+                        .HasForeignKey("ProductCategoriesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("web_development_course.Models.Product", null)
+                        .WithMany()
+                        .HasForeignKey("ProductsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -744,25 +802,6 @@ namespace web_development_course.Migrations
                         .HasForeignKey("CategoryId");
                 });
 
-            modelBuilder.Entity("web_development_course.Models.ProductModels.ProductCategory", b =>
-                {
-                    b.HasOne("web_development_course.Models.Category", "Category")
-                        .WithMany("ProductCategories")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("web_development_course.Models.Product", "Product")
-                        .WithMany("ProductCategories")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("web_development_course.Models.ProductModels.ProductImage", b =>
                 {
                     b.HasOne("web_development_course.Models.Product", "Product")
@@ -800,8 +839,6 @@ namespace web_development_course.Migrations
 
             modelBuilder.Entity("web_development_course.Models.Category", b =>
                 {
-                    b.Navigation("ProductCategories");
-
                     b.Navigation("Products");
                 });
 
@@ -812,8 +849,6 @@ namespace web_development_course.Migrations
 
             modelBuilder.Entity("web_development_course.Models.Product", b =>
                 {
-                    b.Navigation("ProductCategories");
-
                     b.Navigation("ProductImages");
 
                     b.Navigation("ProductTypes");

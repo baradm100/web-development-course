@@ -1,103 +1,98 @@
-﻿@model IEnumerable<web_development_course.Models.Product>
+﻿@using web_development_course.Models.ProductModels
+@model IEnumerable<web_development_course.Models.Product>
 
 @{
     ViewData["Title"] = "Index";
-    var ProductColors = (IEnumerable<web_development_course.Models.ProductModels.ProductColor>)ViewData["Colors"];
+    List<Product> Products = Model.ToList();
+    IEnumerable<ProductColor> ProductColors = (IEnumerable<ProductColor>) ViewData["Colors"];
 }
 
-<h1>Product's Page</h1>
+<div class="container-fluid category p-1 text-center text-xl-start">
+    @{
+    foreach (var product in Products)
+    {
+        <div class="card item border">
+            @{
+                Dictionary<ProductSize, int> SizesAndCounts = new Dictionary<ProductSize, int>();
+                Dictionary<ProductColor, int> ColorsAndCounts = new Dictionary<ProductColor, int>();
 
-<div>
-    <select id="categoriesDropDownList" class="form-select" aria-label="Default select example">
-        <option selected>Category Select</option>
-    </select>
-</div>
-<div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
-    @{ foreach (var product in Model)
-        {
-        <div class="col">
-                <div class="card" style="width: 18rem;">
-                    @{ var carouselId = "carousel" + product.Id;}
-                    @if (product.ProductImages != null)
-                    {
-                        <div id=@carouselId class="carousel slide" data-bs-touch="false" data-bs-interval="false">
-                            <div class="carousel-inner">
-                                @for (var i = 0; i < product.ProductImages.Count(); i++)
-                                {
-                                    if (i == 0)
-                                    {
-                                        <div class="carousel-item active">
-                                            @{
-                                                string img = Convert.ToBase64String(product.ProductImages.ElementAt(i).ImageData);
-                                                <img src="data:image/png;base64,@img" class="card-img-top d-block w-100" width="100" height="250" />
-                                            }
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <div class="carousel-item">
-                                            @{
-                                                string img = Convert.ToBase64String(product.ProductImages.ElementAt(i).ImageData);
-                                                <img src="data:image/png;base64,@img" class="card-img-top d-block w-100" width="100" height="250" />
-                                            }
-                                        </div>
-                                    }
-                                }
-                            </div>
-                            <button class="carousel-control-prev" type="button" data-bs-target="#@carouselId" data-bs-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden">Previous</span>
-                            </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="#@carouselId" data-bs-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden">Next</span>
-                            </button>
-                        </div>
-
+                @foreach (ProductType type in product.ProductTypes)
+                {
+                    if (!SizesAndCounts.ContainsKey(type.Size)) {
+                        SizesAndCounts[type.Size] = 0;
                     }
-                    <div class="card-body">
-                        <p class="card-text category" category="@product.Name">
 
-                        </p>
-                        <h5 class="card-title">@product.Name</h5>
-                        <p class="card-text"><strong>Price: </strong> @{ var priceAfterDiscount = product.Price * ((100 - @product.DiscountPercentage) / 100); } @priceAfterDiscount</p>
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
-                            <strong>Colors: </strong>  
-                            @if (product.ProductTypes != null)
+                    if(!ColorsAndCounts.ContainsKey(type.Color)) {
+                        ColorsAndCounts[type.Color] = 0;
+                    }
+
+                    SizesAndCounts[type.Size] += type.Quantity;
+                    ColorsAndCounts[type.Color] += type.Quantity;
+                }
+            }
+            <div class="card-img-top d-block w-100">
+                <div id="carouselWithIndicators-@product.Id" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        @{
+                            bool isFirst = true;
+                            @foreach (ProductImage image in product.ProductImages)
                             {
-                                foreach (var pr in product.ProductTypes)
-                                {
-                                    var color = "";
-                                    foreach (var col in ProductColors)
-                                    {
-                                        if (col.Id == pr.ColorId)
-                                            color = col.Color;
-                                    }
-                                    <dic class="editProductType text-center" style="border-radius: 10px;  display: inline-block; background:#@color; width: 20px; height: 20px; " id="color" name="@product.Name" data-bs-toggle="tooltip" data-bs-placement="top" quantity="@pr.Quantity" size="@pr.Size" title="Amount Available: @pr.Quantity  Size: @pr.Size">
-                                    </dic>
-                                }
+                                String base64 = Convert.ToBase64String(image.ImageData);
+                                String extraClass = isFirst ? "active" : "";
+                                isFirst = false;
+
+                                <div class="carousel-item @extraClass">
+                                    <img src="data:image/png;base64,@base64" class="card-img-top d-block w-100" width="100" height="250"/>
+                                </div>
                             }
-                        </li>
-                    </ul>
-                    <div class="card-body">
-                        <button type="button" id=@product.Name class="btn btn-primary btnAddGoods">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
-                                <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
-                            </svg>
-                            Add to cart
-                        </button>
+                        }
                     </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselWithIndicators-@product.Id" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselWithIndicators-@product.Id" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
                 </div>
             </div>
-        }
+            <div class="card-body position-relative">
+                <span>
+                    @product.Name
+                </span>
+                <br />
+                <span class="text-secondary">
+                    @product.Price$
+                </span>
+                <div class="text-align-center">
+                    @foreach (var item in SizesAndCounts)
+                    {
+                        String ExtraClass = item.Value <= 0 ? "line-through" : "";
+                        <span class="badge rounded-pill bg-light text-dark @ExtraClass">@item.Key</span>
+                    }
+                </div>
+                <div class="colorContainer text-align-center">
+                    @foreach (var item in ColorsAndCounts)
+                    {
+                        <span class="p-2 border border-dark rounded-circle color" style="background-color: #@item.Key.Color;">
+                            <span class="visually-hidden">@item.Key.Name</span>
+                        </span>
+                    }
+                </div>
+                <a href="#" class="btn btn-primary stretched-link viewButton">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-eye-fill" viewBox="0 0 16 16">
+                        <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"></path>
+                        <path
+                        d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z">
+                        </path>
+                    </svg>
+                    View
+                </a>
+            </div>
+        </div>
     }
+}    
 </div>
 
-
-
-@section Scripts {
-    <script src="~/js/product/ProductHandeling.js"></script>
-    <script src="~/js/product/CategoriesHandeling.js"></script>
-}

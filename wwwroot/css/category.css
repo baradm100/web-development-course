@@ -1,9 +1,12 @@
 .category .item {
   border-radius: 5px;
-  max-width: 20rem;
-  min-width: 15rem;
+  /* max-width: 20rem; */
+  /* min-width: 15rem; */
   display: inline-block;
   margin: 5px;
+
+  width: 20rem;
+  width: 15rem;
 }
 
 .category .item img {

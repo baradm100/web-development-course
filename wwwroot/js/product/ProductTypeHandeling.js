@@ -1,7 +1,5 @@
 ﻿$(function () {
     var productName = null;
-    var isEdit = false;
-    var startQuantity = 0;
     var productTypeQuantityValid = true;
     const PRODUCT_SIZES = {
         "xs": 0,
@@ -48,74 +46,88 @@
         });
     });
 
-    $(".editProductType").click(function () {
-        var color = $(this).css("background-color");
-        var size = $(this).attr("size");
-        var quantity = $(this).attr("quantity");
-        productName = $(this).attr("name");
-        console.log(productName);
-        $("#addGoodsModal").modal("show");
-        $("#deleteGoodsModalBtn").removeClass("d-none");
-        $("#Color").css("background", rgb2hex(color));
-        $("#Color").attr("disabled", true);
-        $("#Size").val(PRODUCT_SIZES[size]).change();
-        $("#Size").attr("disabled", true);
-        $("#Quantity").val(quantity);
-        isEdit = true;
-        startQuantity = parseInt(quantity);
-        $(".modal-title").text("Edit Goods");
-    });
-
-    $("#deleteGoodsModalBtn").click(function () {
-        $("#loadingSpinner").removeClass("d-none");
-        $("#addGoodsForm").addClass("d-none");
-        $("#errorIcon").addClass("d-none");
-        $("#successIcon").addClass("d-none");
-        var color = $('input:checked').val();
-        var size = $("#Size").val();
-        var quantity = $("#Quantity").val();
-        var token = $('input[name="__RequestVerificationToken"]').val();
-        var Success = false;
-        $.ajax({
-            url: "/ProductTypes/DeleteGoods/",
-            type: 'POST',
+    const getProductsInColor = (Color, prodName) => {
+        d = {
+            color: rgb2hex(Color),
+            name: prodName,
+        }
+        return $.ajax({
+            url: "/Products/json",
+            type: 'GET',
             dataType: 'json',
-            data: {
-                __RequestVerificationToken: token,
-                ProductName: productName,
-                Size: size,
-                Quantity: quantity,
-                Color: color,
-            },
+            data: d,
             success: function (result) {
                 if (result.success == true) {
-                    Success = true;
-                    $("#loadingSpinner").addClass("d-none");
-                    $("#addGoodsForm").removeClass("d-none");
-                    $("#successIcon").removeClass("d-none");
-                    $("#addGoodsModalBtn").addClass("d-none");
-                    $("#deleteGoodsModalBtn").addClass("d-none");
+                    return result.types
                 } else {
                     Success = false;
-                    $("#loadingSpinner").addClass("d-none");
-                    $("#addGoodsForm").removeClass("d-none");
-                    $("#errorIcon").removeClass("d-none");
+                }
+            },
+            timeout: 5000
+        });
+    }
+
+    $(".editProductType").click(async function () {
+        var $btn = $(this);
+        $.ajax({
+            url: "/ProductTypes/GetColors/",
+            type: 'GET',
+            dataType: 'json',
+            data: null,
+            fail: function (xhr, textStatus, errorThrown) {
+                Success = false;
+                alert("Something went wrong in server")
+            },
+            success: function (response) {
+                Success = true;
+                if (response.success == true) {
+                    if (response.colors.result.length > 0) {
+                        $('#Color').html('');
+                        var options = '';
+                        for (var i = 0; i < response.colors.result.length; i++) {
+                            console.log(("#" + response.colors.result[i].color).toLowerCase() + " " + rgb2hex($btn.css("background-color")))
+                            if (("#" + response.colors.result[i].color).toLowerCase() == rgb2hex($btn.css("background-color")))
+                                options += `<input disabled checked class="form-check-input checked" type="radio" id="${response.colors.result[i].name}" name="inlineRadioOptions" value="${response.colors.result[i].id}" style="background-color: #${response.colors.result[i].color}; border-radius: 18px;"></input>`
+                            else
+                                options += `<input disabled class="form-check-input" type="radio" id="${response.colors.result[i].name}" name="inlineRadioOptions" value="${response.colors.result[i].id}" style="background-color: #${response.colors.result[i].color}; border-radius: 18px;"></input>`
+                        }
+                        $('#Color').append(options);
+                    }
                 }
             },
             error: function (result) {
                 console.log(result);
                 return false
             },
-            complete: function () {
-                if (!Success) { $("#errorIcon").removeClass("d-none"); }
-                $("#loadingSpinner").addClass("d-none");
-                $("#addGoodsForm").removeClass("d-none");
-                isEdit = false;
-                startQuantity = 0;
+            complete: async function () {
+
+                var color = $btn.css("background-color");
+                productName = $btn.attr("name");
+                var types = await getProductsInColor(color, productName);
+                console.log(types);
+                $("#addGoodsModal").modal("show");
+                for (let i = 0; i < types.types.length; i++) {
+                    if (i != 0) {
+                        var $good = $("#addGoodsForm").clone();
+                        $good.find("input[type=radio]").each(function (i, x) {
+                            $(x).attr("name", $("input").length);
+                        });
+                        console.log(types[i]);
+                        $good.find("#Color").attr("disabled", true);
+                        $good.find("#Quantity").val(types.types[i].quantity);
+                        $good.find("#Size").val(types.types[i].size).change();
+                        $good.insertBefore("#AnotherGood");
+                    } else {
+                        $("#Color").attr("disabled", true);
+                        $("#Size").val(types.types[i].size).change();
+                        $("#Size").attr("disabled", true);
+                        $("#Quantity").val(types.types[i].quantity);
+                    }
+                };
+                $(".modal-title").text("Edit Goods");
             },
-            timeout: 5000
-        });
-        return Success;
+            timeout: 5000,
+        })
     });
 
     const uploadProductType = (token, color, size, quantity, prodName) => {
@@ -125,7 +137,7 @@
         formData.append("ColorId", color);
         formData.append("productName", prodName);
         formData.append("Size", size);
-        $.ajax({
+        return $.ajax({
             url: "/ProductTypes/AddGoods/",
             type: 'POST',
             dataType: 'json',
@@ -135,10 +147,9 @@
             contentType: false,
             success: function (result) {
                 if (result.success == true) {
-                    Success = true;
-                    $(this).val = "add more goods";
+                    return true;
                 } else {
-                    Success = false;
+                    return false;
                     console.log(result);
                 }
             },
@@ -146,41 +157,57 @@
                 console.log(result);
                 return false
             },
-            complete: function () {
-                if (!Success) { $("#errorIcon").removeClass("d-none"); }
-                else {
-                    $("#successIcon").removeClass("d-none");
-                }
-                isEdit = false;
-                startQuantity = 0;
-            },
             timeout: 5000
         });
     }
 
+    const DuplicateSize= () => {
+        var dict = {};
+        for (var i = 0; i < $("select#Size").length; i++) {
+            if (dict[$($("select#Size")[i]).val()] != null)
+                return true;
+            dict[$($("select#Size")[i]).val()] = true;
+        }
+        return false;
+    };
+
     $("#addGoodsModalBtn").click(function () {
+        var validationSize = DuplicateSize();
+        if (validationSize == true) {
+            $(this).parent("div").append("<div class='alert alert-danger' style='color: red' id='SizeWarning'>There is an invalid Inputs</div>");
+            return false;
+        } else {
+            $(this).parent("#SizeWarning").remove()
+        }
         if (productTypeQuantityValid == false) {
             $(this).parent("div").append("<div class='alert alert-danger' style='color: red' id='InvalidWarning'>There is an invalid Inputs</div>");
             return false;
+        }
+         else {
+            $(this).parent("#SizeWarning").remove()
         }
         $(this).siblings("#InvalidWarning").remove()
         $("#loadingSpinner").removeClass("d-none");
         $("#addGoodsForm").addClass("d-none");
         $("#errorIcon").addClass("d-none");
         $("#successIcon").addClass("d-none");
-        var uploadSuccess = false;
-        $(".modal-body").find(".goods").each(function (i, goods) {
+        $(".modal-body").find(".goods").each(async function (i, goods) {
             var color = $(goods).find('input:checked').val();
+            if (!color) {
+                color = $(goods).find("#Color").css("background-color");
+            }
             var size = $(goods).find("#Size").val();
             var quantity = $(goods).find("#Quantity").val();
             var token = $('input[name="__RequestVerificationToken"]').val();
-            uploadSuccess = uploadProductType(token, color, size, quantity, productName);
+            var uploadSuccess = await uploadProductType(token, color, size, quantity, productName);
+            if (await uploadSuccess == false) {
+                $("#errorIcon").removeClass("d-none");
+            }
+            $("#successIcon").removeClass("d-none");
+            $("#loadingSpinner").addClass("d-none");
+            $("#addGoodsForm").removeClass("d-none");
+            $("#deleteGoodsModalBtn").addClass("d-none");
         });
-        $("#loadingSpinner").addClass("d-none");
-        $("#addGoodsForm").removeClass("d-none");
-        $("#deleteGoodsModalBtn").addClass("d-none");
-
-        return uploadSuccess;
     });
 
     $('#closeBtn').click(function () {
@@ -188,8 +215,6 @@
         $("#deleteGoodsModalBtn").addClass("d-none");
         $("#addGoodsModalBtn").removeClass("d-none");
         productName = null;
-        startQuantity = 0;
-        isEdit = false;
         location.reload();
     });
 
@@ -197,8 +222,8 @@
         var $good = $("#addGoodsForm").clone();
         $good.find("input[type=radio]").each(function (i, x) {
             $(x).attr("name", $("input").length);
-            $(x).attr("checked", false)
         });
+        $good.find("#Size").attr("disabled", false);
         $good.find("#Quantity").val("0");
         $good.insertBefore("#AnotherGood");
     })

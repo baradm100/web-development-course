@@ -62,6 +62,28 @@ namespace web_development_course.Controllers
 
         }
 
+        [Authorize(Roles = "Admin,Editor")]
+        public async Task<IActionResult> EditorIndexSearch(string? product)
+        {
+            try
+            {
+                ViewBag.Colors = await _context.ProductColor.ToListAsync();
+                if (product != null)
+                {
+                    var q = _context.Product.Include(product => product.ProductTypes)
+                        .Include(product => product.ProductCategories)
+                        .Where(q => q.Name.ToLower().Contains(product.ToLower()));
+                    return View("EditorIndex",await q.ToListAsync());
+                }
+                return View("EditorIndex", await _context.Product.Include(product => product.ProductImages)
+                        .Include(product => product.ProductTypes).Include(product => product.ProductCategories).ToListAsync());
+            } catch
+            {
+                return NotFound();
+            }
+            return NotFound();
+        }
+
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
         {

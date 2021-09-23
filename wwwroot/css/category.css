@@ -42,3 +42,11 @@
   line-height: 3rem;
   display: inline-block;
 }
+
+.productPage .colorLabel {
+  line-height: 1;
+}
+
+.productPage .color {
+  display: inline-block;
+}

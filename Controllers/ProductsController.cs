@@ -28,7 +28,6 @@ namespace web_development_course.Controllers
         // GET: Products?categoryId=5
         public async Task<IActionResult> Index(int? categoryId)
         {
-
             ViewBag.Colors = await _context.ProductColor.ToListAsync();
             ViewBag.shouldShowEdit = User.IsInRole("Admin") || User.IsInRole("Editor");
 
@@ -90,11 +89,12 @@ namespace web_development_course.Controllers
                     var q = _context.Product.Include(product => product.ProductTypes)
                         .Include(product => product.ProductCategories)
                         .Where(q => q.Name.ToLower().Contains(product.ToLower()));
-                    return View("EditorIndex",await q.ToListAsync());
+                    return View("EditorIndex", await q.ToListAsync());
                 }
                 return View("EditorIndex", await _context.Product.Include(product => product.ProductImages)
                         .Include(product => product.ProductTypes).Include(product => product.ProductCategories).ToListAsync());
-            } catch
+            }
+            catch
             {
                 return NotFound();
             }
@@ -109,12 +109,38 @@ namespace web_development_course.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Product
-                .FirstOrDefaultAsync(m => m.Id == id);
+            Product product = await _context.Product
+                    .Include(product => product.ProductImages)
+                    .Include(product => product.ProductTypes)
+                    .ThenInclude(pt => pt.Color)
+                    .Include(product => product.ProductCategories)
+                    .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
                 return NotFound();
             }
+
+            Dictionary<ProductSize, int> SizesAndCounts = new Dictionary<ProductSize, int>();
+            Dictionary<ProductColor, int> ColorsAndCounts = new Dictionary<ProductColor, int>();
+
+            foreach (ProductSize size in Enum.GetValues(typeof(ProductSize)))
+            {
+                SizesAndCounts[size] = 0;
+            }
+
+            foreach (ProductType type in product.ProductTypes)
+            {
+                if (!ColorsAndCounts.ContainsKey(type.Color))
+                {
+                    ColorsAndCounts[type.Color] = 0;
+                }
+
+                SizesAndCounts[type.Size] += type.Quantity;
+                ColorsAndCounts[type.Color] += type.Quantity;
+            }
+
+            ViewBag.SizesAndCounts = SizesAndCounts;
+            ViewBag.ColorsAndCounts = ColorsAndCounts;
 
             return View(product);
         }

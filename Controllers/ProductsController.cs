@@ -38,7 +38,7 @@ namespace web_development_course.Controllers
         }
 
         [Authorize(Roles = "Admin,Editor")]
-        public async Task<IActionResult> EditorIndex(int? categoryId, string? productName)
+        public async Task<IActionResult> EditorIndex(int? categoryId)
         {
             if(categoryId != null)
             {

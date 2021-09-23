@@ -25,15 +25,12 @@ namespace web_development_course.Controllers
             _context = context;
         }
 
-        // GET: Products
+        // GET: Products?categoryId=5
         public async Task<IActionResult> Index(int? categoryId)
         {
 
             ViewBag.Colors = await _context.ProductColor.ToListAsync();
-
-            // TODO: Change
-            if (User.IsInRole("Admin") || User.IsInRole("Edtior"))
-                return RedirectToAction("EditorIndex", "Products");
+            ViewBag.shouldShowEdit = User.IsInRole("Admin") || User.IsInRole("Editor");
 
             Category[] RelevantCategories;
             if (categoryId == null)

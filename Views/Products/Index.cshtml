@@ -3,6 +3,7 @@
 
 @{
     ViewData["Title"] = "Index";
+    bool shouldShowEdit = (bool) ViewData["shouldShowEdit"];
     List<Product> Products = Model.ToList();
     IEnumerable<ProductColor> ProductColors = (IEnumerable<ProductColor>) ViewData["Colors"];
 }
@@ -75,8 +76,14 @@
                 <div class="colorContainer text-align-center">
                     @foreach (var item in ColorsAndCounts)
                     {
-                        <span class="p-2 border border-dark rounded-circle color" style="background-color: #@item.Key.Color;">
-                            <span class="visually-hidden">@item.Key.Name</span>
+                        bool notInStock = item.Value <= 0; 
+                        String colorName = @item.Key.Name + (notInStock ? " (Not in stock)" : "");
+
+                        <span class="p-2 border border-dark rounded-circle color position-relative" style="background-color: #@item.Key.Color;">
+                            @if(notInStock) {
+                                <span class="emptyStock">X</span>
+                            }
+                            <span class="visually-hidden">@colorName</span>
                         </span>
                     }
                 </div>
@@ -96,3 +103,6 @@
 }    
 </div>
 
+@if(shouldShowEdit) {
+    <partial name="_EditFloatingButton"/>
+}

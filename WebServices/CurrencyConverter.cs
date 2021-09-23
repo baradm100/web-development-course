@@ -29,7 +29,7 @@ namespace web_development_course.WebServices
 
         #endregion
 
-        public void initCurrencyRates()
+        public CurrencyConverter()
         {
             // make sure to ask only for ILS, EUR, GBP the default of the api and the web site is value is USD
             string url = $"{START_URL}/latest?apikey={API_KEY}&symbols={ALL_CURRENCY}";

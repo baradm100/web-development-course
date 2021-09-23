@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using web_development_course.Data;
 using web_development_course.Models;
 using web_development_course.Models.OrderModels;
+using web_development_course.WebServices;
 
 namespace web_development_course.Controllers
 {
@@ -44,24 +45,41 @@ namespace web_development_course.Controllers
         //<summary> the context use for know the current loged in user
         public async Task<IActionResult> Cart()
         {
+            // getting the update value of the currency
+            CurrencyConverter converter = new CurrencyConverter();
+            ViewData["ILS"] = converter.Ils;
+            ViewData["GBP"] = converter.Gbp;
+            ViewData["EUR"] = converter.Eur;
+
             string user = HttpContext.User.Identity.Name;
             var authanticated = HttpContext.User.Identity.IsAuthenticated;
             var userAuthLevel = HttpContext.User.Identity.AuthenticationType;
              
             if (user != null) {
-                List<int> userId = await (from u in _context.User
-                              where user == (u.FirstName + " " + u.LastName)
-                              select u.Id).ToListAsync();
+                var dbUser = await _context.User.FirstOrDefaultAsync(v => (v.FirstName + " " + v.LastName) == user);
 
-                // suppose to get all the product that the loggon user add to cart
-                var model = await (from order in _context.Order
+                if (dbUser != null)
+                {
+                    var a = await (from order in _context.Order
                                    join item in _context.OrderItem on order.Id equals item.OrderId
-                                   join productType in _context.ProductType on item.ProductTypeID equals productType.Id
-                                   join product in _context.Product on productType.ProductId equals product.Id
-                                   where (order.UserId == userId[0] && order.IsCart == true)
                                    select order).ToListAsync();
-                return View(model);
 
+                    var b = await (from item in _context.OrderItem
+                            join productType in _context.ProductType on item.ProductTypeID equals productType.Id
+                            select item).ToListAsync();
+
+                    // suppose to get all the product that the loggon user add to cart
+                    var model = await (from order in _context.Order
+                                       join item in _context.OrderItem on order.Id equals item.OrderId
+                                       join productType in _context.ProductType on item.ProductTypeID equals productType.Id
+                                       join product in _context.Product on productType.ProductId equals product.Id
+                                       where (order.UserId == dbUser.Id && order.IsCart == true)
+                                       select order).ToListAsync();
+
+                    return View(model);
+                }
+
+                return NotFound();
             }
             else
             {

@@ -26,12 +26,14 @@
                     Success = true;
                     var ProductName = response.name;
                     var Text = "Categories: ";
-                    for (let i = 0; i < response.categories.length; i++) {
-                        Text += response.categories[i];
-                        Text += ", ";
-                    };
-                    var a = "[category=" + "'" + ProductName + "'" + "]"
-                    $(a).text(Text);
+                    if (response.success == true) {
+                        for (let i = 0; i < response.categories.length; i++) {
+                            Text += response.categories[i];
+                            Text += ", ";
+                        };
+                        var a = "[category=" + "'" + ProductName + "'" + "]"
+                        $(a).text(Text);
+                    }
                 },
                 error: function (result) {
                     console.log(result);
@@ -50,6 +52,7 @@
     });
 
     $('.btnEditProduct').click(function () {
+        productNameValid = true;
         productEditId = $(this).attr("id");
         var Success = addCategoriesToModal("#categoriesEditDropDownListPModel");
         var formData = new FormData();
@@ -299,14 +302,16 @@
             },
             success: function (response) {
                 Success = true;
-                if (response.categories.length > 0) {
-                    $(dropDownId).html('');
-                    var options = '';
-                    options += '<option value="Select">---</option>';
-                    for (var i = 0; i < response.categories.length; i++) {
-                        options += '<option value="' + response.categories[i].name + '">' + response.categories[i].name + '</option>';
+                if (response.success == true) {
+                    if (response.categories.length > 0) {
+                        $(dropDownId).html('');
+                        var options = '';
+                        options += '<option value="Select">---</option>';
+                        for (var i = 0; i < response.categories.length; i++) {
+                            options += '<option value="' + response.categories[i].name + '">' + response.categories[i].name + '</option>';
+                        }
+                        $(dropDownId).append(options);
                     }
-                    $(dropDownId).append(options);
                 }
             },
             error: function (result) {
@@ -397,6 +402,7 @@
         $("#ProductEditDiscount").val("");
         $("#categoriesEditDropDownListPModel").val("");
         $("#imagesCheckBox").html("");
+        productNameValid = false;
         if (Changed)
             location.reload();
     });
@@ -477,5 +483,13 @@
                 return Success;
             }
         });
+    });
+
+    $(".ProductSearchBtn").click(function () {
+        var SearchValue = $(".ProductSearch").val();
+        var token = $('input[name="__RequestVerificationToken"]').val();
+        var url = "/Products/EditorIndexSearch?product=" + SearchValue + "&__RequestVerificationToken=" + token;
+        window.location.href = url;
+        return false;
     });
 });

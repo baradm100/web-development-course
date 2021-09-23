@@ -33,13 +33,20 @@ namespace web_development_course.Controllers
         [Route("Categories/ProductCategories")]
         public async Task<IActionResult> GetProductCategories([FromForm]string name)
         {
-            var NametoId = await _context.Product.FirstAsync(p => p.Name == name);
-            int id = NametoId.Id;
-            var Categories = from q in _context.ProductCategory
-                             join CategoryName in _context.Category on q.CategoryId equals CategoryName.Id
-                             where q.ProductId == id
-                             select CategoryName.Name;
-            return Json(new { success = true, categories = Categories.ToList(), Name = NametoId.Name });
+            try
+            {
+                var NametoId = await _context.Product.FirstAsync(p => p.Name == name);
+                int id = NametoId.Id;
+                var Categories = from q in _context.ProductCategory
+                                 join CategoryName in _context.Category on q.CategoryId equals CategoryName.Id
+                                 where q.ProductId == id
+                                 select CategoryName.Name;
+                return Json(new { success = true, categories = Categories.ToList(), Name = NametoId.Name });
+
+            } catch
+            {
+                return Json(new { success = false });
+            }
         }
 
         // GET: Categories

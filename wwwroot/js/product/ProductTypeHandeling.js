@@ -28,17 +28,18 @@
             },
             success: function (response) {
                 Success = true;
-                console.log(response.colors.result);
-                if (response.colors.result.length > 0) {
-                    $('#Color').html('');
-                    var options = '';
-                    for (var i = 0; i < response.colors.result.length; i++) {
-                        if (response.colors.result[i].name == "White")
-                            options += `<div class="form-check form-check-inline"><input class="form-check-input" style="background:#${response.colors.result[i].color};" type="radio" id="${response.colors.result[i].name}" value="${response.colors.result[i].id}"></div>`
-                        else
-                            options += `<div class="form-check form-check-inline"><input class="form-check-input" style="background:#${response.colors.result[i].color}; border-color:transparent" type="radio" id="${response.colors.result[i].name}" value="${response.colors.result[i].id}"></div>`
+                if (response.success == true) {
+                    if (response.colors.result.length > 0) {
+                        $('#Color').html('');
+                        var options = '';
+                        for (var i = 0; i < response.colors.result.length; i++) {
+                            if (response.colors.result[i].name == "White")
+                                options += `<div class="form-check form-check-inline"><input class="form-check-input" style="background:#${response.colors.result[i].color};" type="radio" id="${response.colors.result[i].name}" value="${response.colors.result[i].id}"></div>`
+                            else
+                                options += `<div class="form-check form-check-inline"><input class="form-check-input" style="background:#${response.colors.result[i].color}; border-color:transparent" type="radio" id="${response.colors.result[i].name}" value="${response.colors.result[i].id}"></div>`
+                        }
+                        $('#Color').append(options);
                     }
-                    $('#Color').append(options);
                 }
             },
             error: function (result) {
@@ -55,7 +56,6 @@
         var quantity = $(this).attr("quantity");
         productName = $(this).attr("name");
         console.log(productName);
-        console.log(color + " " + size + " " + quantity);
         $("#addGoodsModal").modal("show");
         $("#deleteGoodsModalBtn").removeClass("d-none");
         $("#Color").css("background", rgb2hex(color));

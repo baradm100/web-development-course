@@ -33,8 +33,6 @@
    });
 
     $("#categoriesDropDownList").change(function () {
-        console.log($("#categoriesDropDownList option:selected").text());
-        console.log($("#categoriesDropDownList option:selected").val());
         var categoryId = $("#categoriesDropDownList option:selected").val();
         var token = $('input[name="__RequestVerificationToken"]').val();
         var url = "/Products/EditorIndex?categoryId=" + categoryId + "&__RequestVerificationToken=" + token;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -26,37 +27,19 @@ namespace web_development_course.Controllers
             return View("Index", await applicationDbContext.ToListAsync());
         }
 
-        // GET: Branches/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: Branches/GetJson
+        public async Task<IActionResult> GetData()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var branch = await _context.Branch
-                .Include(b => b.Address)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (branch == null)
-            {
-                return NotFound();
-            }
-
-            return View(branch);
+            var applicationDbContext = _context.Branch.Include(b => b.Address);
+            return Json(await applicationDbContext.ToListAsync());
         }
 
         // GET: Branches/Create
+        [Authorize(Roles = "Admin,Editor")]
         public IActionResult Create()
         {
             ViewData["AddressId"] = new SelectList(_context.Address, "Id,Name,City,Street,BuildingNumber,Longitude,Latitude");
             return View();
-        }
-
-        // GET: Branches/GetJson
-         public async Task<IActionResult> GetJson()
-        {
-            var applicationDbContext = _context.Branch.Include(b => b.Address);
-            return Json(await applicationDbContext.ToListAsync());
         }
 
         // POST: Branches/Create
@@ -64,6 +47,7 @@ namespace web_development_course.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> Create([Bind("Id,City,Street,BuildingNumber,Longitude,Latitude")] Address address, [Bind("Id,Name")] string name, List<OpeningHour> openingHours)
         {
             if (ModelState.IsValid)
@@ -90,6 +74,7 @@ namespace web_development_course.Controllers
         }
 
         // GET: Branches/Edit/5
+        [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -117,6 +102,7 @@ namespace web_development_course.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,City,Street,BuildingNumber,Longitude,Latitude")] Address address, [Bind("Id,Name")] string name, List<OpeningHour> openingHours)
         {
             var branchToEdit = (from branch in _context.Branch
@@ -157,6 +143,7 @@ namespace web_development_course.Controllers
         }
 
         // GET: Branches/Delete/5
+        [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -178,6 +165,7 @@ namespace web_development_course.Controllers
         // POST: Branches/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var branch = await _context.Branch.FindAsync(id);

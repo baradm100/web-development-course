@@ -1,31 +1,52 @@
-﻿var rowNum = 1
-var openingHours = [];
-var name, city, street, buildingNumber, lon, lat
+﻿var openingHours = [];
+var name, city, street, buildingNumber, lon, lat, branchId, addressId
 var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
+// Add new day to the branch opening day
 $("#add_day").click(function () {
-    if (rowNum < 7) {
-        $("#table_body").append('<tr><th scope="row"><select class="form-select day_selection" id="day_selection' + rowNum + '" aria-label="Default select example">
-            + for (var i = 0; i < days.length; i++) {
-                /<option value=""$i>days[i]</option>
-            } +/</select > <span class="text-danger d-none" id="day_error' "$rowNum">Error</span></th>
-                <td><div scope="row"><input id="open' + rowNum + '" class="form-select" type="time"/><span class="text-danger d-none" id="open_error' + rowNum + '">Error</span></div ></td><td><div scope="row"><input id ="close' + rowNum +'" class= "form-select" type = "time" /><span class="text-danger d-none" id="close_error'+rowNum+'">Error</span></div ></td> </tr > ')
-rowNum++
-        }
-    });
+    var option = initDays()
+
+    // get the amount of days we already have
+    var rowNum = $("tr").length - 1
+    
+    if ($("tr").length < 8) {
+        $("#table_body").append('<tr id="tr_' + rowNum
+            + '"><th scope="row"><select class="form-select day_selection" id="day_selection_' + rowNum
+            + '" aria-label="Default select example">' + option
+            + '</select><span class="text-danger d-none" id="day_error_' + rowNum
+            + '">Error</span></th><td><div scope="row"><input id="open_' + rowNum
+            + '" class="form-select" type="time"/><span class="text-danger d-none" id="open_error_' + rowNum
+            + '">Error</span></div></td><td><div scope="row"><input id ="close_' + rowNum
+            + '" class= "form-select" type="time"/><span class="text-danger d-none" id="close_error_' + rowNum
+            + '">Error</span></div ></td></tr>')
+    }
+    else {
+        console.log("too many days")
+    }
+});
+
+// init the selcet days options 
+function initDays() {
+    let lst = "";
+    for (var i = 0; i < days.length; i++) {
+        lst += ("<option value =" + i +">"+days[i]+"</option>")
+    }
+
+    return lst
+};
+
 
 $("#create").click(function () {
-
     if (validHour() && validDay() && validBranch()) {
         var newBranch = {
             "__RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val(),
             'Name': name,
             'Address': {
-                'City': city,
-                'Street': street,
-                'BuildingNumber': buildingNumber,
-                'Longitude': lon,
-                'Latitude': lat
+                    'City': city,
+                    'Street': street,
+                    'BuildingNumber': buildingNumber,
+                    'Longitude': lon,
+                    'Latitude': lat
             },
             'OpeningHours': openingHours
         }
@@ -46,33 +67,87 @@ $("#create").click(function () {
     }
 });
 
+$("#save").click(function () {
+    if (validHour() && validDay() && validBranch()) {
+        var newBranch = {
+            "__RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val(),
+            "Id": branchId,
+            'Name': name,
+            'Address': {
+                'Id' : addressId,
+                'City': city,
+                'Street': street,
+                'BuildingNumber': buildingNumber,
+                'Longitude': lon,
+                'Latitude': lat
+             },
+             'OpeningHours': openingHours
+            }
+
+        $.ajax({
+            type: 'POST',
+            url: "/Branches/Edit",
+            dataType: 'json',
+            data: newBranch,
+            fail: function () {
+                console.log("fail");
+                alert("failed")
+            },
+            success: function () {
+                console.log("success");
+                location.href = "/Branches"
+            }
+        });
+    }
+    else {
+        // clear opening hour
+        openingHours =[];
+    }
+});
+
+$("#delete_day").click(function () {
+    var lastRow = $("tr").length - 1
+    console.log(" last row is " + lastRow)
+    if (lastRow > 1) {
+        $("#tr_" + (lastRow - 1)).remove()
+    }
+});
+
 function validHour() {
     console.log("validHour")
-    var rowNumberIndex = rowNum - 1;
+    var rowNumberIndex = $("tr").length - 2;
+
     while (rowNumberIndex >= 0) {
-        if (!$("#open_error" + rowNumberIndex).hasClass("d-none")) {
-            $("#open_error" + rowNumberIndex).addClass("d-none")
+        if (!$("#open_error_" + rowNumberIndex).hasClass("d-none")) {
+            $("#open_error_" + rowNumberIndex).addClass("d-none")
         }
-        if (!$("#close_error" + rowNumberIndex).hasClass("d-none")) {
-            $("#close_error" + rowNumberIndex).addClass("d-none")
+        if (!$("#close_error_" + rowNumberIndex).hasClass("d-none")) {
+            $("#close_error_" + rowNumberIndex).addClass("d-none")
         }
 
-        var openHour = document.getElementById("open" + rowNumberIndex).value
-        var closeHour = document.getElementById("close" + rowNumberIndex).value
+        var openHour = document.getElementById("open_" + rowNumberIndex).value
+        var closeHour = document.getElementById("close_" + rowNumberIndex).value
 
         if (!openHour || !closeHour || openHour > closeHour) {
             console.log("all bad")
-            $("#open_error" + rowNumberIndex).removeClass("d-none")
-            $("#close_error" + rowNumberIndex).removeClass("d-none")
+            $("#open_error_" + rowNumberIndex).removeClass("d-none")
+            $("#close_error_" + rowNumberIndex).removeClass("d-none")
 
             // rasie some error
             return false
         }
 
         var item = {}
-        item["DayOfWeek"] = document.getElementById("day_selection" + rowNumberIndex).value
+        var dayId = $("#day_selection_" + rowNumberIndex).attr("dbid")
+
+        if (dayId != null) {
+            item["Id"] = dayId
+        }
+
+        item["DayOfWeek"] = document.getElementById("day_selection_" + rowNumberIndex).value
         item["Open"] = openHour
         item["Close"] = closeHour
+        item["BranchId"] = branchId
         openingHours.push(item)
 
         rowNumberIndex--
@@ -83,18 +158,17 @@ function validHour() {
 function validDay() {
     console.log("validDay")
 
-    var days = document.getElementsByClassName("day_selection")
+    var daysIndex = document.getElementsByClassName("day_selection")
     var hlper = [0, 0, 0, 0, 0, 0, 0];
 
-    for (var i = 0; i < days.length; i++) {
-        console.log("day val " + days[i].value)
-        hlper[days[i].value] += 1
+    for (var i = 0; i < daysIndex.length; i++) {
+        hlper[daysIndex[i].value] += 1
     }
-
     hlper.forEach(function (item, index) {
         if (item > 1) {
-            //reaise toast with index
-            console.log("validDay bad")
+            //raise toast with index
+            console.log("validDay bad " + index)
+            alert("it is not possible to repeat the same day twice - " + days[index])
             return false
         }
     });
@@ -104,8 +178,10 @@ function validDay() {
 
 function validBranch() {
     let result = true
-    name = $("#name").val()
-    city = $("#city").val()
+    name = $(".name").val()
+    branchId = $(".name").attr("id")
+    city = $(".city").val()
+    addressId = $(".city").attr("id")
     street = $("#street").val()
     buildingNumber = document.getElementById("building-number").value
     lon = $("#longitude").val()
@@ -161,6 +237,5 @@ function validBranch() {
         $("#latitude_error").addClass("d-none")
     }
 
-    // figure a way to use the Asp.Net validation
     return result
 }

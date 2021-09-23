@@ -1,7 +1,6 @@
 let _markers = []
 let _map
 
-
 $(function initMap () {
     const myLatLng = { lat: 32.084694, lng: 34.7912818 };
     _map = new google.maps.Map(document.getElementById("google-map"), {
@@ -11,7 +10,7 @@ $(function initMap () {
 
     _infoWindow = new google.maps.InfoWindow();
     $.ajax({
-        url: "/Branches/GetJson",
+        url: "/Branches/GetData",
     }).done(function (result) {
         $.each(result, function (key, value) {
             var title, lng, lat

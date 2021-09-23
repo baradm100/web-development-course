@@ -1,16 +1,21 @@
 ﻿@model web_development_course.Models.Branch
+
 @{
-    string name ="", city ="", street="", buildingNum="",lon="", lat="";
+    string name = "", city = "", street = "", buildingNum = "", lon = "", lat = "";
+    int branchId = -1, addressId = -1;
     string title = (string)ViewData["Title"];
     var isEdit = (bool)ViewData["isEdit"];
 
-    if(isEdit) {
+    if (isEdit)
+    {
         name = Model.Name;
         city = ViewBag.Address.City;
         street = ViewBag.Address.Street;
-        buildingNum =  ViewBag.Address.BuildingNumber.ToString();
+        buildingNum = ViewBag.Address.BuildingNumber.ToString();
         lon = ViewBag.Address.Longitude.ToString();
         lat = ViewBag.Address.Latitude.ToString();
+        branchId = Model.Id;
+        addressId = Model.AddressId;
     }
 
 }
@@ -26,12 +31,12 @@
                 <div class="form-group">
                     <div class="form-group">
                         <label asp-for="Name" class="control-label"></label>
-                        <input asp-for="Name" class="form-control" id="name" value="@name" />
+                        <input asp-for="Name" class="form-control name" id="@branchId" value="@name" />
                         <span id="name_error" class="text-danger d-none">Name must be between 2-50 charactes</span>
                     </div>
                     <div class="form-group">
                         <label asp-for="Address.City" class="control-label"></label>
-                        <input asp-for="Address.City" class="form-control" id="city" value="@city" />
+                        <input asp-for="Address.City" class="form-control city" id="@addressId" value="@city" />
                         <span id="city_error" class="text-danger d-none">City is mandatory</span>
                     </div>
                     <div class="form-group">
@@ -67,67 +72,69 @@
                 </tr>
             </thead>
             <tbody id="table_body">
-                @if(isEdit) {
+                @if (isEdit)
+                {
                     @for (var i = 0; i < @ViewBag.OpeningHours.Count; i++)
                     {
-                    <tr id="tr_@i ">
+                        <tr id="tr_@i ">
+                            <th scope="row">
+                                <select class="form-select day_selection" id="day_selection_@i" aria-label="Default select example" dbid="@ViewBag.OpeningHours[i].Id">
+                                    @foreach (var day in Enum.GetValues(typeof(DayOfWeek)))
+                                    {
+                                        if (day.Equals(@ViewBag.OpeningHours[i].DayOfWeek))
+                                        {
+                                            <option selected="selected" value=@((int)day)>@day</option>
+                                        }
+                                        else
+                                        {
+                                            <option value=@((int)day)>@day</option>
+                                        }
+                                    }
+                                </select>
+                                <span class="text-danger d-none" id="day_error_@i">It is not possible to repeat a day</span>
+
+                            </th>
+                            <td>
+                                <div scope="row">
+                                    <input id="open_@i" class="form-select" type="time" value="@ViewBag.OpeningHours[i].Open" />
+                                    <span class="text-danger d-none" id="open_error_@i">Error</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div scope="row">
+                                    <input id="close_@i" class="form-select" type="time" value="@ViewBag.OpeningHours[i].Close" />
+                                    <span class="text-danger d-none" id="close_error_@i">Error</span>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr id="tr_0">
                         <th scope="row">
-                            <select class="form-select day_selection" id="day_selection_@i" aria-label="Default select example" dbid="@ViewBag.OpeningHours[i].Id">
+                            <select class="form-select day_selection" id="day_selection_0" aria-label="Default select example">
                                 @foreach (var day in Enum.GetValues(typeof(DayOfWeek)))
                                 {
-                                    if (day.Equals(@ViewBag.OpeningHours[i].DayOfWeek))
-                                    {
-                                    <option selected="selected" value=@((int)day)>@day</option>
-                                    }
-                                    else
-                                    {
                                     <option value=@((int)day)>@day</option>
-                                    }
                                 }
                             </select>
-                            <span class="text-danger d-none" id="day_error_@i">It is not possible to repeat a day</span>
+                            <span class="text-danger d-none" id="day_error_0">Error</span>
 
                         </th>
                         <td>
                             <div scope="row">
-                                <input id="open_@i" class="form-select" type="time" value="@ViewBag.OpeningHours[i].Open" />
-                                <span class="text-danger d-none" id="open_error_@i">Error</span>
+                                <input id="open_0" class="form-select" type="time" />
+                                <span class="text-danger d-none" id="open_error_0">Open hour must be before close hour</span>
                             </div>
                         </td>
                         <td>
                             <div scope="row">
-                                <input id="close_@i" class="form-select" type="time" value="@ViewBag.OpeningHours[i].Close" />
-                                <span class="text-danger d-none" id="close_error_@i">Error</span>
+                                <input id="close_0" class="form-select" type="time" />
+                                <span class="text-danger d-none" id="close_error_0">Close hour must be after open hour</span>
                             </div>
                         </td>
                     </tr>
-                    }
-                }
-                else {
-                <tr id="tr_0">
-                    <th scope="row">
-                        <select class="form-select day_selection" id="day_selection_0" aria-label="Default select example">
-                            @foreach (var day in Enum.GetValues(typeof(DayOfWeek)))
-                            {
-                            <option value=@((int)day)>@day</option>
-                            }
-                        </select>
-                        <span class="text-danger d-none" id="day_error_0">Error</span>
-
-                    </th>
-                    <td>
-                        <div scope="row">
-                            <input id="open_0" class="form-select" type="time" />
-                            <span class="text-danger d-none" id="open_error_0">Open hour must be before close hour</span>
-                        </div>
-                    </td>
-                    <td>
-                        <div scope="row">
-                            <input id="close_0" class="form-select" type="time" />
-                            <span class="text-danger d-none" id="close_error_0">Close hour must be after open hour</span>
-                        </div>
-                    </td>
-                </tr>
                 }
             </tbody>
         </table>
@@ -137,11 +144,10 @@
         </div>
     </div>
 </div>
+
 <div class="form-group" style="margin-top:5px">
     <input type="submit" value="@(isEdit ? "Save" : "Create" )" class="btn btn-primary" id="@(isEdit ? "save" : "create" )" />
 </div>
-<input name="__RequestVerificationToken" type="hidden" value="CfDJ8DcFb8cwX75MpjVbrdOfqYc31lrkh-Qmd6ZQe8FN1phOXVvrvZiyXYty1vWicIgFYeBddJgzqU9mhK_f08w-SHu8uyCoeNegnQGgarsGrb8qBFhI1XSqg9y5Pg_3KEztiwD08izo9A6SLC4cCw9yNSI">
-
 
 
 <div>

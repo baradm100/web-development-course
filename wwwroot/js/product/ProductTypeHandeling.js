@@ -162,28 +162,35 @@
     }
 
     const DuplicateSize= () => {
-        var dict = {};
+        var validated = {};
         for (var i = 0; i < $("select#Size").length; i++) {
-            if (dict[$($("select#Size")[i]).val()] != null)
+            if (validated[$($("select#Size")[i]).val()] != null)
                 return true;
-            dict[$($("select#Size")[i]).val()] = true;
+            validated[$($("select#Size")[i]).val()] = true;
+        }
+        return false;
+    };
+
+    const QuantityNegativeValue = () => {
+        for (var i = 0; i < $("input#Quantity").length; i++) {
+            if ($($("input#Quantity")[i]).val() < 0)
+                return true;
         }
         return false;
     };
 
     $("#addGoodsModalBtn").click(function () {
-        var validationSize = DuplicateSize();
-        if (validationSize == true) {
+        if (DuplicateSize() == true) {
             $(this).parent("div").append("<div class='alert alert-danger' style='color: red' id='SizeWarning'>There is an invalid Inputs</div>");
             return false;
         } else {
             $(this).parent("#SizeWarning").remove()
         }
-        if (productTypeQuantityValid == false) {
+        if (QuantityNegativeValue() == true) {
             $(this).parent("div").append("<div class='alert alert-danger' style='color: red' id='InvalidWarning'>There is an invalid Inputs</div>");
             return false;
         }
-         else {
+        else {
             $(this).parent("#SizeWarning").remove()
         }
         $(this).siblings("#InvalidWarning").remove()

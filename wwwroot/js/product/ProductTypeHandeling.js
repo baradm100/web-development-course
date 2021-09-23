@@ -2,6 +2,7 @@
     var productName = null;
     var isEdit = false;
     var startQuantity = 0;
+    var productTypeQuantityValid = true;
     const PRODUCT_SIZES = {
         "xs": 0,
         "s": 1,
@@ -33,10 +34,7 @@
                         $('#Color').html('');
                         var options = '';
                         for (var i = 0; i < response.colors.result.length; i++) {
-                            if (response.colors.result[i].name == "White")
-                                options += `<div class="form-check form-check-inline"><input class="form-check-input" style="background:#${response.colors.result[i].color};" type="radio" id="${response.colors.result[i].name}" value="${response.colors.result[i].id}"></div>`
-                            else
-                                options += `<div class="form-check form-check-inline"><input class="form-check-input" style="background:#${response.colors.result[i].color}; border-color:transparent" type="radio" id="${response.colors.result[i].name}" value="${response.colors.result[i].id}"></div>`
+                            options += `<input class="form-check-input" type="radio" id="${response.colors.result[i].name}" name="inlineRadioOptions" value="${response.colors.result[i].id}" style="background-color: #${response.colors.result[i].color}; border-radius: 18px;"></input>`
                         }
                         $('#Color').append(options);
                     }
@@ -120,26 +118,12 @@
         return Success;
     });
 
-
-
-    $("#addGoodsModalBtn").click(function () {
+    const uploadProductType = (token, color, size, quantity, prodName) => {
         var formData = new FormData();
-        $("#loadingSpinner").removeClass("d-none");
-        $("#addGoodsForm").addClass("d-none");
-        $("#errorIcon").addClass("d-none");
-        $("#successIcon").addClass("d-none");
-        var color = $('input:checked').val();
-        var size = $("#Size").val();
-        var quantity = $("#Quantity").val();
-        if (isEdit) {
-            quantity = startQuantity + (quantity - startQuantity);
-        }
-        var token = $('input[name="__RequestVerificationToken"]').val();
-        var Success = false;
         formData.append("__RequestVerificationToken", token);
         formData.append("Quantity", quantity);
         formData.append("ColorId", color);
-        formData.append("productName", productName);
+        formData.append("productName", prodName);
         formData.append("Size", size);
         $.ajax({
             url: "/ProductTypes/AddGoods/",
@@ -152,16 +136,10 @@
             success: function (result) {
                 if (result.success == true) {
                     Success = true;
-                    $("#loadingSpinner").addClass("d-none");
-                    $("#addGoodsForm").removeClass("d-none");
-                    $("#successIcon").removeClass("d-none");
                     $(this).val = "add more goods";
                 } else {
-                Success = false;
-                $("#loadingSpinner").addClass("d-none");
-                $("#addGoodsForm").removeClass("d-none");
-                $("#errorIcon").removeClass("d-none");
-                console.log(result);
+                    Success = false;
+                    console.log(result);
                 }
             },
             error: function (result) {
@@ -169,16 +147,40 @@
                 return false
             },
             complete: function () {
-                if (!Success) { $("#errorIcon").removeClass("d-none");}
-                $("#loadingSpinner").addClass("d-none");
-                $("#addGoodsForm").removeClass("d-none");
-                $("#deleteGoodsModalBtn").addClass("d-none");
+                if (!Success) { $("#errorIcon").removeClass("d-none"); }
+                else {
+                    $("#successIcon").removeClass("d-none");
+                }
                 isEdit = false;
                 startQuantity = 0;
             },
             timeout: 5000
         });
-        return Success;
+    }
+
+    $("#addGoodsModalBtn").click(function () {
+        if (productTypeQuantityValid == false) {
+            $(this).parent("div").append("<div class='alert alert-danger' style='color: red' id='InvalidWarning'>There is an invalid Inputs</div>");
+            return false;
+        }
+        $(this).siblings("#InvalidWarning").remove()
+        $("#loadingSpinner").removeClass("d-none");
+        $("#addGoodsForm").addClass("d-none");
+        $("#errorIcon").addClass("d-none");
+        $("#successIcon").addClass("d-none");
+        var uploadSuccess = false;
+        $(".modal-body").find(".goods").each(function (i, goods) {
+            var color = $(goods).find('input:checked').val();
+            var size = $(goods).find("#Size").val();
+            var quantity = $(goods).find("#Quantity").val();
+            var token = $('input[name="__RequestVerificationToken"]').val();
+            uploadSuccess = uploadProductType(token, color, size, quantity, productName);
+        });
+        $("#loadingSpinner").addClass("d-none");
+        $("#addGoodsForm").removeClass("d-none");
+        $("#deleteGoodsModalBtn").addClass("d-none");
+
+        return uploadSuccess;
     });
 
     $('#closeBtn').click(function () {
@@ -190,4 +192,28 @@
         isEdit = false;
         location.reload();
     });
+
+    $("#addAnotherGood").on("click", function () {
+        var $good = $("#addGoodsForm").clone();
+        $good.find("input[type=radio]").each(function (i, x) {
+            $(x).attr("name", $("input").length);
+            $(x).attr("checked", false)
+        });
+        $good.find("#Quantity").val("0");
+        $good.insertBefore("#AnotherGood");
+    })
+
+    const addWarningSmallerThanZero = (selector, warningId, alert) => {
+        if ($(selector).val() < 0) {
+            $(selector).parent("div").append("<div class='alert alert-danger' style='color: red' id=" + warningId + ">" + alert + "</div>");
+            return false
+        }
+        else {
+            $(selector).siblings("#" + warningId).remove()
+            return true
+        }
+    };
+
+    $('#Quantity').change(() => productTypeQuantityValid = addWarningSmallerThanZero('#Quantity', 'quantityAlert', 'Price cannot be lower than zero'));
+
 });

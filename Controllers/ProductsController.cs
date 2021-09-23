@@ -13,6 +13,7 @@ using web_development_course.Data;
 using web_development_course.Models;
 using web_development_course.Models.ProductModels;
 
+
 namespace web_development_course.Controllers
 {
     public class ProductsController : Controller
@@ -24,34 +25,50 @@ namespace web_development_course.Controllers
             _context = context;
         }
 
-        // GET: Products
-        public async Task<IActionResult> Index()
+        // GET: Products?categoryId=5
+        public async Task<IActionResult> Index(int? categoryId)
         {
 
-            if (User.IsInRole("Admin") || User.IsInRole("Edtior"))
-                return RedirectToAction("EditorIndex", "Products");
             ViewBag.Colors = await _context.ProductColor.ToListAsync();
-            return View(await _context.Product.Include(product => product.ProductImages)
-                    .Include(product => product.ProductTypes).Include(product => product.ProductCategories)
-                    .ToListAsync());
+            ViewBag.shouldShowEdit = User.IsInRole("Admin") || User.IsInRole("Editor");
 
+            Category[] RelevantCategories;
+            if (categoryId == null)
+            {
+                RelevantCategories = await _context.Category.ToArrayAsync();
+            }
+            else
+            {
+                RelevantCategories = await _context.Category.Where(c => c.Id == categoryId || c.ParentCategoryId == categoryId).ToArrayAsync();
+            }
+
+            HashSet<int> RelevantCategoryIds = RelevantCategories.Select(c => c.Id).ToHashSet();
+
+            var ProductsQuery = _context.Product
+                    .Include(product => product.ProductImages)
+                    .Include(product => product.ProductTypes)
+                    .ThenInclude(pt => pt.Color)
+                    .Include(product => product.ProductCategories)
+                    .Where(p => p.ProductCategories.Any(pc => RelevantCategoryIds.Contains(pc.CategoryId)));
+            List<Product> ProductsToShow = await ProductsQuery.ToListAsync();
+            return View(ProductsToShow);
         }
 
         [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> EditorIndex(int? categoryId)
         {
-            if(categoryId != null)
+            if (categoryId != null)
             {
                 Category category = await _context.Category.FirstOrDefaultAsync(q => q.Id == categoryId);
                 if (category != null)
                 {
-                var products =   from q in _context.ProductCategory
-                                 join CategoryName in _context.Category on q.CategoryId equals CategoryName.Id
-                                 where q.CategoryId == category.Id
-                                 join p in _context.Product.Include(a => a.ProductImages).Include(a=>a.ProductTypes)
-                                 on q.ProductId equals p.Id
-                                 where q.ProductId == p.Id
-                                 select p;
+                    var products = from q in _context.ProductCategory
+                                   join CategoryName in _context.Category on q.CategoryId equals CategoryName.Id
+                                   where q.CategoryId == category.Id
+                                   join p in _context.Product.Include(a => a.ProductImages).Include(a => a.ProductTypes)
+                                   on q.ProductId equals p.Id
+                                   where q.ProductId == p.Id
+                                   select p;
                     ViewBag.Colors = await _context.ProductColor.ToListAsync();
                     return View(await products.ToListAsync());
                 }
@@ -109,9 +126,9 @@ namespace web_development_course.Controllers
             var product = await _context.Product.Include(m => m.ProductImages)
                 .FirstOrDefaultAsync(m => m.Id == id);
             var categories = from q in _context.ProductCategory
-                                    join CategoryName in _context.Category on q.CategoryId equals CategoryName.Id
-                                    where q.ProductId == id
-                                    select CategoryName.Name;
+                             join CategoryName in _context.Category on q.CategoryId equals CategoryName.Id
+                             where q.ProductId == id
+                             select CategoryName.Name;
             var imagesNames = product.ProductImages.Select(m => new { m.Name, m.ImageData, m.Id }).ToList();
             if (product == null)
             {
@@ -135,7 +152,8 @@ namespace web_development_course.Controllers
         [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> AddProduct([Bind("Id,Price,Name,DiscountPercentage")] Product product, List<string> categories)
         {
-            try {
+            try
+            {
                 // adding the product to the DB
                 var pro = _context.Product.FirstOrDefault(p => p.Name.ToLower() == product.Name.ToLower());
                 if (pro != null)
@@ -156,9 +174,7 @@ namespace web_development_course.Controllers
                         // adding category and product to the many to many table: ProductCategory.
                         ProductCategory bind = new ProductCategory();
                         bind.CategoryId = category.Id;
-                        bind.Categories.Append(category);
                         bind.ProductId = product.Id;
-                        bind.Products.Append(product);
                         category.ProductCategories.Append(bind);
                         product.ProductCategories.Append(bind);
                         _context.Category.Update(category);
@@ -167,7 +183,8 @@ namespace web_development_course.Controllers
                 }
                 await _context.SaveChangesAsync();
                 return Json(new { success = true, productId = product.Id });
-            } catch
+            }
+            catch
             {
                 return Json(new { success = false, errorDetails = "sorry, we had a problem in server" });
             }
@@ -191,9 +208,10 @@ namespace web_development_course.Controllers
                 }
                 await _context.SaveChangesAsync();
                 return Json(new { success = true });
-            } catch
+            }
+            catch
             {
-            return Json(new { success = false });
+                return Json(new { success = false });
             }
         }
 
@@ -266,10 +284,10 @@ namespace web_development_course.Controllers
                 product.Name = Name;
                 product.Price = Price;
                 product.DiscountPercentage = DiscountPercentage;
-                var pc =_context.ProductCategory.Where(q => q.ProductId == id);
-                foreach(var cat in pc)
+                var pc = _context.ProductCategory.Where(q => q.ProductId == id);
+                foreach (var cat in pc)
                 {
-                 _context.ProductCategory.Remove(cat);
+                    _context.ProductCategory.Remove(cat);
                 }
                 foreach (var cat in Categories)
                 {
@@ -278,9 +296,7 @@ namespace web_development_course.Controllers
                     {
                         ProductCategory bind = new ProductCategory();
                         bind.CategoryId = category.Id;
-                        bind.Categories.Append(category);
                         bind.ProductId = product.Id;
-                        bind.Products.Append(product);
                         category.ProductCategories.Append(bind);
                         product.ProductCategories.Append(bind);
                         _context.Category.Update(category);
@@ -289,7 +305,8 @@ namespace web_development_course.Controllers
                 }
                 await _context.SaveChangesAsync();
                 return Json(new { success = true });
-            } catch
+            }
+            catch
             {
                 return Json(new { success = false, errorDetails = "sorry, we had a problem in server" });
             }

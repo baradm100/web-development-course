@@ -32,7 +32,11 @@
                         $('#Color').html('');
                         var options = '';
                         for (var i = 0; i < response.colors.result.length; i++) {
-                            options += `<input class="form-check-input" type="radio" id="${response.colors.result[i].name}" name="inlineRadioOptions" value="${response.colors.result[i].id}" style="background-color: #${response.colors.result[i].color}; border-radius: 18px;"></input>`
+                            if(i == 0)
+                                options += `<input checked class="form-check-input" type="radio" id="${response.colors.result[i].name}" name="inlineRadioOptions" value="${response.colors.result[i].id}" style="background-color: #${response.colors.result[i].color}; border-radius: 18px;"></input>`
+                            else
+                                options += `<input class="form-check-input" type="radio" id="${response.colors.result[i].name}" name="inlineRadioOptions" value="${response.colors.result[i].id}" style="background-color: #${response.colors.result[i].color}; border-radius: 18px;"></input>`
+
                         }
                         $('#Color').append(options);
                     }
@@ -171,9 +175,9 @@
         return false;
     };
 
-    const QuantityNegativeValue = () => {
+    const QuantityNegativeOrFloatValue = () => {
         for (var i = 0; i < $("input#Quantity").length; i++) {
-            if ($($("input#Quantity")[i]).val() < 0)
+            if ($($("input#Quantity")[i]).val() < 0 || !Number.isInteger(Number($($("input#Quantity")[i]).val())))
                 return true;
         }
         return false;
@@ -181,13 +185,15 @@
 
     $("#addGoodsModalBtn").click(function () {
         if (DuplicateSize() == true) {
-            $(this).parent("div").append("<div class='alert alert-danger' style='color: red' id='SizeWarning'>There is an invalid Inputs</div>");
+            if($(this).siblings("#SizeWarning").length == 0)
+                $(this).parent("div").append("<div class='alert alert-danger' style='color: red' id='SizeWarning'>There is an Duplicate Sizes</div>");
             return false;
         } else {
             $(this).parent("#SizeWarning").remove()
         }
-        if (QuantityNegativeValue() == true) {
-            $(this).parent("div").append("<div class='alert alert-danger' style='color: red' id='InvalidWarning'>There is an invalid Inputs</div>");
+        if (QuantityNegativeOrFloatValue() == true) {
+            if($(this).siblings("#InvalidWarning").length == 0)
+                $(this).parent("div").append("<div class='alert alert-danger' style='color: red' id='InvalidWarning'>There is an invalid Inputs</div>");
             return false;
         }
         else {
@@ -235,17 +241,5 @@
         $good.insertBefore("#AnotherGood");
     })
 
-    const addWarningSmallerThanZero = (selector, warningId, alert) => {
-        if ($(selector).val() < 0) {
-            $(selector).parent("div").append("<div class='alert alert-danger' style='color: red' id=" + warningId + ">" + alert + "</div>");
-            return false
-        }
-        else {
-            $(selector).siblings("#" + warningId).remove()
-            return true
-        }
-    };
-
-    $('#Quantity').change(() => productTypeQuantityValid = addWarningSmallerThanZero('#Quantity', 'quantityAlert', 'Price cannot be lower than zero'));
 
 });

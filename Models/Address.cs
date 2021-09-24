@@ -20,7 +20,19 @@ namespace web_development_course.Models
         public string Street { get; set; }
 
         [Required]
+        [Display(Name = "Building Number")]
         [Range(Consts.FIRST_BUILDING_NUM, Consts.MAX_BUILDING_NUM, ErrorMessage = Consts.ONLY_DIGITS_ERROR)]
         public int BuildingNumber { get; set; }
+
+        [Required]
+        public double Longitude { get; set; }
+
+        [Required]
+        public double Latitude { get; set; }
+
+        public override string ToString()
+        {
+            return Street + " St." + BuildingNumber + " " + City; 
+        }
     }
 }

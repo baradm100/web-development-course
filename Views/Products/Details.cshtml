@@ -33,8 +33,7 @@
                         isFirst = false;
 
                         <div class="carousel-item @extraClass">
-                            <img src="data:image/png;base64,@base64" class="card-img-top d-block w-100" width="100"
-                            height="250" />
+                            <img src="data:image/png;base64,@base64" class="d-block w-100 h-100" width="100" height="250" />
                         </div>
                     }
                 }
@@ -70,30 +69,31 @@
                 </div>
 
             </h5>
-            <h5>
-                Size:
+            <div style="margin-bottom: .5rem;">
+                <label class="form-check-label h5 margin-bottom-0 quantityLabel" for="Size">Size:</label>
                 <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
                     @foreach (var item in SizesAndCounts)
                     {
                         bool noStock = item.Value <= 0;
                         String ExtraClass = noStock ? "line-through" : "";
 
-                        <input type="radio" class="btn-check" name="size" id="size-@item.Key" autocomplete="off" @(noStock ?
+                        <input type="radio" class="btn-check" name="Size" id="size-@item.Key" autocomplete="off" @(noStock ?
                         "disabled" : "" )>
                         <label class="btn btn-outline-secondary @ExtraClass"
                         for="size-@item.Key">@item.Key.ToString().ToUpper()</label>
                     }
                 </div>
-            </h5>
-            <h5>
-                Quantity:
-                <select class="form-select" aria-label="Default select example" disabled>
+            </div>
+            <div style="display: flex; margin-bottom: .5rem;">
+                <label class="form-check-label h5 margin-bottom-0 quantityLabel" for="Quantity">Quantity:</label>
+
+                <select class="form-select" aria-label="Quantity" name="Quantity" disabled>
                     <option selected value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
                 </select>
+            </div>
 
-            </h5>
             <button type="button" class="btn btn-primary" disabled>
                 <i class="bi bi-cart-plus"></i>
                 Add to cart

@@ -50,3 +50,7 @@
 .productPage .color {
   display: inline-block;
 }
+
+.productPage .quantityLabel {
+  line-height: 1.8;
+}

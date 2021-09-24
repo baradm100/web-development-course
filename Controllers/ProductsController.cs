@@ -79,6 +79,25 @@ namespace web_development_course.Controllers
 
         }
 
+        // GET: Products/json
+        [Route("products/json")]
+        public async Task<IActionResult> getProductsJson(string? color, string? name)
+        {
+
+            ProductColor productColor = await _context.ProductColor.FirstOrDefaultAsync(c => color.Contains(c.Color));
+            if(productColor != null)
+            {
+                var productType = from product in _context.Product
+                               join type in _context.ProductType on product.Id equals type.Product.Id
+                               where type.ColorId == productColor.Id && product.Name.ToLower() == name.ToLower()
+                               select type;
+                var productTypes = await productType.ToListAsync();
+                return Json(new { success = true, types = productTypes });
+            }
+            return NotFound();
+
+        }
+
         [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> EditorIndexSearch(string? product)
         {

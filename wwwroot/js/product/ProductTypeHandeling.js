@@ -164,12 +164,18 @@
         });
     }
 
-    const DuplicateSize= () => {
+    const DuplicateSize = () => {
         var validated = {};
         for (var i = 0; i < $("select#Size").length; i++) {
-            if (validated[$($("select#Size")[i]).val()] != null)
-                return true;
-            validated[$($("select#Size")[i]).val()] = true;
+            var $size = $($("select#Size")[i]);
+            if (validated[$size.val()] != null) {
+                // check if color already exist in it
+                if (validated[$size.val()].includes($size.parents("#addGoodsForm").find("input:checked").val()))
+                    return true;
+                else
+                    validated[$size.val()].push($size.parents("#addGoodsForm").find("input:checked").val());
+            }
+            validated[$size.val()] = [$size.parents("#addGoodsForm").find("input:checked").val()];
         }
         return false;
     };

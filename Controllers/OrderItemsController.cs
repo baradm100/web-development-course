@@ -36,7 +36,7 @@ namespace web_development_course.Controllers
             {
                 return NotFound();
             }
-
+                
             var orderItem = await _context.OrderItem
                 .Include(o => o.ProductType)
                 .FirstOrDefaultAsync(m => m.Id == id);

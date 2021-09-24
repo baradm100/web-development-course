@@ -19,9 +19,6 @@ namespace web_development_course.Controllers
     {
         private readonly ApplicationDbContext _context;
 
-        private readonly UserManager<User> _userManager;
-
-
         public OrdersController(ApplicationDbContext context)
         {
             _context = context;
@@ -34,13 +31,6 @@ namespace web_development_course.Controllers
             return View(await _context.Order.ToListAsync());
         }
 
-        public void MyMethod(Microsoft.AspNetCore.Http.HttpContext context)
-        {
-           
-
-            // Other code
-        }
-
         // GET: Orders/Cart
         //<summary> the context use for know the current loged in user
         public async Task<IActionResult> Cart()
@@ -51,41 +41,93 @@ namespace web_development_course.Controllers
             ViewData["GBP"] = converter.Gbp;
             ViewData["EUR"] = converter.Eur;
 
-            string user = HttpContext.User.Identity.Name;
-            var authanticated = HttpContext.User.Identity.IsAuthenticated;
-            var userAuthLevel = HttpContext.User.Identity.AuthenticationType;
-             
-            if (user != null) {
-                var dbUser = await _context.User.FirstOrDefaultAsync(v => (v.FirstName + " " + v.LastName) == user);
+            var dbUser = isValidUserAsync();
 
-                if (dbUser != null)
+            if (dbUser.Result > 0)
+            {
+                var model = await (_context.OrderItem.Include(o => o.Order).
+                            Include(o => o.ProductType).
+                            Include(o => o.ProductType.Product).
+                            Include(o => o.ProductType.Product.ProductImages).
+                            Include(o => o.ProductType.Color).
+                            Where(o => (o.Order.UserId == dbUser.Result && o.Order.IsCart))).ToListAsync();
+
+                return View(model);
+            }
+
+            return NotFound();
+
+        }
+
+        // GET: Orders/GetItemFinalPrice
+        public async Task<IActionResult> GetItemFinalPrice(int orderId)
+        {
+            var dbUser = isValidUserAsync();
+
+            if (dbUser.Result > 0)
+            {
+                var order = await (_context.OrderItem.Include(o=>o.Order).
+                                    Include(o=>o.ProductType).
+                                    Include(o=>o.ProductType.Product).
+                                    Where(o=>o.Id == orderId && o.Order.IsCart).ToListAsync());
+
+                // Makes sure the login user ask for the data
+                if(order != null && order[0].Order.UserId == dbUser.Result)
                 {
-                    var a = await (from order in _context.Order
-                                   join item in _context.OrderItem on order.Id equals item.OrderId
-                                   select order).ToListAsync();
+                    var amount =  order[0].Amount;
+                    var price = order[0].ProductType.Product.Price;
+                    var discount = order[0].ProductType.Product.DiscountPercentage;
+                    discount = discount > 0 ? ((100 - discount) / 100) : 1;
+                    var totalPrice = price * discount * amount;
 
-                    var b = await (from item in _context.OrderItem
-                            join productType in _context.ProductType on item.ProductTypeID equals productType.Id
-                            select item).ToListAsync();
+                    order[0].TotalPrice = (double) totalPrice;
+                    _context.OrderItem.Update(order[0]);
+                    await _context.SaveChangesAsync();
 
-                    // suppose to get all the product that the loggon user add to cart
-                    var model = await (from order in _context.Order
-                                       join item in _context.OrderItem on order.Id equals item.OrderId
-                                       join productType in _context.ProductType on item.ProductTypeID equals productType.Id
-                                       join product in _context.Product on productType.ProductId equals product.Id
-                                       where (order.UserId == dbUser.Id && order.IsCart == true)
-                                       select order).ToListAsync();
+                    return Json(new { success = true, data = new { totalPrice = totalPrice, currecnyIndex = 0 }});
+                }
+            }
 
-                    return View(model);
+            return Json(new { success = false });
+        }
+
+        // GET: Orders/GetSummary
+        public async Task<IActionResult> GetSummary()
+        {
+            var dbUser = isValidUserAsync();
+
+            if (dbUser.Result > 0)
+            {
+                var orders = await (_context.OrderItem.Include(o => o.Order).
+                            Include(o => o.ProductType).
+                            Include(o => o.ProductType.Product).
+                            Where(o => (o.Order.UserId == dbUser.Result && o.Order.IsCart))).ToListAsync();
+
+                double midPrice = 0;
+                double totalDiscount = 0;
+                double totalPrice = 0;
+
+                foreach (var data in orders) {
+                    var price = data.Amount * data.ProductType.Product.Price;
+                    var discountNum = (data.ProductType.Product.DiscountPercentage / 100);
+
+                    // if there is no discount the amount will be 0 
+                    var discountAmount = price * discountNum;
+
+                    // add logic in case we in a diffrent currency
+                    totalPrice += (price - discountAmount); 
+                    midPrice += price;
+                    totalDiscount += discountAmount;
                 }
 
-                return NotFound();
+                return Json(new { success = true, data = new { totalPrice = totalPrice,
+                                                               midPrice = midPrice,
+                                                               saving = totalDiscount,
+                                                               //later change this!
+                                                               currencyIndex = 0 } });
             }
-            else
-            {
-                return View(await _context.Order.ToListAsync());
-                // dont know
-            }
+
+            return Json(new { success = false });
         }
 
         // GET: Orders/Details/5
@@ -114,6 +156,24 @@ namespace web_development_course.Controllers
             return View();
         }
 
+        //Post: Orders/UpdateAmount
+        [HttpPost]
+            public async Task<IActionResult> UpdateAmount(int id, int amount)
+        {
+            var order = await _context.OrderItem.FindAsync(id);
+
+            if(order != null)
+            {
+                order.Amount = (int)amount;
+                _context.OrderItem.Update(order);
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true });
+            }
+
+            return Json(new { success = false, textStatus = "didnt find order" }) ;
+        }
+  
         // POST: Orders/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -203,6 +263,38 @@ namespace web_development_course.Controllers
             return View(order);
         }
 
+        //GET: Orders/DeleteByUser
+        public async Task<IActionResult> DeleteByUser(int? orderId)
+        {
+            if (orderId == null )
+            {
+                return NotFound();
+            }
+
+            var dbUser = isValidUserAsync();
+
+            if (dbUser.Result > 0)
+            {
+                var order = await (_context.OrderItem.Include(o => o.Order).
+                                    Include(o => o.ProductType).
+                                    Include(o => o.ProductType.Product).
+                                    Where(o => o.Id == orderId && o.Order.IsCart).ToListAsync());
+
+                // Makes sure the login user ask for the data
+                if (order != null && order[0].Order.UserId == dbUser.Result)
+                {
+                    order[0].Order.OrderItems.ToList().Remove(order[0]);
+                    order[0].Amount -= 1;
+                    _context.OrderItem.Remove(order[0]);
+                    await _context.SaveChangesAsync();
+
+                    return Json(new {success = true });
+                }
+            }
+
+            return Json( new {success = false });
+        }
+
         // POST: Orders/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -219,5 +311,31 @@ namespace web_development_course.Controllers
         {
             return _context.Order.Any(e => e.Id == id);
         }
+
+        private async Task<int> isValidUserAsync()
+        {
+            string user = HttpContext.User.Identity.Name;
+
+            if (user != null)
+            {
+                var dbUser = await _context.User.FirstOrDefaultAsync(v => (v.FirstName + " " + v.LastName) == user);
+
+                if (dbUser != null)
+                {
+                    return dbUser.Id;
+                }
+                else
+                {
+                    // should be gust
+                }
+            }
+            else
+            {
+                return -1;
+            }
+
+            return -1;
+        }
     }
+  
 }

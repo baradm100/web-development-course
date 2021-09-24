@@ -23,7 +23,7 @@ namespace web_development_course.Models.OrderModels
         [Required]
         [Display(Name = "total price")]
         [Range(0,Consts.MaxProductsTotalPrice,ErrorMessage = Consts.ProductTotalPriceErrorMessage)]
-        public int TotalPrice { get; set; }
+        public double TotalPrice { get; set; }
         
         public int ProductTypeID { get; set; }
 

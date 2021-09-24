@@ -55,7 +55,15 @@ $("#create").click(function () {
             type: 'POST',
             url: "/Branches/Create",
             dataType: 'json',
-            data: newBranch
+            data: newBranch,
+            success: function (response) {
+                if (!response.success) {
+                    if ($("#create").siblings("#existWarning").length == 0)
+                        $("#create").parent("div").append("<div class='alert alert-danger' id='existWarning'>this branch already exist</div>");
+                } else {
+                    $("#create").siblings("#existWarning").remove();
+                }
+            }
         }).done(function () {
             console.log("done")
         });

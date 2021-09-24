@@ -442,7 +442,7 @@
 
     $('#ProductPrice').change(() => productPriceValid = addWarningSmallerThanZero('#ProductPrice', 'priceAlert', 'Price cannot be lower than zero'));
     $('#ProductDiscount').change(() => productDiscountValid = addWarningSmallerThanZero('#ProductDiscount', 'discountAlert', 'Discount cannot be lower than zero'));
-    $('#ProductDiscount').change(() => productDiscountValid = addWarningSmallerbiggerHundred('#ProductDiscount', 'discountBiggerAlert', 'Discount cannot be biger than zero'));
+    $('#ProductDiscount').change(() => productDiscountValid = addWarningSmallerbiggerHundred('#ProductDiscount', 'discountBiggerAlert', 'Discount cannot be biger than hundred'));
     $('#ProductName').change(() => productNameValid = stringNotNullWarning('#ProductName', 'nameAlert', 'Name cannot be empty'));
 
 

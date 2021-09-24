@@ -12,6 +12,7 @@ using web_development_course.Common;
 using web_development_course.Data;
 using web_development_course.Models;
 using web_development_course.Models.ProductModels;
+using web_development_course.WebServices;
 
 
 namespace web_development_course.Controllers
@@ -19,10 +20,12 @@ namespace web_development_course.Controllers
     public class ProductsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly TwitterApi twitterApi;
 
         public ProductsController(ApplicationDbContext context)
         {
             _context = context;
+            twitterApi = new TwitterApi();
         }
 
         // GET: Products?categoryId=5
@@ -78,6 +81,25 @@ namespace web_development_course.Controllers
 
         }
 
+        // GET: Products/json
+        [Route("products/json")]
+        public async Task<IActionResult> getProductsJson(string? color, string? name)
+        {
+
+            ProductColor productColor = await _context.ProductColor.FirstOrDefaultAsync(c => color.Contains(c.Color));
+            if(productColor != null)
+            {
+                var productType = from product in _context.Product
+                               join type in _context.ProductType on product.Id equals type.Product.Id
+                               where type.ColorId == productColor.Id && product.Name.ToLower() == name.ToLower()
+                               select type;
+                var productTypes = await productType.ToListAsync();
+                return Json(new { success = true, types = productTypes });
+            }
+            return NotFound();
+
+        }
+
         [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> EditorIndexSearch(string? product)
         {
@@ -98,7 +120,6 @@ namespace web_development_course.Controllers
             {
                 return NotFound();
             }
-            return NotFound();
         }
 
         // GET: Products/Details/5
@@ -207,7 +228,14 @@ namespace web_development_course.Controllers
                         _context.ProductCategory.Add(bind);
                     }
                 }
+                
                 await _context.SaveChangesAsync();
+                float priceAfterDiscount = product.Price * ((100 - product.DiscountPercentage) / 100);
+                try
+                {
+                    await twitterApi.PostTweetAsync("ClothIt has a new Product: '" + product.Name + "' just in " + priceAfterDiscount + " come and check it!");
+                } catch
+                {}
                 return Json(new { success = true, productId = product.Id });
             }
             catch
@@ -215,6 +243,7 @@ namespace web_development_course.Controllers
                 return Json(new { success = false, errorDetails = "sorry, we had a problem in server" });
             }
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

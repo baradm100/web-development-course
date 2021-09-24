@@ -234,6 +234,12 @@ namespace web_development_course.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<double>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("float");
+
                     b.Property<string>("Street")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -253,6 +259,11 @@ namespace web_development_course.Migrations
 
                     b.Property<int>("AddressId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -338,12 +349,15 @@ namespace web_development_course.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("BranchId")
+                    b.Property<int>("BranchId")
                         .HasColumnType("int");
 
                     b.Property<string>("Close")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int");
 
                     b.Property<string>("Open")
                         .IsRequired()
@@ -702,9 +716,13 @@ namespace web_development_course.Migrations
 
             modelBuilder.Entity("web_development_course.Models.OpeningHour", b =>
                 {
-                    b.HasOne("web_development_course.Models.Branch", null)
+                    b.HasOne("web_development_course.Models.Branch", "Branch")
                         .WithMany("OpeningHours")
-                        .HasForeignKey("BranchId");
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Branch");
                 });
 
             modelBuilder.Entity("web_development_course.Models.OrderModels.Order", b =>

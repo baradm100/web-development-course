@@ -12,6 +12,7 @@ using web_development_course.Common;
 using web_development_course.Data;
 using web_development_course.Models;
 using web_development_course.Models.ProductModels;
+using web_development_course.WebServices;
 
 
 namespace web_development_course.Controllers
@@ -19,10 +20,12 @@ namespace web_development_course.Controllers
     public class ProductsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly TwitterApi twitterApi;
 
         public ProductsController(ApplicationDbContext context)
         {
             _context = context;
+            twitterApi = new TwitterApi();
         }
 
         // GET: Products?categoryId=5
@@ -117,7 +120,6 @@ namespace web_development_course.Controllers
             {
                 return NotFound();
             }
-            return NotFound();
         }
 
         // GET: Products/Details/5
@@ -200,7 +202,14 @@ namespace web_development_course.Controllers
                         _context.ProductCategory.Add(bind);
                     }
                 }
+                
                 await _context.SaveChangesAsync();
+                float priceAfterDiscount = product.Price * ((100 - product.DiscountPercentage) / 100);
+                try
+                {
+                    await twitterApi.PostTweetAsync("ClothIt has a new Product: '" + product.Name + "' just in " + priceAfterDiscount + " come and check it!");
+                } catch
+                {}
                 return Json(new { success = true, productId = product.Id });
             }
             catch
@@ -208,6 +217,7 @@ namespace web_development_course.Controllers
                 return Json(new { success = false, errorDetails = "sorry, we had a problem in server" });
             }
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

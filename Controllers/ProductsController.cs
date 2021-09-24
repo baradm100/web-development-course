@@ -170,7 +170,11 @@ namespace web_development_course.Controllers
                 
                 await _context.SaveChangesAsync();
                 float priceAfterDiscount = product.Price * ((100 - product.DiscountPercentage) / 100);
-                await twitterApi.PostTweetAsync("ClothIt has a new Product: '" + product.Name + "' just in " + priceAfterDiscount + " come and check it!");
+                try
+                {
+                    await twitterApi.PostTweetAsync("ClothIt has a new Product: '" + product.Name + "' just in " + priceAfterDiscount + " come and check it!");
+                } catch
+                {}
                 return Json(new { success = true, productId = product.Id });
             } catch
             {

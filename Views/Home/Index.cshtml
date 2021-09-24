@@ -2,7 +2,53 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+<div class="container-fluid category p-1 text-center text-xl-start">
+    @for (var i = 0; i < 15; i++)
+    {
+        <div class="card item border">
+            <img @* Load the image from Product *@
+            src="https://media.terminalx.com/pub/media/catalog/product/cache/f112238e8de94b6d480bd02e7a9501b8/x/8/x858370001-11628410958_1.jpg"
+            class="card-img-top" />
+            <div class="card-body">
+                <span>
+                    @* TODO: Set the name from Product *@
+                    ADIDAS
+                </span>
+                <br />
+                <span class="text-secondary">
+                    @* TODO: Set the price from Product *@
+                    69$
+                </span>
+                <div class="text-align-center">
+                    @* TODO: Set the sizes from the possible ProductType *@
+                    <span class="badge rounded-pill bg-light text-dark">XS</span>
+                    <span class="badge rounded-pill bg-light text-dark">M</span>
+                    <span class="badge rounded-pill bg-light text-dark">XL</span>
+                </div>
+                <div class="colorContainer text-align-center">
+                    @* TODO: Set the colors from the possible ProductType *@
+                    <span class="p-2 border border-dark rounded-circle color product-color-red">
+                        <span class="visually-hidden">Red</span>
+                    </span>
+                    <span class="p-2 border border-dark rounded-circle color product-color-black">
+                        <span class="visually-hidden">Black</span>
+                    </span>
+                    <span class="p-2 border border-dark rounded-circle color product-color-white">
+                        <span class="visually-hidden">White</span>
+                    </span>
+                </div>
+                <a href="#" class="btn btn-primary stretched-link viewButton">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-eye-fill" viewBox="0 0 16 16">
+                        <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"></path>
+                        <path
+                        d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z">
+                        </path>
+                    </svg>
+                    View
+                </a>
+            </div>
+        </div>
+    }
 </div>

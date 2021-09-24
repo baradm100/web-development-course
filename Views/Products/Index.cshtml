@@ -1,0 +1,108 @@
+﻿@using web_development_course.Models.ProductModels
+@model IEnumerable<web_development_course.Models.Product>
+
+@{
+    ViewData["Title"] = "Index";
+    bool shouldShowEdit = (bool) ViewData["shouldShowEdit"];
+    List<Product> Products = Model.ToList();
+    IEnumerable<ProductColor> ProductColors = (IEnumerable<ProductColor>) ViewData["Colors"];
+}
+
+<div class="container-fluid category p-1 text-center text-xl-start">
+    @{
+    foreach (var product in Products)
+    {
+        <div class="card item border">
+            @{
+                Dictionary<ProductSize, int> SizesAndCounts = new Dictionary<ProductSize, int>();
+                Dictionary<ProductColor, int> ColorsAndCounts = new Dictionary<ProductColor, int>();
+
+                @foreach (ProductType type in product.ProductTypes)
+                {
+                    if (!SizesAndCounts.ContainsKey(type.Size)) {
+                        SizesAndCounts[type.Size] = 0;
+                    }
+
+                    if(!ColorsAndCounts.ContainsKey(type.Color)) {
+                        ColorsAndCounts[type.Color] = 0;
+                    }
+
+                    SizesAndCounts[type.Size] += type.Quantity;
+                    ColorsAndCounts[type.Color] += type.Quantity;
+                }
+            }
+            <div class="card-img-top d-block w-100">
+                <div id="carouselWithIndicators-@product.Id" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        @{
+                            bool isFirst = true;
+                            @foreach (ProductImage image in product.ProductImages)
+                            {
+                                String base64 = Convert.ToBase64String(image.ImageData);
+                                String extraClass = isFirst ? "active" : "";
+                                isFirst = false;
+
+                                <div class="carousel-item @extraClass">
+                                    <img src="data:image/png;base64,@base64" class="card-img-top d-block w-100" width="100" height="250"/>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselWithIndicators-@product.Id" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselWithIndicators-@product.Id" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body position-relative">
+                <span>
+                    @product.Name
+                </span>
+                <br />
+                <span class="text-secondary">
+                    @product.Price$
+                </span>
+                <div class="text-align-center">
+                    @foreach (var item in SizesAndCounts)
+                    {
+                        String ExtraClass = item.Value <= 0 ? "line-through" : "";
+                        <span class="badge rounded-pill bg-light text-dark @ExtraClass">@item.Key</span>
+                    }
+                </div>
+                <div class="colorContainer text-align-center">
+                    @foreach (var item in ColorsAndCounts)
+                    {
+                        bool notInStock = item.Value <= 0; 
+                        String colorName = @item.Key.Name + (notInStock ? " (Not in stock)" : "");
+
+                        <span class="p-2 border border-dark rounded-circle color position-relative" style="background-color: #@item.Key.Color;">
+                            @if(notInStock) {
+                                <span class="emptyStock">X</span>
+                            }
+                            <span class="visually-hidden">@colorName</span>
+                        </span>
+                    }
+                </div>
+                <a href="#" class="btn btn-primary stretched-link viewButton">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-eye-fill" viewBox="0 0 16 16">
+                        <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"></path>
+                        <path
+                        d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z">
+                        </path>
+                    </svg>
+                    View
+                </a>
+            </div>
+        </div>
+    }
+}    
+</div>
+
+@if(shouldShowEdit) {
+    <partial name="_EditFloatingButton"/>
+}

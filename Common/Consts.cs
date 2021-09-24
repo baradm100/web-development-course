@@ -7,6 +7,22 @@ namespace web_development_course.Common
 {
     public static class Consts
     {
+
+        #region Product
+
+        public const int MaxProductsTotalPrice = 10000;
+        public const int MaxProductsQuantity = 100000;
+        // Error messages
+        public const string DiscountPercentageErrorMessage = "The value should be between 0 - 100";
+        public const string ProductTypeQuantityErrorMessage = "quantity must be between 0 and 100000";
+        public const string ProductTotalPriceErrorMessage = "the price must be a value between 0 and 10000";
+        public const string ProductImageMissingError = "You must upload at least one image";
+        public const string ProductExsistError = "This product is already exist";
+
+
+        # endregion
+
+
         #region Address
 
         public const int FIRST_BUILDING_NUM = 1;

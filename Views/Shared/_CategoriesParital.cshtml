@@ -1,0 +1,36 @@
+@inject web_development_course.Models.ProductModels.CategoryModelService CategoryModelService
+
+@foreach (var item in @CategoryModelService.GetCategoryTrees())
+{
+    if (item.SubCategories.Count() == 0)
+    {
+        <li class="nav-item">
+             @Html.ActionLink(item.Category.Name, "Index", "Products", new {categoryId=item.Category.Id}, new  {@class="nav-link text-dark"})
+        </li>
+    }
+    else
+    {
+        <li class="nav-item dropdown">
+    <a class="nav-link text-dark nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"
+        id="catagory-@item.Category.Id" href="#">@item.Category.Name</a>
+
+    <ul class="dropdown-menu" aria-labelledby="catagory-@item.Category.Id">
+        @foreach (var subItem in item.SubCategories)
+                {
+                    <li>
+                        @Html.ActionLink(subItem.Name, "Index","Products", new {categoryId=subItem.Id}, new
+            {@class="dropdown-item"})
+                    </li>
+                }
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li>
+                    @Html.ActionLink("View All", "Index","Products", new {categoryId=item.Category.Id}, new
+            {@class="dropdown-item"})
+                </li>
+            </ul>
+        </li>
+    }
+
+}

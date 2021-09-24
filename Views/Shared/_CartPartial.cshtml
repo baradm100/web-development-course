@@ -1,0 +1,84 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+@* TODO: Use the User to get the Cart items *@
+
+<li class="nav-item dropdown">
+    <button type="button" class="nav-link text-dark dropdown-toggle btn btn-light position-relative cartIcon"
+        id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+
+        <i class="bi bi-cart-fill"></i>
+        Cart
+
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            4
+            <span class="visually-hidden">items</span>
+        </span>
+    </button>
+    <ul class="dropdown-menu container cartQuickView" aria-labelledby="navbarDropdown">
+        <div class="itemList">
+            @* TODO: For each ProductType in User.Cart.ProductTypes *@
+            @for (var i = 0; i < 4; i++)
+            {
+                <li class="row cartItem">
+                    <img class="col"
+                    src="https://media.terminalx.com/pub/media/catalog/product/cache/f112238e8de94b6d480bd02e7a9501b8/x/8/x858370001-11628410958_1.jpg" />
+                    <div class="col cartItemDetails">
+                        <span>
+                            @* TODO: Set the name from Product *@
+                            ADIDAS
+                        </span>
+                        <br />
+                        <span class="text-secondary">
+                            @* TODO: Set the size and color from the ProductType *@
+                            Black / M
+                        </span>
+                        <br />
+                        <span class="text-secondary">
+                            @* TODO: Set the price from Product *@
+                            69$
+                        </span>
+                        <div>
+                            <select class="form-select" aria-label="Number Of Items">
+                                @* TODO: Set the number from ProdcutType *@
+                                <option value="1">1</option>
+                                <option value="2" selected>2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                            </select>
+                            <button type="button" class="btn btn-outline-danger deleteButton">
+                                @* TODO: Add delete action *@
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                    <path
+                                    d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
+                                    </path>
+                                </svg>
+                                <span class="d-none d-sm-inline d-md-inline d-lg-none">Delete From Cart</span>
+                            </button>
+                        </div>
+
+                    </div>
+                </li>
+                @if (i != 3)
+                {
+                    @* Do not display on the last item *@
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                }
+            }
+        </div>
+        <li>
+            <hr class="dropdown-divider">
+        </li>
+        <a class="btn btn-primary goToCart" href="#" role="button">Go To Cart</a>
+    </ul>
+</li>

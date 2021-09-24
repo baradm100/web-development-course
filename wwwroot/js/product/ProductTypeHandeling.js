@@ -1,6 +1,5 @@
 ﻿$(function () {
     var productName = null;
-    var productTypeQuantityValid = true;
     const PRODUCT_SIZES = {
         "xs": 0,
         "s": 1,
@@ -240,6 +239,4 @@
         $good.find("#Quantity").val("0");
         $good.insertBefore("#AnotherGood");
     })
-
-
 });

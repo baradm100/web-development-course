@@ -30,16 +30,20 @@
                         <partial name="_CategoriesParital" />
 
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home"
-                               asp-action="Privacy">Branches</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Branches</a>
                         </li>
                     </ul>
+                    <button type="button" class="nav-link text-dark btn btn-light position-relative" id="navbarDropdown" role="button" data-bs-toggle="offcanvas" data-bs-target="#advancedSearchCanvas" aria-controls="offcanvasRight">
+                        <i class="bi bi-search"></i>
+                    </button>
                     <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
 
     </header>
+    <partial name="_SearchPartial" />
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()

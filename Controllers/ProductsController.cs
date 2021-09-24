@@ -71,6 +71,7 @@ namespace web_development_course.Controllers
                                    join p in _context.Product.Include(a => a.ProductImages).Include(a => a.ProductTypes)
                                    on q.ProductId equals p.Id
                                    where q.ProductId == p.Id
+                                   orderby p.Id descending
                                    select p;
                     ViewBag.Colors = await _context.ProductColor.ToListAsync();
                     return View(await products.ToListAsync());
@@ -78,7 +79,7 @@ namespace web_development_course.Controllers
             }
             ViewBag.Colors = await _context.ProductColor.ToListAsync();
             return View(await _context.Product.Include(product => product.ProductImages)
-                    .Include(product => product.ProductTypes).Include(product => product.ProductCategories).ToListAsync());
+                    .Include(product => product.ProductTypes).Include(product => product.ProductCategories).OrderByDescending(p => p.Id).ToListAsync());
 
         }
 

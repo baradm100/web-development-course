@@ -6,8 +6,6 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using CoreTweet;
-using Tweetinvi;
 
 namespace web_development_course.WebServices
 {

@@ -3,7 +3,10 @@
     var $dropDownCategories = $("#categoriesDropDownAdvancedSearch");
     var $price = $("#priceRangeAdvancedSearch");
     var $name = $("#productNameAdvancedSearch");
-    var $searchBtn = $("#searchBtnAdvancedSearch");
+    var $productSearchBtn = $("#searchBtnAdvancedSearch");
+    var $branchSearchBtn = $("#branchBtnAdvancedSearch");
+    var $branchName = $("#branchNameAdvancedSearch");
+
 
     // when page is ready append the categories:
     $.ajax({
@@ -62,8 +65,13 @@
         timeout: 10000,
     });
 
-    const advancedSearch = (categoryId, maximumPrice, name) => {
+    const productAdvancedSearch = (categoryId, maximumPrice, name) => {
         var url = "/Products/AdvancedSearch?productName=" + name + "&maximumPrice=" + maximumPrice + "&categoryId=" + categoryId;
+        window.location.href = url;
+    };
+
+    const branchAdvancedSearch = (name) => {
+        var url = "/Branches?name=" + name;
         window.location.href = url;
     };
 
@@ -72,8 +80,12 @@
     }
 
     //events
-    $searchBtn.on("click", function (event) {
-        advancedSearch(findSelectedDropdown($dropDownCategories), $price.val(), $name.val())
+    $productSearchBtn.on("click", function (event) {
+        productAdvancedSearch(findSelectedDropdown($dropDownCategories), $price.val(), $name.val())
+    });
+
+    $branchSearchBtn.on("click", function (event) {
+        branchAdvancedSearch($branchName.val());
     });
 
     $price.on("change", (event) => $("#dynamicPrice").text($price.val()));

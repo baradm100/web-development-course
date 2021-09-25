@@ -31,7 +31,6 @@ namespace web_development_course.Controllers
         // GET: Products?categoryId=5
         public async Task<IActionResult> Index(int? categoryId)
         {
-
             ViewBag.Colors = await _context.ProductColor.ToListAsync();
             ViewBag.shouldShowEdit = User.IsInRole("Admin") || User.IsInRole("Editor");
 
@@ -196,12 +195,50 @@ namespace web_development_course.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Product
-                .FirstOrDefaultAsync(m => m.Id == id);
+            Product product = await _context.Product
+                    .Include(product => product.ProductImages)
+                    .Include(product => product.ProductTypes)
+                    .ThenInclude(pt => pt.Color)
+                    .Include(product => product.ProductCategories)
+                    .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
                 return NotFound();
             }
+
+            Dictionary<ProductSize, int> SizesAndCounts = new Dictionary<ProductSize, int>();
+            Dictionary<ProductColor, int> ColorsAndCounts = new Dictionary<ProductColor, int>();
+            Dictionary<int, Dictionary<ProductSize, int>> SizesCountByColorIds = new Dictionary<int, Dictionary<ProductSize, int>>();
+
+            foreach (ProductSize size in Enum.GetValues(typeof(ProductSize)))
+            {
+                SizesAndCounts[size] = 0;
+            }
+
+            foreach (ProductType type in product.ProductTypes)
+            {
+                if (!ColorsAndCounts.ContainsKey(type.Color))
+                {
+                    ColorsAndCounts[type.Color] = 0;
+                }
+
+                if (!SizesCountByColorIds.ContainsKey(type.Color.Id))
+                {
+                    SizesCountByColorIds[type.Color.Id] = new Dictionary<ProductSize, int>();
+                    foreach (ProductSize size in Enum.GetValues(typeof(ProductSize)))
+                    {
+                        SizesCountByColorIds[type.Color.Id][size] = 0;
+                    }
+                }
+
+                SizesAndCounts[type.Size] += type.Quantity;
+                ColorsAndCounts[type.Color] += type.Quantity;
+                SizesCountByColorIds[type.Color.Id][type.Size] += type.Quantity;
+            }
+        
+            ViewBag.SizesAndCounts = SizesAndCounts;
+            ViewBag.ColorsAndCounts = ColorsAndCounts;
+            ViewBag.SizesCountByColorIds = SizesCountByColorIds;
 
             return View(product);
         }

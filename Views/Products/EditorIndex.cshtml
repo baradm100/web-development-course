@@ -6,30 +6,46 @@
 }
 
 
-<nav class="navbar navbar-light">
-        <h2>Product Managment Page</h2>
-        <form class="container-fluid justify-content-start">
-            <button type="button" id="AddNewProductBtn" class="btn btn-outline-success me-2" style="border-radius: 18px;">
-
-                Add new Product
-            </button>
-            <button type="button" id="AddNewCategoryBtn" class="btn btn-outline-secondary" style="border-radius: 18px;">
-
-                Add new Category
-            </button>
-            <div class="form-group">
-                <select id="categoriesDropDownList" class="form-select" style="margin: 5px; border-radius: 18px;" aria-label="Default select example">
+<div class="card" style="margin-top: 1rem; margin-bottom: 1rem">
+    <div class="card-body">
+        <div class="text-center">
+            <h5 class="card-title">Product Managment Page</h5>
+        </div>
+        <div class="container d-sm-flex">
+            <div class="dropdown d-flex me-2">
+                <button class="btn btn-success dropdown-toggle" style="border-radius: 18px;" type="button" id="dropdownMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                    Add Options
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu">
+                    <li>
+                        <a class="dropdown-item" href="#" style="border-radius: 18px;" id="AddNewProductBtn">
+                            Add new Product
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#" style="border-radius: 18px;" id="AddNewCategoryBtn">
+                            Add new Category
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="dropdown d-flex me-2">
+                <select class="btn btn-outline-secondary dropdown-toggle" id="categoriesDropDownList" style="border-radius: 18px;" aria-label="Default select example">
                     <option selected multiple>Category Select</option>
                 </select>
             </div>
-        </form>
-</nav>
-    
-    
-  
+            <form class="d-flex me-2 ms-auto">
+                <input class="form-control ProductSearch" type="search" placeholder="Search Product" aria-label="Search">
+                <button class="btn btn-outline-secondary ProductSearchBtn" type="submit"><i class="bi bi-search"></i></button>
+            </form>
+        </div>
+    </div>
+    <div class="card-footer text-muted">
+    </div>
+</div>
 
-    <partial name="_ProductsEditPartial" model="Model" view-data="ViewData" />
-    
+<partial name="_ProductsEditPartial" model="Model" view-data="ViewData" />
+
 <div class="modal" id="addGoodsModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -55,25 +71,28 @@
                         <span class="visually-hidden">Loading...</span>
                     </div>
                 </div>
-                <div class="form-group" id="addGoodsForm">
-                    <div class="form-group">
+                <div class="row g-3 goods" id="addGoodsForm">
+                    <div class="col-sm-3">
                         <label class="control-label">Product Size </label>
                         <select id="Size" name="Size" asp-items="Html.GetEnumSelectList<ProductSize>()" class="form-control"></select>
                     </div>
-                    <div class="form-group">
-                        <label class="control-label">Product Amount</label>
-                        <input id="Quantity" value="0" class="form-control" />
+                    <div class="col-sm-3">
+                        <label class="control-label">Amount</label>
+                        <input id="Quantity" value="0" class="form-control" min="0" />
                     </div>
-                    <div class="form-group">
+                    <div class="col-sm-5">
                         <label class="control-label">Color</label>
-                        <div id="Color" class="d-flex form-control justify-content-between"></div>
+                        <div class="d-flex form-control  justify-content-between" id="Color">
+                        </div>
                     </div>
+                </div>
+                <div id="AnotherGood" style="margin-top: 1rem">
+                    <button type="button" id="addAnotherGood" class="btn btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Add another good"><i class="bi bi-plus-square"></i></button>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" id="closeBtn" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" id="addGoodsModalBtn" class="btn btn-success">Add goods</button>
-                <button type="button" id="deleteGoodsModalBtn" class="btn btn-danger d-none">delete this product type</button>
             </div>
         </div>
     </div>
@@ -191,20 +210,20 @@
                                         Edit Images
                                     </button>
                                 </h2>
-                                    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingOne">
-                                        <div class="accordion-body">
-                                            <div class="form-group">
-                                                <div class="EditUploadNewImages">
-                                                    <h4>Add New Images</h4>
-                                                    <input class="form-control" type="file" id="EditImageUpload" accept="image/*" multiple />
-                                                    <br />
-                                                </div>
-                                                <h4>Editing Exist Images</h4>
-                                                <span id="imagesProduct" style="margin: 5px;">
-                                                </span>
+                                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingOne">
+                                    <div class="accordion-body">
+                                        <div class="form-group">
+                                            <div class="EditUploadNewImages">
+                                                <h4>Add New Images</h4>
+                                                <input class="form-control" type="file" id="EditImageUpload" accept="image/*" multiple />
+                                                <br />
                                             </div>
+                                            <h4>Editing Exist Images</h4>
+                                            <span id="imagesProduct" style="margin: 5px;">
+                                            </span>
                                         </div>
                                     </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -212,7 +231,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" id="closeEditProductBtn" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" id="editProductModalBtn" class="btn btn-success">Edit Product</button>
+                <button type="button" id="editProductModalBtn" class="btn btn-success">Save</button>
             </div>
         </div>
     </div>
@@ -263,4 +282,5 @@
     <script src="~/js/product/ProductTypeHandeling.js"></script>
     <script src="~/js/product/ProductHandeling.js"></script>
     <script src="~/js/product/CategoriesHandeling.js"></script>
+    <link rel="stylesheet" href="~/css/product/productPage.css" />
 }

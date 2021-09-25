@@ -10,9 +10,10 @@ namespace web_development_course.Models.ProductModels
         public int Id { get; set; }
 
         public int ProductId { get; set; }
-        public int CategoryId { get; set; }
+        public Product Product { get; set; }
 
-        public IEnumerable<Product> Products { get; set; } = new List<Product>();
-        public IEnumerable<Category> Categories { get; set; } = new List<Category>();
+
+        public int CategoryId { get; set; }
+        public Category Category { get; set; }
     }
 }

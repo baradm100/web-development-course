@@ -1,9 +1,12 @@
 .category .item {
   border-radius: 5px;
-  max-width: 20rem;
-  min-width: 15rem;
+  /* max-width: 20rem; */
+  /* min-width: 15rem; */
   display: inline-block;
   margin: 5px;
+
+  width: 20rem;
+  width: 15rem;
 }
 
 .category .item img {
@@ -18,4 +21,24 @@
 
 .category .item .viewButton {
   width: 100%;
+}
+
+.category .item .colorContainer .color .emptyStock {
+  font-size: 1.5em;
+  position: absolute;
+  top: -0.46em;
+  left: 0.02em;
+}
+
+.editFloatingBtn {
+  position: fixed;
+  bottom: 1em;
+  right: 1em;
+  z-index: 999;
+}
+
+.editFloatingBtn .icon {
+  width: 3rem;
+  line-height: 3rem;
+  display: inline-block;
 }

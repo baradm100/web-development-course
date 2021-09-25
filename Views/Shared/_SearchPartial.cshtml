@@ -1,0 +1,37 @@
+@{
+
+}
+
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="advancedSearchCanvas" aria-labelledby="offcanvasRightLabel">
+    <div class="offcanvas-header">
+        <h5 id="offcanvasRightLabel">Advanced Search</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="card d-flex mb-2">
+            <div class="card-body ">
+                <label for="productNameAdvancedSearch" class="form-label">Product Name</label>
+                <input class="form-control" id="productNameAdvancedSearch" type="search" placeholder="Search Product" aria-label="Search">
+            </div>
+        </div>
+        <div class="card d-flex">
+            <div class="card-body">
+                <label for="priceRangeAdvancedSearch" class="form-label">Maximum Price: <span id="dynamicPrice">100</span></label>
+                <input type="range" min="0" max="10000" step="1" class="form-range" id="priceRangeAdvancedSearch">
+            </div>
+        </div>
+        <div class="card d-flex mt-2">
+            <div class="card-body">
+                <select id="categoriesDropDownAdvancedSearch" size="5" class="form-select" aria-label="Default select example">
+                    <option selected multiple>Category Select</option>
+                </select>
+            </div>
+        </div>
+        <div class="d-grid mt-2">
+            <button class="flex-fill btn btn-outline-secondary" id="searchBtnAdvancedSearch" type="submit"><i class="bi bi-search"></i></button>
+        </div>
+    </div>
+</div>
+
+

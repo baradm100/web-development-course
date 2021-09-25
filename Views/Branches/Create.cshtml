@@ -1,0 +1,16 @@
+﻿@model web_development_course.Models.Branch
+
+@{
+    ViewData["Title"] = "Create";
+    ViewData["isEdit"] = false;
+}
+
+<partial name="_EditCreateBranchPartial" model="Model" view-data="ViewData"/>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script src="~/js/branch.js"></script>
+
+}

@@ -9,6 +9,11 @@ namespace web_development_course.Models
     public class Branch
     {
         public int Id { get; set; }
+            
+        [Required]
+        [MaxLength(100)]
+        [MinLength(2)]
+        public string Name { get; set; } = "Default Name";
 
         public int AddressId { get; set; }
 
@@ -16,6 +21,7 @@ namespace web_development_course.Models
         public Address Address { get; set; }
 
         [Required]
-        public OpeningHour[] OpeningHours { get; set; }
+        public IEnumerable<OpeningHour> OpeningHours { get; set; }
+
     }
 }

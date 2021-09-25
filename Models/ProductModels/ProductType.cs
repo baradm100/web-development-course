@@ -31,9 +31,12 @@ namespace web_development_course.Models
         public Product Product { get; set; }
 
         [Required]
+        public int ProductId { get; set; }
+
+        [Required]
         public ProductSize Size { get; set; }
 
-        [Range(0,Consts.MaxProductsQuantity,ErrorMessage = Consts.ProductTypeQuantityErrorMessage)]
+        [Range(0, Consts.MaxProductsQuantity, ErrorMessage = Consts.ProductTypeQuantityErrorMessage)]
         public int Quantity { get; set; } = 0;
 
         [Required]

@@ -2,17 +2,36 @@
 
 }
 
-<div class="input-group">
-    <input type="text" class="form-control" aria-label="Text input with segmented dropdown button">
-    <button type="button" class="btn btn-outline-secondary">Action</button>
-    <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-        <span class="visually-hidden">Toggle Dropdown</span>
-    </button>
-    <ul class="dropdown-menu dropdown-menu-end">
-        <li><a class="dropdown-item" href="#">Action</a></li>
-        <li><a class="dropdown-item" href="#">Another action</a></li>
-        <li><a class="dropdown-item" href="#">Something else here</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="#">Separated link</a></li>
-    </ul>
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="advancedSearchCanvas" aria-labelledby="offcanvasRightLabel">
+    <div class="offcanvas-header">
+        <h5 id="offcanvasRightLabel">Advanced Search</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="card d-flex mb-2">
+            <div class="card-body ">
+                <label for="productNameAdvancedSearch" class="form-label">Product Name</label>
+                <input class="form-control" id="productNameAdvancedSearch" type="search" placeholder="Search Product" aria-label="Search">
+            </div>
+        </div>
+        <div class="card d-flex">
+            <div class="card-body">
+                <label for="priceRangeAdvancedSearch" class="form-label">Maximum Price: <span id="dynamicPrice">100</span></label>
+                <input type="range" min="0" max="10000" step="1" class="form-range" id="priceRangeAdvancedSearch">
+            </div>
+        </div>
+        <div class="card d-flex mt-2">
+            <div class="card-body">
+                <select id="categoriesDropDownAdvancedSearch" size="5" class="form-select" aria-label="Default select example">
+                    <option selected multiple>Category Select</option>
+                </select>
+            </div>
+        </div>
+        <div class="d-grid mt-2">
+            <button class="flex-fill btn btn-outline-secondary" id="searchBtnAdvancedSearch" type="submit"><i class="bi bi-search"></i></button>
+        </div>
+    </div>
 </div>
+
+

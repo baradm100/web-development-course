@@ -56,6 +56,51 @@ namespace web_development_course.Controllers
             return View(ProductsToShow);
         }
 
+        public async Task<IActionResult> AdvancedSearch(string? productName, float? maximumPrice, int? categoryId)
+        {
+
+            ViewBag.Colors = await _context.ProductColor.ToListAsync();
+            ViewBag.shouldShowEdit = User.IsInRole("Admin") || User.IsInRole("Editor");
+
+            Category[] RelevantCategories;
+            if (categoryId == null)
+            {
+                RelevantCategories = await _context.Category.ToArrayAsync();
+            }
+            else
+            {
+                RelevantCategories = await _context.Category.Where(c => c.Id == categoryId || c.ParentCategoryId == categoryId).ToArrayAsync();
+            }
+            float maximumPriceValue;
+            if (maximumPrice == null)
+            {
+                maximumPriceValue = await _context.Product.MaxAsync(p => p.Price);
+            } else
+            {
+                maximumPriceValue = (float)maximumPrice;
+            }
+            string productNameValue;
+            if (productName == null)
+            {
+                productNameValue = "";
+            } else
+            {
+                productNameValue = productName.ToLower();
+            }
+
+            HashSet<int> RelevantCategoryIds = RelevantCategories.Select(c => c.Id).ToHashSet();
+
+            var ProductsQuery = _context.Product
+                    .Include(product => product.ProductImages)
+                    .Include(product => product.ProductTypes)
+                    .ThenInclude(pt => pt.Color)
+                    .Include(product => product.ProductCategories)
+                    .Where(p => p.ProductCategories.Any(pc => RelevantCategoryIds.Contains(pc.CategoryId)) && 
+                    p.Name.ToLower().Contains(productNameValue) && p.Price <= maximumPriceValue);
+            List<Product> ProductsToShow = await ProductsQuery.ToListAsync();
+            return View("index",ProductsToShow);
+        }
+
         [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> EditorIndex(int? categoryId)
         {
@@ -70,6 +115,7 @@ namespace web_development_course.Controllers
                                    join p in _context.Product.Include(a => a.ProductImages).Include(a => a.ProductTypes)
                                    on q.ProductId equals p.Id
                                    where q.ProductId == p.Id
+                                   orderby p.Id descending
                                    select p;
                     ViewBag.Colors = await _context.ProductColor.ToListAsync();
                     return View(await products.ToListAsync());
@@ -77,7 +123,7 @@ namespace web_development_course.Controllers
             }
             ViewBag.Colors = await _context.ProductColor.ToListAsync();
             return View(await _context.Product.Include(product => product.ProductImages)
-                    .Include(product => product.ProductTypes).Include(product => product.ProductCategories).ToListAsync());
+                    .Include(product => product.ProductTypes).Include(product => product.ProductCategories).OrderByDescending(p => p.Id).ToListAsync());
 
         }
 
@@ -98,6 +144,16 @@ namespace web_development_course.Controllers
             }
             return NotFound();
 
+        }
+
+        // GET: Products/json
+        [Route("products/MaxPrice/json")]
+        public async Task<IActionResult> getMaxPriceJson()
+        {
+            var maxPrice = await _context.Product.MaxAsync(p => p.Price);
+            if (maxPrice != 0)
+                return Json(new { success = true, max = maxPrice });
+            return Json(new { success = false });
         }
 
         [Authorize(Roles = "Admin,Editor")]

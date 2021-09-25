@@ -21,8 +21,15 @@ namespace web_development_course.Controllers
         }
 
         // GET: Branches
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? name)
         {
+            if (name != null)
+            {
+                var SearchedBranches = _context.Branch.Include(b => b.Address).Include(d => d.OpeningHours)
+                    .Where(p => p.Name.ToLower().Contains(name.ToLower()) ||
+                    p.Address.City.Contains(name.ToLower()) || p.Address.Street.ToLower().Contains(name.ToLower()));
+                return View("Index", await SearchedBranches.ToListAsync());
+            }
             var applicationDbContext = _context.Branch.Include(b => b.Address).Include(d=>d.OpeningHours);
             return View("Index", await applicationDbContext.ToListAsync());
         }
@@ -50,6 +57,9 @@ namespace web_development_course.Controllers
         [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> Create([Bind("Id,City,Street,BuildingNumber,Longitude,Latitude")] Address address, [Bind("Id,Name")] string name, List<OpeningHour> openingHours)
         {
+            var ExistBranch = await _context.Branch.FirstOrDefaultAsync(p => p.Address == address || p.Name == name.ToLower());
+            if (ExistBranch != null)
+                return Json(new { success = false, error = "this branch already exist" });
             if (ModelState.IsValid)
             {
                 _context.Add(address);

@@ -166,7 +166,7 @@ namespace web_development_course.Controllers
                 if (product != null)
                 {
                     var q = _context.Product.Include(product => product.ProductTypes)
-                        .Include(product => product.ProductCategories)
+                        .Include(product => product.ProductCategories).Include(product => product.ProductImages)
                         .Where(q => q.Name.ToLower().Contains(product.ToLower()));
                     return View("EditorIndex",await q.ToListAsync());
                 }

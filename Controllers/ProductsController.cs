@@ -72,21 +72,21 @@ namespace web_development_course.Controllers
             {
                 RelevantCategories = await _context.Category.Where(c => c.Id == categoryId || c.ParentCategoryId == categoryId).ToArrayAsync();
             }
-            float MaximumPrice;
+            float maximumPriceValue;
             if (maximumPrice == null)
             {
-                MaximumPrice = await _context.Product.MaxAsync(p => p.Price);
+                maximumPriceValue = await _context.Product.MaxAsync(p => p.Price);
             } else
             {
-                MaximumPrice = (float)maximumPrice;
+                maximumPriceValue = (float)maximumPrice;
             }
-            string ProductName;
+            string productNameValue;
             if (productName == null)
             {
-                ProductName = "";
+                productNameValue = "";
             } else
             {
-                ProductName = productName.ToLower();
+                productNameValue = productName.ToLower();
             }
 
             HashSet<int> RelevantCategoryIds = RelevantCategories.Select(c => c.Id).ToHashSet();
@@ -97,7 +97,7 @@ namespace web_development_course.Controllers
                     .ThenInclude(pt => pt.Color)
                     .Include(product => product.ProductCategories)
                     .Where(p => p.ProductCategories.Any(pc => RelevantCategoryIds.Contains(pc.CategoryId)) && 
-                    p.Name.ToLower().Contains(ProductName) && p.Price <= MaximumPrice);
+                    p.Name.ToLower().Contains(productNameValue) && p.Price <= maximumPriceValue);
             List<Product> ProductsToShow = await ProductsQuery.ToListAsync();
             return View("index",ProductsToShow);
         }

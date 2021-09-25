@@ -41,16 +41,16 @@ namespace web_development_course.Controllers
             ViewData["GBP"] = converter.Gbp;
             ViewData["EUR"] = converter.Eur;
 
-            var dbUser = isValidUserAsync();
+            int dbUser = await isValidUserAsync();
 
-            if (dbUser.Result > 0)
+            if (dbUser > 0)
             {
                 var model = await (_context.OrderItem.Include(o => o.Order).
                             Include(o => o.ProductType).
                             Include(o => o.ProductType.Product).
                             Include(o => o.ProductType.Product.ProductImages).
                             Include(o => o.ProductType.Color).
-                            Where(o => (o.Order.UserId == dbUser.Result && o.Order.IsCart))).ToListAsync();
+                            Where(o => (o.Order.UserId == dbUser && o.Order.IsCart))).ToListAsync();
 
                 return View(model);
             }
@@ -62,56 +62,52 @@ namespace web_development_course.Controllers
         // GET: Orders/GetItemFinalPrice
         public async Task<IActionResult> GetItemFinalPrice(int orderId)
         {
-            var dbUser = isValidUserAsync();
+            int dbUser = await isValidUserAsync();
 
-            if (dbUser.Result > 0)
+            if (dbUser > 0)
             {
                 var order = await (_context.OrderItem.Include(o=>o.Order).
                                     Include(o=>o.ProductType).
                                     Include(o=>o.ProductType.Product).
-                                    Where(o=>o.Id == orderId && o.Order.IsCart).ToListAsync());
+                                    Where(o=>o.Id == orderId && o.Order.IsCart && o.Order.UserId == dbUser).FirstAsync());
+           
+                var amount =  order.Amount;
+                var price = order.ProductType.Product.Price;
+                var discount = order.ProductType.Product.DiscountPercentage;
+                discount = discount > 0 ? ((100 - discount) / 100) : 1;
+                var totalPrice = price * discount * amount;
 
-                // Makes sure the login user ask for the data
-                if(order != null && order[0].Order.UserId == dbUser.Result)
-                {
-                    var amount =  order[0].Amount;
-                    var price = order[0].ProductType.Product.Price;
-                    var discount = order[0].ProductType.Product.DiscountPercentage;
-                    discount = discount > 0 ? ((100 - discount) / 100) : 1;
-                    var totalPrice = price * discount * amount;
+                order.TotalPrice = (double) totalPrice;
+                _context.OrderItem.Update(order);
+                await _context.SaveChangesAsync();
 
-                    order[0].TotalPrice = (double) totalPrice;
-                    _context.OrderItem.Update(order[0]);
-                    await _context.SaveChangesAsync();
-
-                    return Json(new { success = true, data = new { totalPrice = totalPrice, currecnyIndex = 0 }});
-                }
+                return Json(new { success = true, data = new { totalPrice = totalPrice, currecnyIndex = 0 }});
             }
 
             return Json(new { success = false });
         }
 
+        /// <summary>
+        /// This Method return the orderItemId product data
+        /// It use for get the data after user edit it
+        /// </summary>
         public async Task<IActionResult> GetOrderItemData(int orderItemId)
         {
-            var dbUser = isValidUserAsync();
+            var dbUser = await isValidUserAsync();
 
-            if (dbUser.Result > 0)
+            if (dbUser > 0)
             {
                 var order = await (_context.OrderItem.Include(o => o.Order).
                                     Include(o => o.ProductType).
                                     Include(o => o.ProductType.Product).
                                     Include(o => o.ProductType.Color).
-                                    Where(o => o.Id == orderItemId && o.Order.IsCart).ToListAsync());
+                                    Where(o => o.Id == orderItemId && o.Order.IsCart && o.Order.UserId == dbUser).FirstAsync());
 
-                // Makes sure the login user ask for the data
-                if (order != null && order[0].Order.UserId == dbUser.Result)
-                {
-                    var color = order[0].ProductType.Color.Color;
-                    var amount = order[0].Amount;
-                    var size = order[0].ProductType.Size;
+                var color = order.ProductType.Color.Color;
+                var amount = order.Amount;
+                var size = order.ProductType.Size;
 
-                    return Json(new { success = true, data = new { color = color, amount = amount, size = size } });
-                }
+                return Json(new { success = true, data = new { color = color, amount = amount, size = size } });
             }
 
             return Json(new { success = false });
@@ -121,14 +117,14 @@ namespace web_development_course.Controllers
         // GET: Orders/GetSummary
         public async Task<IActionResult> GetSummary()
         {
-            var dbUser = isValidUserAsync();
+            int dbUser = await isValidUserAsync();
 
-            if (dbUser.Result > 0)
+            if (dbUser > 0)
             {
                 var orders = await (_context.OrderItem.Include(o => o.Order).
                             Include(o => o.ProductType).
                             Include(o => o.ProductType.Product).
-                            Where(o => (o.Order.UserId == dbUser.Result && o.Order.IsCart))).ToListAsync();
+                            Where(o => (o.Order.UserId == dbUser && o.Order.IsCart))).ToListAsync();
 
                 double midPrice = 0;
                 double totalDiscount = 0;
@@ -185,7 +181,7 @@ namespace web_development_course.Controllers
 
         //Post: Orders/UpdateAmount
         [HttpPost]
-            public async Task<IActionResult> UpdateAmount(int id, int amount)
+        public async Task<IActionResult> UpdateAmount(int id, int amount)
         {
             var order = await _context.OrderItem.FindAsync(id);
 

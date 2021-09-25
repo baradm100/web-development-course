@@ -1,9 +1,18 @@
+﻿@using Microsoft.AspNetCore.Http;
 @{
-    var user = Context.User.Identity.Name;
-    var authanticated = Context.User.Identity.IsAuthenticated;
-    var userAuthLevel = Context.User.Identity.AuthenticationType;
+    Dictionary<int, string> currencies = new Dictionary<int, string>();
+    currencies.Add(1, "$");
+    currencies.Add(2, "₪");
+    currencies.Add(3, "€");
+    currencies.Add(4, "£");
     var Products = (IEnumerable<web_development_course.Models.Product>)ViewData["Products"];
     var ProductColors = (IEnumerable<web_development_course.Models.ProductModels.ProductColor>)ViewData["Colors"];
+    float currency = 1;
+    var currencySign = "$";
+    if (Context.Request.Cookies["currency"] != null)
+        currency = float.Parse(Context.Request.Cookies["currency"]);
+    if (Context.Request.Cookies["currencySign"] != null)
+        currencySign = currencies[int.Parse(Context.Request.Cookies["CurrencySign"])];
 }
 
 <div class="container">
@@ -50,17 +59,18 @@
                             </div>
 
                         }
-                        <div class="card-body">
-                            <p class="card-text category" category="@product.Name">
+                    <div class="card-body">
+                        <p class="card-text category" category="@product.Name">
 
-                            </p>
-                            <h5 class="card-title">@product.Name</h5>
-                            <p class="card-text"><strong>Discount: </strong> @product.DiscountPercentage%</p>
-                            <p class="card-text"><strong>Price (after discount): </strong> @{ var priceAfterDiscount = product.Price * ((100 - @product.DiscountPercentage) / 100); } @priceAfterDiscount</p>
-                        </div>
+                        </p>
+                        <h5 class="card-title">@product.Name</h5>
+                        <p class="card-text"><strong>Discount: </strong> @product.DiscountPercentage%</p>
+                        @{var priceAfterDiscount = currency * product.Price * ((100 - @product.DiscountPercentage) / 100); }
+                    <p class="card-text"><strong>Price (after discount): </strong> @String.Format("{0:0.00}", priceAfterDiscount) @currencySign </p>
+                    </div>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">
-                                <strong>Colors: </strong>  
+                                <strong>Colors: </strong>
                                 @if (product.ProductTypes != null)
                                 {
                                     HashSet<string> colors = new HashSet<string>();
@@ -105,15 +115,21 @@
                                     Edit options
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                    <li><a class="dropdown-item btnAddGoods" href="#" style="border-radius: 18px;" id="@product.Name">
-                                        Add goods
-                                    </a></li>
-                                    <li><a class="dropdown-item btnEditProduct" href="#" id=@product.Id style="border-radius: 18px;">
+                                    <li>
+                                        <a class="dropdown-item btnAddGoods" href="#" style="border-radius: 18px;" id="@product.Name">
+                                            Add goods
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item btnEditProduct" href="#" id=@product.Id style="border-radius: 18px;">
                                             Edit product
-                                    </a></li>
-                                    <li><a class="dropdown-item btnDeleteProduct" href="#" id=@product.Id style="border-radius: 18px;">
-                                        Delete product
-                                    </a></li>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item btnDeleteProduct" href="#" id=@product.Id style="border-radius: 18px;">
+                                            Delete product
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>

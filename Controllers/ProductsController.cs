@@ -87,12 +87,12 @@ namespace web_development_course.Controllers
         {
 
             ProductColor productColor = await _context.ProductColor.FirstOrDefaultAsync(c => color.Contains(c.Color));
-            if(productColor != null)
+            if (productColor != null)
             {
                 var productType = from product in _context.Product
-                               join type in _context.ProductType on product.Id equals type.Product.Id
-                               where type.ColorId == productColor.Id && product.Name.ToLower() == name.ToLower()
-                               select type;
+                                  join type in _context.ProductType on product.Id equals type.Product.Id
+                                  where type.ColorId == productColor.Id && product.Name.ToLower() == name.ToLower()
+                                  select type;
                 var productTypes = await productType.ToListAsync();
                 return Json(new { success = true, types = productTypes });
             }
@@ -143,6 +143,7 @@ namespace web_development_course.Controllers
 
             Dictionary<ProductSize, int> SizesAndCounts = new Dictionary<ProductSize, int>();
             Dictionary<ProductColor, int> ColorsAndCounts = new Dictionary<ProductColor, int>();
+            Dictionary<int, Dictionary<ProductSize, int>> SizesCountByColorIds = new Dictionary<int, Dictionary<ProductSize, int>>();
 
             foreach (ProductSize size in Enum.GetValues(typeof(ProductSize)))
             {
@@ -156,12 +157,23 @@ namespace web_development_course.Controllers
                     ColorsAndCounts[type.Color] = 0;
                 }
 
+                if (!SizesCountByColorIds.ContainsKey(type.Color.Id))
+                {
+                    SizesCountByColorIds[type.Color.Id] = new Dictionary<ProductSize, int>();
+                    foreach (ProductSize size in Enum.GetValues(typeof(ProductSize)))
+                    {
+                        SizesCountByColorIds[type.Color.Id][size] = 0;
+                    }
+                }
+
                 SizesAndCounts[type.Size] += type.Quantity;
                 ColorsAndCounts[type.Color] += type.Quantity;
+                SizesCountByColorIds[type.Color.Id][type.Size] += type.Quantity;
             }
-
+        
             ViewBag.SizesAndCounts = SizesAndCounts;
             ViewBag.ColorsAndCounts = ColorsAndCounts;
+            ViewBag.SizesCountByColorIds = SizesCountByColorIds;
 
             return View(product);
         }
@@ -228,14 +240,15 @@ namespace web_development_course.Controllers
                         _context.ProductCategory.Add(bind);
                     }
                 }
-                
+
                 await _context.SaveChangesAsync();
                 float priceAfterDiscount = product.Price * ((100 - product.DiscountPercentage) / 100);
                 try
                 {
                     await twitterApi.PostTweetAsync("ClothIt has a new Product: '" + product.Name + "' just in " + priceAfterDiscount + " come and check it!");
-                } catch
-                {}
+                }
+                catch
+                { }
                 return Json(new { success = true, productId = product.Id });
             }
             catch

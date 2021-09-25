@@ -5,8 +5,13 @@
     ViewData["Title"] = Model.Name;
     Dictionary<ProductSize, int> SizesAndCounts = (Dictionary<ProductSize, int>)ViewData["SizesAndCounts"];
     Dictionary<ProductColor, int> ColorsAndCounts = (Dictionary<ProductColor, int>)ViewData["ColorsAndCounts"];
+    Dictionary<int, Dictionary<ProductSize, int>> SizesCountByColorIds = (Dictionary<int, Dictionary<ProductSize,
+    int>>)ViewData["SizesCountByColorIds"];
 }
 
+<script type="text/javascript">
+    var SizesCountByColorIds = @Json.Serialize(SizesCountByColorIds);
+</script>
 
 <div class="container-fluid productPage">
     <div class="row">
@@ -52,52 +57,57 @@
         <div class="col-6 col-12 col-lg-8">
             <h1>@Model.Name</h1>
             <h3>@Model.Price$</h3>
-            <h5>
-                Color:
-                <div class="btn-group" role="group" aria-label="color selection">
-                    @foreach (var item in ColorsAndCounts)
-                    {
-                        bool noStock = item.Value <= 0;
-
-                        <input type="radio" class="btn-check" name="colorSelection" id="color-button-@item.Key.Id"
-                        autocomplete="off" @(noStock ? "disabled" : "" )>
-                        <label class="btn btn-outline-secondary colorLabel" for="color-button-@item.Key.Id">
-                            <span class="p-2 border border-dark rounded-circle color"
-                            style="background-color: #@item.Key.Color;"></span>
-                        </label>
-                    }
+            <form id="productForm">
+                <div class="attribute">
+                    <label class="form-check-label h5 margin-bottom-0 quantityLabel" for="colorSelection">Color:</label>
+                    <div class="btn-group" role="group" aria-label="color selection">
+                        @foreach (var item in ColorsAndCounts)
+                        {
+                            bool noStock = item.Value <= 0;
+                            <input type="radio" class="btn-check" name="colorSelection" id="color-button-@item.Key.Id"
+                            value="@item.Key.Id" autocomplete="off" @(noStock ? "disabled" : "" )>
+                            <label class="btn btn-outline-secondary colorLabel" for="color-button-@item.Key.Id">
+                                <span class="p-2 border border-dark rounded-circle color"
+                                style="background-color: #@item.Key.Color;"></span>
+                            </label>
+                        }
+                    </div>
                 </div>
+                <div class="attribute">
+                    <label class="form-check-label h5 margin-bottom-0 quantityLabel" for="Size">Size:</label>
+                    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                        @foreach (var item in SizesAndCounts)
+                        {
+                            bool noStock = item.Value <= 0;
+                            String ExtraClass = noStock ? "line-through" : "";
 
-            </h5>
-            <div style="margin-bottom: .5rem;">
-                <label class="form-check-label h5 margin-bottom-0 quantityLabel" for="Size">Size:</label>
-                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                    @foreach (var item in SizesAndCounts)
-                    {
-                        bool noStock = item.Value <= 0;
-                        String ExtraClass = noStock ? "line-through" : "";
-
-                        <input type="radio" class="btn-check" name="Size" id="size-@item.Key" autocomplete="off" @(noStock ?
-                        "disabled" : "" )>
-                        <label class="btn btn-outline-secondary @ExtraClass"
-                        for="size-@item.Key">@item.Key.ToString().ToUpper()</label>
-                    }
+                            <input type="radio" class="btn-check" name="Size" id="size-@item.Key" autocomplete="off"
+                            value="@item.Key" disabled>
+                            <label class="btn btn-outline-secondary @ExtraClass" for="size-@item.Key">
+                                @item.Key.ToString().ToUpper()
+                            </label>
+                        }
+                    </div>
                 </div>
-            </div>
-            <div style="display: flex; margin-bottom: .5rem;">
-                <label class="form-check-label h5 margin-bottom-0 quantityLabel" for="Quantity">Quantity:</label>
+                <div class="attribute" style="display: flex;">
+                    <label class="form-check-label h5 margin-bottom-0 quantityLabel" for="Quantity">Quantity:</label>
 
-                <select class="form-select" aria-label="Quantity" name="Quantity" disabled>
-                    <option selected value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                </select>
-            </div>
-
-            <button type="button" class="btn btn-primary" disabled>
-                <i class="bi bi-cart-plus"></i>
-                Add to cart
-            </button>
+                    <select class="form-select" aria-label="Quantity" name="Quantity" id="Quantity" disabled>
+                        <option selected value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" id="addToCart" disabled>
+                    <i class="bi bi-cart-plus"></i>
+                    Add to cart
+                </button>
+            </form>
         </div>
     </div>
 </div>
+
+
+@section Scripts {
+<script src="~/js/product/ProductPage.js"></script>
+}

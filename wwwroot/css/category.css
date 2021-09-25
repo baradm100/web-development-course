@@ -54,3 +54,7 @@
 .productPage .quantityLabel {
   line-height: 1.8;
 }
+
+.productPage .attribute {
+  margin-bottom: 0.5rem;
+}

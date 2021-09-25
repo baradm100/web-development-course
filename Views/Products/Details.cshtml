@@ -11,6 +11,7 @@
 
 <script type="text/javascript">
     var SizesCountByColorIds = @Json.Serialize(SizesCountByColorIds);
+    var ProductId = @Json.Serialize(Model.Id);
 </script>
 
 <div class="container-fluid productPage">
@@ -55,9 +56,16 @@
             </button>
         </div>
         <div class="col-6 col-12 col-lg-8">
+            <div class="alert alert-success d-none" role="alert" id="successNotification">
+                Item was added to the cart!
+            </div>
+
+            <div class="alert alert-danger d-none" role="alert" id="failNotification">
+                Unknown error, please try again
+            </div>
             <h1>@Model.Name</h1>
             <h3>@Model.Price$</h3>
-            <form id="productForm">
+            <form id="productForm" asp-action="AddToCart" asp-controller="Orders">
                 <div class="attribute">
                     <label class="form-check-label h5 margin-bottom-0 quantityLabel" for="colorSelection">Color:</label>
                     <div class="btn-group" role="group" aria-label="color selection">
@@ -97,6 +105,9 @@
                         <option value="2">2</option>
                         <option value="3">3</option>
                     </select>
+                </div>
+                <div class="spinner-border d-none" role="status" id="loadingSpinner">
+                    <span class="visually-hidden">Loading...</span>
                 </div>
                 <button type="submit" class="btn btn-primary" id="addToCart" disabled>
                     <i class="bi bi-cart-plus"></i>

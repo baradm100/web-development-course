@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using web_development_course.Common;
 using web_development_course.Data;
 using web_development_course.Models;
 using web_development_course.Models.OrderModels;
@@ -66,22 +67,22 @@ namespace web_development_course.Controllers
 
             if (dbUser > 0)
             {
-                var order = await (_context.OrderItem.Include(o=>o.Order).
-                                    Include(o=>o.ProductType).
-                                    Include(o=>o.ProductType.Product).
-                                    Where(o=>o.Id == orderId && o.Order.IsCart && o.Order.UserId == dbUser).FirstAsync());
-           
-                var amount =  order.Amount;
+                var order = await (_context.OrderItem.Include(o => o.Order).
+                                    Include(o => o.ProductType).
+                                    Include(o => o.ProductType.Product).
+                                    Where(o => o.Id == orderId && o.Order.IsCart && o.Order.UserId == dbUser).FirstAsync());
+
+                var amount = order.Amount;
                 var price = order.ProductType.Product.Price;
                 var discount = order.ProductType.Product.DiscountPercentage;
                 discount = discount > 0 ? ((100 - discount) / 100) : 1;
                 var totalPrice = price * discount * amount;
 
-                order.TotalPrice = (double) totalPrice;
+                order.TotalPrice = (double)totalPrice;
                 _context.OrderItem.Update(order);
                 await _context.SaveChangesAsync();
 
-                return Json(new { success = true, data = new { totalPrice = totalPrice, currecnyIndex = 0 }});
+                return Json(new { success = true, data = new { totalPrice = totalPrice, currecnyIndex = 0 } });
             }
 
             return Json(new { success = false });
@@ -130,7 +131,8 @@ namespace web_development_course.Controllers
                 double totalDiscount = 0;
                 double totalPrice = 0;
 
-                foreach (var data in orders) {
+                foreach (var data in orders)
+                {
                     var price = data.Amount * data.ProductType.Product.Price;
                     var discountNum = (data.ProductType.Product.DiscountPercentage / 100);
 
@@ -138,16 +140,23 @@ namespace web_development_course.Controllers
                     var discountAmount = price * discountNum;
 
                     // add logic in case we in a diffrent currency
-                    totalPrice += (price - discountAmount); 
+                    totalPrice += (price - discountAmount);
                     midPrice += price;
                     totalDiscount += discountAmount;
                 }
 
-                return Json(new { success = true, data = new { totalPrice = totalPrice,
-                                                               midPrice = midPrice,
-                                                               saving = totalDiscount,
-                                                               //later change this!
-                                                               currencyIndex = 0 } });
+                return Json(new
+                {
+                    success = true,
+                    data = new
+                    {
+                        totalPrice = totalPrice,
+                        midPrice = midPrice,
+                        saving = totalDiscount,
+                        //later change this!
+                        currencyIndex = 0
+                    }
+                });
             }
 
             return Json(new { success = false });
@@ -185,7 +194,7 @@ namespace web_development_course.Controllers
         {
             var order = await _context.OrderItem.FindAsync(id);
 
-            if(order != null)
+            if (order != null)
             {
                 order.Amount = (int)amount;
                 _context.OrderItem.Update(order);
@@ -194,9 +203,9 @@ namespace web_development_course.Controllers
                 return Json(new { success = true });
             }
 
-            return Json(new { success = false, textStatus = "didnt find order" }) ;
+            return Json(new { success = false, textStatus = "didnt find order" });
         }
-  
+
         // POST: Orders/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -229,6 +238,78 @@ namespace web_development_course.Controllers
                 return NotFound();
             }
             return View(order);
+        }
+
+        // POST: Orders/AddToCart
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> AddToCart(int productId, int colorId, ProductSize size, int quantity)
+        {
+            int dbUser = await isValidUserAsync();
+            if (dbUser <= 0)
+            {
+                return Unauthorized();
+            }
+            Order userCart = await GetOrCreateCartForUser(dbUser);
+
+            ProductType releventProductType = await _context.ProductType
+                .Include(pd => pd.Product)
+                .Where(pd => pd.ProductId == productId && pd.ColorId == colorId)
+                .FirstOrDefaultAsync();
+
+            if (releventProductType == null)
+            {
+                return NotFound(new { errorMessage = Consts.ITEM_NOT_FOUND });
+            }
+
+            if (quantity > releventProductType.Quantity)
+            {
+                return BadRequest(new { errorMessage = Consts.NOT_IN_STOCK });
+            }
+
+            OrderItem releventOrderItem = await GetOrCreateOrderItem(userCart.Id, releventProductType.Id);
+
+            releventOrderItem.Amount = quantity;
+            releventOrderItem.TotalPrice = releventProductType.Product.TotalPrice() * quantity;
+            _context.OrderItem.Update(releventOrderItem);
+            await _context.SaveChangesAsync();
+
+            // TODO: Send the updated order deatiles
+            return Json(new { });
+        }
+
+        private async Task<OrderItem> GetOrCreateOrderItem(int OrderId, int ProductTypeID)
+        {
+            OrderItem releventOrderItem = await _context.OrderItem
+                .Where(oi => oi.OrderId == OrderId && oi.ProductTypeID == ProductTypeID)
+                .FirstOrDefaultAsync();
+
+            if (releventOrderItem == null)
+            {
+                releventOrderItem = new OrderItem { OrderId = OrderId, Amount = 0, TotalPrice = 0, ProductTypeID = ProductTypeID };
+                _context.Add(releventOrderItem);
+                await _context.SaveChangesAsync();
+            }
+
+            return releventOrderItem;
+        }
+
+        private async Task<Order> GetOrCreateCartForUser(int UserId)
+        {
+            Order userCart = await _context.Order
+                .Where(o => o.UserId == UserId && o.IsCart)
+                .FirstOrDefaultAsync();
+
+            if (userCart == null)
+            {
+                // The user does not have a cart, creating a new one
+                userCart = new Order { UserId = UserId, IsCart = true, OrderItems = new List<OrderItem>() };
+                _context.Add(userCart);
+                await _context.SaveChangesAsync();
+            }
+
+            return userCart;
         }
 
         // POST: Orders/Edit/5
@@ -289,7 +370,7 @@ namespace web_development_course.Controllers
         //GET: Orders/DeleteByUser
         public async Task<IActionResult> DeleteByUser(int? orderItemId)
         {
-            if (orderItemId == null )
+            if (orderItemId == null)
             {
                 return NotFound();
             }
@@ -299,7 +380,7 @@ namespace web_development_course.Controllers
             if (dbUser.Result > 0)
             {
                 var orderItem = await (_context.OrderItem.Include(o => o.Order).
-                                    Include(o=>o.Order.OrderItems).
+                                    Include(o => o.Order.OrderItems).
                                     Include(o => o.ProductType).
                                     Include(o => o.ProductType.Product).
                                     Where(o => o.Id == orderItemId && o.Order.IsCart).ToListAsync());
@@ -321,11 +402,11 @@ namespace web_development_course.Controllers
                     _context.OrderItem.Remove(orderItem[0]);
                     await _context.SaveChangesAsync();
 
-                    return Json(new {success = true, isLastItem = isLastItem });
+                    return Json(new { success = true, isLastItem = isLastItem });
                 }
             }
 
-            return Json( new {success = false });
+            return Json(new { success = false });
         }
 
         // POST: Orders/Delete/5
@@ -370,5 +451,5 @@ namespace web_development_course.Controllers
             return -1;
         }
     }
-  
+
 }

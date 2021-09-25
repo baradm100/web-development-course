@@ -51,6 +51,13 @@ $(function () {
   $("#productForm").submit(function (event) {
     event.preventDefault();
 
+    if (!isLoggedIn) {
+      // The user is not logged in, showing the modal
+      const notLoggedModal = new bootstrap.Modal(document.getElementById("notLoggedModal"));
+      notLoggedModal.show();
+      return;
+    }
+
     const form = new FormData();
     form.set("productId", ProductId);
     form.set(

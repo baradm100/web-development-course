@@ -13,12 +13,12 @@ namespace web_development_course.Models
 {
     public enum ProductSize
     {
-        xs,
-        s,
-        m,
-        l,
-        xl,
-        xxl
+        XS,
+        S,
+        M,
+        L,
+        XL,
+        XXL
     }
 
     public class ProductType

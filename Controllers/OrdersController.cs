@@ -91,6 +91,33 @@ namespace web_development_course.Controllers
             return Json(new { success = false });
         }
 
+        public async Task<IActionResult> GetOrderItemData(int orderItemId)
+        {
+            var dbUser = isValidUserAsync();
+
+            if (dbUser.Result > 0)
+            {
+                var order = await (_context.OrderItem.Include(o => o.Order).
+                                    Include(o => o.ProductType).
+                                    Include(o => o.ProductType.Product).
+                                    Include(o => o.ProductType.Color).
+                                    Where(o => o.Id == orderItemId && o.Order.IsCart).ToListAsync());
+
+                // Makes sure the login user ask for the data
+                if (order != null && order[0].Order.UserId == dbUser.Result)
+                {
+                    var color = order[0].ProductType.Color.Color;
+                    var amount = order[0].Amount;
+                    var size = order[0].ProductType.Size;
+
+                    return Json(new { success = true, data = new { color = color, amount = amount, size = size } });
+                }
+            }
+
+            return Json(new { success = false });
+
+        }
+
         // GET: Orders/GetSummary
         public async Task<IActionResult> GetSummary()
         {
@@ -264,9 +291,9 @@ namespace web_development_course.Controllers
         }
 
         //GET: Orders/DeleteByUser
-        public async Task<IActionResult> DeleteByUser(int? orderId)
+        public async Task<IActionResult> DeleteByUser(int? orderItemId)
         {
-            if (orderId == null )
+            if (orderItemId == null )
             {
                 return NotFound();
             }
@@ -275,17 +302,24 @@ namespace web_development_course.Controllers
 
             if (dbUser.Result > 0)
             {
-                var order = await (_context.OrderItem.Include(o => o.Order).
+                var orderItem = await (_context.OrderItem.Include(o => o.Order).
+                                    Include(o=>o.Order.OrderItems).
                                     Include(o => o.ProductType).
                                     Include(o => o.ProductType.Product).
-                                    Where(o => o.Id == orderId && o.Order.IsCart).ToListAsync());
+                                    Where(o => o.Id == orderItemId && o.Order.IsCart).ToListAsync());
 
                 // Makes sure the login user ask for the data
-                if (order != null && order[0].Order.UserId == dbUser.Result)
+                if (orderItem != null && orderItem[0].Order.UserId == dbUser.Result)
                 {
-                    order[0].Order.OrderItems.ToList().Remove(order[0]);
-                    order[0].Amount -= 1;
-                    _context.OrderItem.Remove(order[0]);
+                    orderItem[0].Order.OrderItems.ToList().Remove(orderItem[0]);
+                    
+                    // Check is this is the last orderItem in the order
+                    if (orderItem[0].Order.OrderItems.ToList().Count() <= 1)
+                    {
+                        _context.Order.Remove(orderItem[0].Order);
+                    }
+
+                    _context.OrderItem.Remove(orderItem[0]);
                     await _context.SaveChangesAsync();
 
                     return Json(new {success = true });

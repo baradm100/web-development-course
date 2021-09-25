@@ -1,10 +1,12 @@
 ﻿let currecny = ["$", "₪", "€","£"]
+let sizes = ["XS", "S", "M", "L", "XL", "XXL"]
 
 $(function () {
     GetSummary()
     initAmountListeners()
     initDeleteListener()
-   
+    initEditListener()
+
 
     function initAmountListeners() {
         $(".amount").change(function () {
@@ -15,6 +17,22 @@ $(function () {
         })
     }
 
+    function initDeleteListener() {
+        $(".deleteButton").click(function () {
+            var index = $(this).attr("id")
+            var modelId = $(this).attr("modelId")
+            deleteItem(modelId, index)
+        })
+    }
+
+    function initEditListener() {
+        $(".editBtn").click(function () {
+            var index = $(this).attr("id")
+            var modelId = $(this).attr("modelId")
+            editItem(modelId, index)
+        })
+    }
+    
     function GetSummary() {
         console.log("GetSummary")
         $.ajax({
@@ -58,7 +76,6 @@ $(function () {
             },
             success: function (response) {
                 Success = true;
-                GetSummary()
                 getItemFinalPrice(id, index)
             },
             error: function (result) {
@@ -68,7 +85,6 @@ $(function () {
             timeout: 5000,
         });
     }
-
 
     function getItemFinalPrice(orderId, rowIndex) {
         console.log("orderid" + orderId)
@@ -84,6 +100,7 @@ $(function () {
             success: function (response) {
                 Success = true;
                 $("#total-price_" + rowIndex).text(Number(Number(response.data.totalPrice).toFixed(2)) + " " + currecny[(response.data.currecnyIndex)])
+                GetSummary()
 
             },
             error: function (result) {
@@ -94,18 +111,42 @@ $(function () {
         });
     }
 
+    function editItem(modelId, index) {
+        alert("to be wriiten later")
+        // to be wriiten later, need to pop modal
+        GetOrderItemData(modelId, index)
+    }
 
-    function initDeleteListener() {
-        $(".deleteButton").click(function () {
-            var index = $(this).attr("id")
-            var modelId = $(this).attr("modelId")
-            deleteItem(modelId, index)
-        })
+    function GetOrderItemData(modelId, index) {
+        $.ajax({
+            url: "/Orders/GetOrderItemData?orderItemId=" + modelId,
+            type: 'GET',
+            dataType: 'json',
+            data: null,
+            fail: function (xhr, textStatus, errorThrown) {
+                Success = false;
+                alert("Something went wrong in server " + textStatus)
+            },
+            success: function (response) {
+                Success = true;
+                // UPDATE The Item Data  {color = color, amount = amount, size = size}
+                $("#size_" + index).text(sizes[response.data.size])
+                $("#color_" + index).css("background-color", response.data.color);
+                $(".amount#" + index).val(response.data.amount)
+                getItemFinalPrice(modelId, index)
+
+            },
+            error: function (result) {
+                console.log(result);
+                return false
+            },
+            timeout: 5000,
+        });
     }
 
     function deleteItem(modelId, index) {
         $.ajax({
-            url: "/Orders/DeleteByUser?orderId="+modelId,
+            url: "/Orders/DeleteByUser?orderItemId="+modelId,
             type: 'GET',
             dataType: 'json',
             data: null,

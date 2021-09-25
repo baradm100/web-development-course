@@ -1,4 +1,5 @@
 ﻿$(function () {
+    var editType = false;
     var productName = null;
     const PRODUCT_SIZES = {
         "xs": 0,
@@ -13,6 +14,7 @@
     const rgb2hex = (rgb) => `#${rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/).slice(1).map(n => parseInt(n, 10).toString(16).padStart(2, '0')).join('')}`
 
     $('.btnAddGoods').click(function () {
+        editType = false;
         productName = $(this).get(0).id;
         $("#addGoodsModal").modal("show");
         $.ajax({
@@ -71,6 +73,7 @@
     }
 
     $(".editProductType").click(async function () {
+        editType = true;
         var $btn = $(this);
         $.ajax({
             url: "/ProductTypes/GetColors/",
@@ -229,6 +232,7 @@
     });
 
     $('#closeBtn').click(function () {
+        editType = false;
         $(".modal-title").text("Add Goods");
         $("#deleteGoodsModalBtn").addClass("d-none");
         $("#addGoodsModalBtn").removeClass("d-none");
@@ -236,7 +240,7 @@
         location.reload();
     });
 
-    $("#addAnotherGood").on("click", function () {
+    const addAnotherGood = () => {
         var $good = $("#addGoodsForm").clone();
         $good.find("input[type=radio]").each(function (i, x) {
             $(x).attr("name", $("input").length);
@@ -244,5 +248,18 @@
         $good.find("#Size").attr("disabled", false);
         $good.find("#Quantity").val("0");
         $good.insertBefore("#AnotherGood");
+    }
+
+    $("#addAnotherGood").on("click", function () {
+        if (editType) {
+            if ($("div.goods").length < 6) {
+                addAnotherGood();
+            } else {
+                $(this).attr("disabled", true);
+                $(this).parent("div").append("<div><span class='alert alert-danger p-1 m-2' id='maximumSizes' > there is no more available sizes</span>");
+            }
+        } else {
+            addAnotherGood();
+        }
     })
 });

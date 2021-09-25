@@ -76,7 +76,7 @@
     };
 
     const findSelectedDropdown = ($selector) => {
-        return $selector.find('option:selected')
+        return $selector.find('option:selected').val();
     }
 
     //events

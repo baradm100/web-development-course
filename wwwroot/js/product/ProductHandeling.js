@@ -376,7 +376,7 @@
     });
 
     $('#closeProductBtn').click(function () {
-        location.reload();
+        document.location.reload(true);
     });
 
     $('#closeEditProductBtn').click(function () {
@@ -386,8 +386,7 @@
         $("#categoriesEditDropDownListPModel").val("");
         $("#imagesCheckBox").html("");
         productNameValid = false;
-        if (Changed)
-            location.reload();
+        document.location.reload(true);
     });
 
     const productValid = () => {

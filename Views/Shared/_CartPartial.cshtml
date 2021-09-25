@@ -5,7 +5,7 @@
 @* TODO: Use the User to get the Cart items *@
 
 <li class="nav-item dropdown">
-    <button type="button" class="nav-link text-dark dropdown-toggle btn btn-light position-relative cartIcon"
+    <button type="button" class="nav-link text-dark dropdown-toggle btn position-relative cartIcon"
         id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 
         <i class="bi bi-cart-fill"></i>
@@ -79,6 +79,13 @@
         <li>
             <hr class="dropdown-divider">
         </li>
-        <a class="btn btn-primary goToCart" href="#" role="button">Go To Cart</a>
+        <li >
+            <div class="container">
+                <div class="row">
+                    <a class="btn btn-secondary col-5" href="/Orders/Cart" role="button">View Cart</a>
+                    <a class="btn btn-primary col-5 ms-auto" href="/Orders/Index" role="button">Checkout</a>
+                </div>
+            </div>
+        </li>
     </ul>
 </li>

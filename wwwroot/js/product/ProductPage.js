@@ -8,6 +8,11 @@ $(function () {
       // Enable only the sizes we have in stock
       sizeInput.disabled = sizesBySelectedColor[sizeInput.value] <= 0;
     }
+
+    // Reset other depended fields (size, quantity and add to cart)
+    $("#productForm input[name=Size]:checked")[0].checked = false;
+    $("#Quantity")[0].disabled = true;
+    $("#addToCart")[0].disabled = true;
   });
 
   // Handle updating size

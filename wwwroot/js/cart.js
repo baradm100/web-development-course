@@ -156,8 +156,14 @@ $(function () {
             },
             success: function (response) {
                 Success = true;
-                removeCard(index)
-                GetSummary()
+                if (response.isLastItem) {
+                    location.reload()
+                }
+                else {
+                    removeCard(index)
+                    GetSummary()
+                }
+                
             },
             error: function (result) {
                 console.log(result);

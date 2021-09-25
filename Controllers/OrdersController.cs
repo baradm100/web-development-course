@@ -312,17 +312,20 @@ namespace web_development_course.Controllers
                 if (orderItem != null && orderItem[0].Order.UserId == dbUser.Result)
                 {
                     orderItem[0].Order.OrderItems.ToList().Remove(orderItem[0]);
-                    
+
+                    var isLastItem = false;
+
                     // Check is this is the last orderItem in the order
                     if (orderItem[0].Order.OrderItems.ToList().Count() <= 1)
                     {
                         _context.Order.Remove(orderItem[0].Order);
+                        isLastItem = true;
                     }
 
                     _context.OrderItem.Remove(orderItem[0]);
                     await _context.SaveChangesAsync();
 
-                    return Json(new {success = true });
+                    return Json(new {success = true, isLastItem = isLastItem });
                 }
             }
 

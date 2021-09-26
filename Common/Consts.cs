@@ -37,6 +37,10 @@ namespace web_development_course.Common
 
         public const string HOUR_VIOLATION_ERROR = "Please enter valid hour";
 
+        public const string ITEM_NOT_FOUND = "Item was not found";
+
+        public const string NOT_IN_STOCK = "Not enough item in stock";
+
         #endregion
 
         #region Regex

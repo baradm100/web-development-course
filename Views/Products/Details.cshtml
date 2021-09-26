@@ -11,6 +11,8 @@
 
 <script type="text/javascript">
     var SizesCountByColorIds = @Json.Serialize(SizesCountByColorIds);
+    var ProductId = @Json.Serialize(Model.Id);
+    var isLoggedIn = @Json.Serialize(Context.User.Identity.IsAuthenticated);
 </script>
 
 <div class="container-fluid productPage">
@@ -55,9 +57,16 @@
             </button>
         </div>
         <div class="col-6 col-12 col-lg-8">
+            <div class="alert alert-success d-none" role="alert" id="successNotification">
+                Item was added to the cart!
+            </div>
+
+            <div class="alert alert-danger d-none" role="alert" id="failNotification">
+                Unknown error, please try again
+            </div>
             <h1>@Model.Name</h1>
             <h3>@Model.Price$</h3>
-            <form id="productForm">
+            <form id="productForm" asp-action="AddToCart" asp-controller="Orders">
                 <div class="attribute">
                     <label class="form-check-label h5 margin-bottom-0 quantityLabel" for="colorSelection">Color:</label>
                     <div class="btn-group" role="group" aria-label="color selection">
@@ -98,6 +107,9 @@
                         <option value="3">3</option>
                     </select>
                 </div>
+                <div class="spinner-border d-none" role="status" id="loadingSpinner">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
                 <button type="submit" class="btn btn-primary" id="addToCart" disabled>
                     <i class="bi bi-cart-plus"></i>
                     Add to cart
@@ -107,6 +119,27 @@
     </div>
 </div>
 
+
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true" id="notLoggedModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Opps</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                In order to add items to your cart you need to
+                <a class="link-primary" asp-area="Identity" asp-controller="Users" asp-action="Login">Login</a>
+                or
+                <a class="link-primary" asp-area="Identity" asp-controller="Users" asp-action="Register">Register</a>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
 <script src="~/js/product/ProductPage.js"></script>

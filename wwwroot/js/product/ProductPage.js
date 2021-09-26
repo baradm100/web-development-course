@@ -53,7 +53,9 @@ $(function () {
 
     if (!isLoggedIn) {
       // The user is not logged in, showing the modal
-      const notLoggedModal = new bootstrap.Modal(document.getElementById("notLoggedModal"));
+      const notLoggedModal = new bootstrap.Modal(
+        document.getElementById("notLoggedModal")
+      );
       notLoggedModal.show();
       return;
     }
@@ -92,6 +94,7 @@ $(function () {
       },
       success: function (response) {
         $("#successNotification").removeClass("d-none");
+        updateCart();
       },
       error: function (xhr) {
         let errorMessage = "Unknown error, please try again";

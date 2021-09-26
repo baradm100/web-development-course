@@ -1,60 +1,114 @@
-@using Microsoft.AspNetCore.Identity
-@inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
+@using web_development_course.Models.OrderModels
+@using web_development_course.Models.ProductModels
+@inject web_development_course.Models.OrderModels.CartService CartService
+
+@{
+    var user = Context.User.Identity.Name;
+    var authanticated = Context.User.Identity.IsAuthenticated;
+
+    List<OrderItem> OrderItems = new List<OrderItem>();
+    int LastOrderId = -1;
+    if (authanticated)
+    {
+        OrderItems = await CartService.GetOrderItemsByUserName(user);
+        if(OrderItems.Count > 0)
+        {
+            LastOrderId = OrderItems.Last().Id;
+        }
+    }
+}
 
 @* TODO: Use the User to get the Cart items *@
 
+<form id="quickCartForm" asp-action="DeleteOrderItem" asp-controller="Orders"></form>
+
 <li class="nav-item dropdown">
     <button type="button" class="nav-link text-dark dropdown-toggle btn position-relative cartIcon"
-        id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        id="quickCartDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 
         <i class="bi bi-cart-fill"></i>
         Cart
 
-        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-            4
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="quickCartTotal">
+            @OrderItems.Count
             <span class="visually-hidden">items</span>
         </span>
     </button>
-    <ul class="dropdown-menu container cartQuickView" aria-labelledby="navbarDropdown">
-        <div class="itemList">
-            @* TODO: For each ProductType in User.Cart.ProductTypes *@
-            @for (var i = 0; i < 4; i++)
+    <ul class="dropdown-menu container cartQuickView" aria-labelledby="quickCartDropdown">
+        <div class="d-none justify-content-center" id="quickCartLoading">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+        <div class="itemList" id="quickCartItemsList">
+            @foreach (OrderItem orderItem in OrderItems)
             {
+                String carouselId = "carouselQuickCartIndicators-" + orderItem.Id;
+                String seperatorExtraClass = orderItem.Id == LastOrderId ? "d-none" : "";
                 <li class="row cartItem">
-                    <img class="col"
-                    src="https://media.terminalx.com/pub/media/catalog/product/cache/f112238e8de94b6d480bd02e7a9501b8/x/8/x858370001-11628410958_1.jpg" />
+                    <div id="@carouselId" class="carousel slide col" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                            @{
+                                for (var i = 0; i < orderItem.ProductType.Product.ProductImages.Count(); i++)
+                                {
+                                    String extraClass = i == 0 ? "active" : "";
+
+                                    <button type="button" data-bs-target="#@carouselId" data-bs-slide-to="@i"
+                                class="@extraClass" aria-current="true" aria-label="Photo @i"></button>
+
+                                }
+                            }
+                        </div>
+                        <div class="carousel-inner">
+                            @{
+                                bool isFirst = true;
+                                @foreach (ProductImage image in orderItem.ProductType.Product.ProductImages)
+                                {
+                                    String base64 = Convert.ToBase64String(image.ImageData);
+                                    String extraClass = isFirst ? "active" : "";
+                                    isFirst = false;
+
+                                    <div class="carousel-item @extraClass">
+                                        <img src="data:image/png;base64,@base64" class="d-block w-100 h-100" width="100"
+                                    height="250" />
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#@carouselId"
+                            data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#@carouselId"
+                            data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
                     <div class="col cartItemDetails">
                         <span>
-                            @* TODO: Set the name from Product *@
-                            ADIDAS
+                            <a asp-action="Details" asp-controller="Products" class="link-primary"
+                            asp-route-id="@orderItem.ProductType.Product.Id">
+                                @orderItem.ProductType.Product.Name
+                            </a>
                         </span>
                         <br />
                         <span class="text-secondary">
-                            @* TODO: Set the size and color from the ProductType *@
-                            Black / M
+                            @orderItem.ProductType.Color.Name / @orderItem.ProductType.Size
                         </span>
                         <br />
                         <span class="text-secondary">
-                            @* TODO: Set the price from Product *@
-                            69$
+                            @orderItem.TotalPrice$
                         </span>
                         <div>
-                            <select class="form-select" aria-label="Number Of Items">
-                                @* TODO: Set the number from ProdcutType *@
-                                <option value="1">1</option>
-                                <option value="2" selected>2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                                <option value="6">6</option>
-                                <option value="7">7</option>
-                                <option value="8">8</option>
-                                <option value="9">9</option>
-                                <option value="10">10</option>
+                            <select class="form-select" aria-label="Number Of Items" onchange="updateItemQuantity(@orderItem.Id)(arguments[0])">
+                                @for (var i = 1; i <= orderItem.ProductType.Quantity; i++)
+                                {
+                                    <option value="@i" selected="@(orderItem.Amount == i)">@i</option>
+                                }
                             </select>
-                            <button type="button" class="btn btn-outline-danger deleteButton">
-                                @* TODO: Add delete action *@
+                            <button type="button" class="btn btn-outline-danger deleteButton" onClick="deleteItemFromCart(@orderItem.Id)">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                 class="bi bi-trash-fill" viewBox="0 0 16 16">
                                     <path
@@ -67,19 +121,16 @@
 
                     </div>
                 </li>
-                @if (i != 3)
-                {
-                    @* Do not display on the last item *@
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
-                }
+
+                <li>
+                    <hr class="dropdown-divider @seperatorExtraClass">
+                </li>
             }
         </div>
         <li>
             <hr class="dropdown-divider">
         </li>
-        <li >
+        <li>
             <div class="container">
                 <div class="row">
                     <a class="btn btn-secondary col-5" href="/Orders/Cart" role="button">View Cart</a>

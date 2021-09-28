@@ -5,12 +5,12 @@
 }
 
 .cartQuickView .cartItem > .cartItemDetails > div > select {
-  width: unset;
-  display: inline;
+    width: unset;
+    display: inline;
 }
 
 .cartQuickView .goToCart {
-  width: 100%;
+  width: 40%;
 }
 
 .cartQuickView .deleteButton {
@@ -45,11 +45,11 @@
 
 ul.dropdown-menu.container.cartQuickView {
   min-width: 18em;
-  left: -40px;
+  left: -5rem;
   padding-right: 5px;
   padding-left: 5px;
 }
 
 ul.dropdown-menu.container.cartQuickView.noLogin {
-  left: -80px;
+    left: -80px;
 }

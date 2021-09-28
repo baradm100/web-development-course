@@ -70,7 +70,9 @@
                     @foreach (var item in SizesAndCounts)
                     {
                         String ExtraClass = item.Value <= 0 ? "line-through" : "";
-                        <span class="badge rounded-pill bg-light text-dark @ExtraClass">@item.Key</span>
+                        <span class="badge rounded-pill bg-light text-dark @ExtraClass">
+                            @item.Key.ToString().ToUpper()
+                        </span>
                     }
                 </div>
                 <div class="colorContainer text-align-center">
@@ -87,8 +89,9 @@
                         </span>
                     }
                 </div>
-                <a href="#" class="btn btn-primary stretched-link viewButton">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+
+                <a asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary stretched-link viewButton">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                     class="bi bi-eye-fill" viewBox="0 0 16 16">
                         <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"></path>
                         <path

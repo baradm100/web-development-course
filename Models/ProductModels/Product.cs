@@ -19,7 +19,7 @@ namespace web_development_course.Models
         [Required]
         public string Name { get; set; }
 
-        [Range(0,100,ErrorMessage = Consts.DiscountPercentageErrorMessage)]
+        [Range(0, 100, ErrorMessage = Consts.DiscountPercentageErrorMessage)]
         public float DiscountPercentage { get; set; } = 0;
 
         public IEnumerable<ProductCategory> ProductCategories { get; set; } = new HashSet<ProductCategory>();
@@ -27,6 +27,11 @@ namespace web_development_course.Models
         public IEnumerable<ProductType> ProductTypes { get; set; }
 
         public IEnumerable<ProductImage> ProductImages { get; set; }
+
+        public float TotalPrice()
+        {
+            return (1 - (DiscountPercentage / 100)) * Price;
+        }
 
     }
 }

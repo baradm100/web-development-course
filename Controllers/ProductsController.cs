@@ -31,7 +31,6 @@ namespace web_development_course.Controllers
         // GET: Products?categoryId=5
         public async Task<IActionResult> Index(int? categoryId)
         {
-
             ViewBag.Colors = await _context.ProductColor.ToListAsync();
             ViewBag.shouldShowEdit = User.IsInRole("Admin") || User.IsInRole("Editor");
 
@@ -76,7 +75,8 @@ namespace web_development_course.Controllers
             if (maximumPrice == null)
             {
                 maximumPriceValue = await _context.Product.MaxAsync(p => p.Price);
-            } else
+            }
+            else
             {
                 maximumPriceValue = (float)maximumPrice;
             }
@@ -84,7 +84,8 @@ namespace web_development_course.Controllers
             if (productName == null)
             {
                 productNameValue = "";
-            } else
+            }
+            else
             {
                 productNameValue = productName.ToLower();
             }
@@ -96,10 +97,10 @@ namespace web_development_course.Controllers
                     .Include(product => product.ProductTypes)
                     .ThenInclude(pt => pt.Color)
                     .Include(product => product.ProductCategories)
-                    .Where(p => p.ProductCategories.Any(pc => RelevantCategoryIds.Contains(pc.CategoryId)) && 
+                    .Where(p => p.ProductCategories.Any(pc => RelevantCategoryIds.Contains(pc.CategoryId)) &&
                     p.Name.ToLower().Contains(productNameValue) && p.Price <= maximumPriceValue);
             List<Product> ProductsToShow = await ProductsQuery.ToListAsync();
-            return View("index",ProductsToShow);
+            return View("index", ProductsToShow);
         }
 
         [Authorize(Roles = "Admin,Editor")]
@@ -134,12 +135,12 @@ namespace web_development_course.Controllers
         {
 
             ProductColor productColor = await _context.ProductColor.FirstOrDefaultAsync(c => color.Contains(c.Color));
-            if(productColor != null)
+            if (productColor != null)
             {
                 var productType = from product in _context.Product
-                               join type in _context.ProductType on product.Id equals type.Product.Id
-                               where type.ColorId == productColor.Id && product.Name.ToLower() == name.ToLower()
-                               select type;
+                                  join type in _context.ProductType on product.Id equals type.Product.Id
+                                  where type.ColorId == productColor.Id && product.Name.ToLower() == name.ToLower()
+                                  select type;
                 var productTypes = await productType.ToListAsync();
                 return Json(new { success = true, types = productTypes });
             }
@@ -147,11 +148,18 @@ namespace web_development_course.Controllers
 
         }
 
-        // GET: Products/json
         [Route("products/MaxPrice/json")]
         public async Task<IActionResult> getMaxPriceJson()
         {
+            int numOfProducts = await _context.Product.CountAsync();
+            if (numOfProducts == 0)
+            {
+                // No products in the DB
+                return Json(new { success = false });
+            }
+
             var maxPrice = await _context.Product.MaxAsync(p => p.Price);
+
             if (maxPrice != 0)
                 return Json(new { success = true, max = maxPrice });
             return Json(new { success = false });
@@ -166,13 +174,14 @@ namespace web_development_course.Controllers
                 if (product != null)
                 {
                     var q = _context.Product.Include(product => product.ProductTypes)
-                        .Include(product => product.ProductCategories)
+                        .Include(product => product.ProductCategories).Include(product => product.ProductImages)
                         .Where(q => q.Name.ToLower().Contains(product.ToLower()));
-                    return View("EditorIndex",await q.ToListAsync());
+                    return View("EditorIndex", await q.ToListAsync());
                 }
                 return View("EditorIndex", await _context.Product.Include(product => product.ProductImages)
                         .Include(product => product.ProductTypes).Include(product => product.ProductCategories).ToListAsync());
-            } catch
+            }
+            catch
             {
                 return NotFound();
             }
@@ -186,12 +195,50 @@ namespace web_development_course.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Product
-                .FirstOrDefaultAsync(m => m.Id == id);
+            Product product = await _context.Product
+                    .Include(product => product.ProductImages)
+                    .Include(product => product.ProductTypes)
+                    .ThenInclude(pt => pt.Color)
+                    .Include(product => product.ProductCategories)
+                    .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
                 return NotFound();
             }
+
+            Dictionary<ProductSize, int> SizesAndCounts = new Dictionary<ProductSize, int>();
+            Dictionary<ProductColor, int> ColorsAndCounts = new Dictionary<ProductColor, int>();
+            Dictionary<int, Dictionary<ProductSize, int>> SizesCountByColorIds = new Dictionary<int, Dictionary<ProductSize, int>>();
+
+            foreach (ProductSize size in Enum.GetValues(typeof(ProductSize)))
+            {
+                SizesAndCounts[size] = 0;
+            }
+
+            foreach (ProductType type in product.ProductTypes)
+            {
+                if (!ColorsAndCounts.ContainsKey(type.Color))
+                {
+                    ColorsAndCounts[type.Color] = 0;
+                }
+
+                if (!SizesCountByColorIds.ContainsKey(type.Color.Id))
+                {
+                    SizesCountByColorIds[type.Color.Id] = new Dictionary<ProductSize, int>();
+                    foreach (ProductSize size in Enum.GetValues(typeof(ProductSize)))
+                    {
+                        SizesCountByColorIds[type.Color.Id][size] = 0;
+                    }
+                }
+
+                SizesAndCounts[type.Size] += type.Quantity;
+                ColorsAndCounts[type.Color] += type.Quantity;
+                SizesCountByColorIds[type.Color.Id][type.Size] += type.Quantity;
+            }
+        
+            ViewBag.SizesAndCounts = SizesAndCounts;
+            ViewBag.ColorsAndCounts = ColorsAndCounts;
+            ViewBag.SizesCountByColorIds = SizesCountByColorIds;
 
             return View(product);
         }
@@ -258,14 +305,15 @@ namespace web_development_course.Controllers
                         _context.ProductCategory.Add(bind);
                     }
                 }
-                
+
                 await _context.SaveChangesAsync();
                 float priceAfterDiscount = product.Price * ((100 - product.DiscountPercentage) / 100);
                 try
                 {
                     await twitterApi.PostTweetAsync("ClothIt has a new Product: '" + product.Name + "' just in " + priceAfterDiscount + " come and check it!");
-                } catch
-                {}
+                }
+                catch
+                { }
                 return Json(new { success = true, productId = product.Id });
             }
             catch

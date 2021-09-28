@@ -1,0 +1,26 @@
+﻿@using System;
+@using System.Collections.Generic;
+
+@{
+    Dictionary<string,string> currencies = new Dictionary<string,string>();
+    currencies.Add("USD", "$");
+    currencies.Add("ILS", "₪");
+    currencies.Add("EUR", "€");
+    currencies.Add("GBP", "£");
+}
+
+<div class="dropdown">
+    <button type="button" class="nav-link text-dark btn btn-light position-relative"
+            id="currencyDropdownBtn" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-cash-coin"></i>
+    </button>
+    <ul class="dropdown-menu container currencyMenu" aria-labelledby="currencyDropdownBtn">
+        @{ foreach (var type in Enum.GetValues(typeof(CurrencyTypes)).Cast<CurrencyTypes>())
+            {
+            <li class="dropdown-item currencyBtn">
+                <i id=@type>@currencies[@type.ToString()]&#9;@type</i>
+            </li>
+            }
+        }
+    </ul>
+</div>

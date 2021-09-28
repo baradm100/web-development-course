@@ -22,7 +22,6 @@ namespace web_development_course.Controllers
             if (ct == null)
             {
                 ct = new CurrencyConverter();
-                ct.initCurrencyRates();
             }
             if (currency == "GBP")
                 currencyValue = ct.Gbp;

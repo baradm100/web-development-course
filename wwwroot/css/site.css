@@ -83,3 +83,16 @@ body {
 .line-through {
   text-decoration: line-through;
 }
+
+.image-container {
+    position: relative;
+    text-align: center;
+    color: white;
+}
+
+.centerd-image-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

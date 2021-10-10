@@ -28,24 +28,16 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <partial name="_CategoriesParital" />
-
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Branches" asp-action="Index">
-                                Branches
-                            </a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="branches" asp-action="index">Branches</a>
                         </li>
                     </ul>
-                    <button type="button" class="nav-link text-dark btn btn-light position-relative" id="navbarDropdown" role="button" data-bs-toggle="offcanvas" data-bs-target="#advancedSearchCanvas" aria-controls="offcanvasRight">
-                        <i class="bi bi-search"></i>
-                    </button>
                     <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
-
     </header>
     <partial name="_SearchPartial" />
-
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -64,6 +56,7 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/search/searchPartialHandeling.js"></script>
     <script src="~/js/product/QuickCart.js"></script>
+    <script src="~/js/currency.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 

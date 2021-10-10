@@ -83,3 +83,8 @@ body {
 .line-through {
   text-decoration: line-through;
 }
+
+.discount-txt {
+    color: darkgray;
+    text-decoration: line-through;
+}

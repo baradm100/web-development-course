@@ -240,15 +240,13 @@ namespace web_development_course.Controllers
 
             if (order != null)
             {
-
+                // Checks if we still have in stock the requested amount
                 if (amount > order.ProductType.Quantity)
                 {
                     return BadRequest(new { errorMessage = Consts.NOT_IN_STOCK });
                 }
 
                 order.Amount = amount;
-
-
 
                 _context.OrderItem.Update(order);
                 await _context.SaveChangesAsync();

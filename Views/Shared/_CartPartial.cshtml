@@ -41,6 +41,10 @@
             </div>
         </div>
         <div class="itemList" id="quickCartItemsList">
+            @if(OrderItems.Count == 0) {
+                <span>Your cart is empty</span>
+            }
+            
             @foreach (OrderItem orderItem in OrderItems)
             {
                 String carouselId = "carouselQuickCartIndicators-" + orderItem.Id;

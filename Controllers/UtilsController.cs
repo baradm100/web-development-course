@@ -12,6 +12,10 @@ namespace web_development_course.Controllers
 
         private CurrencyConverter ct;
 
+        public UtilsController(CurrencyConverter currencyConverter) {
+            ct = currencyConverter;
+        }
+
         // GET: /currency/json
         [HttpGet]
         [Route("currency/json")]
@@ -19,10 +23,7 @@ namespace web_development_course.Controllers
         {
             // dollar is equal to 1, its the default value in app
             double currencyValue = 1;
-            if (ct == null)
-            {
-                ct = new CurrencyConverter();
-            }
+
             if (currency == "GBP")
                 currencyValue = ct.Gbp;
             else if (currency == "EUR")

@@ -22,6 +22,11 @@
     string currencySign = CurrencyService.GetCurrencySign();
 }
 
+<script type="text/javascript">
+    var currency = @Json.Serialize(currency);
+    var currencySign = @Json.Serialize(currencySign);
+</script>
+
 <form id="quickCartForm" asp-action="DeleteOrderItem" asp-controller="Orders"></form>
 
 <li class="nav-item dropdown">
@@ -95,7 +100,7 @@
                             <span class="visually-hidden">Next</span>
                         </button>
                     </div>
-                    <div class="card-img-overlay" style="margin-left: 0px">
+                    <div class="discountOverlay">
                         @if(orderItem.ProductType.Product.DiscountPercentage != 0) {
                             <h5 class="discount-on-card">@orderItem.ProductType.Product.DiscountPercentage%</h5>
                         }

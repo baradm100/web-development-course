@@ -54,10 +54,34 @@ function createCarouse(item) {
   <span class="visually-hidden">Next</span>
 </button>`;
 
+  if (item.discountPercentage) {
+    carouseDiv.innerHTML += `    
+<div class="discountOverlay">
+  <h5 class="discount-on-card">${item.discountPercentage}%</h5>
+</div>`;
+  }
+
   return carouseDiv;
 }
 
+function createPriceView(item) {
+  const priceBefore = (item.productPrice * item.amount * currency).toFixed(2);
+  const priceAfter = (
+    item.productPrice *
+    item.amount *
+    (1 - item.discountPercentage / 100) *
+    currency
+  ).toFixed(2);
+
+  if (item.discountPercentage) {
+    return `<span class="discount-txt">${priceBefore}</span>${priceAfter}`;
+  }
+
+  return priceBefore;
+}
+
 function createDetails(item) {
+  const priceView = createPriceView(item);
   const detailsDiv = document.createElement("div");
   detailsDiv.classList.add("col", "cartItemDetails");
   detailsDiv.innerHTML += `
@@ -72,7 +96,7 @@ function createDetails(item) {
   </span>
   <br />
   <span class="text-secondary">
-  ${item.totalPrice}$
+  ${priceView}${currencySign}
   </span>
     `;
   const editItemDiv = document.createElement("div");

@@ -15,7 +15,7 @@ namespace web_development_course.WebServices
         // using currencyfreaks api 
         private const string START_URL = @"https://api.currencyfreaks.com";
         private string ALL_CURRENCY = "" + CurrencyTypes.ILS + "," + CurrencyTypes.EUR + "," + CurrencyTypes.GBP;
-        private const string API_KEY = "618cc1d3ccf445fda4e621a37b480e66"; // remeber to hide it from the github
+        private const string API_KEY = "dabcb370ba844f7fbc24f5232e2ff27a"; // remeber to hide it from the github
 
         #endregion
 

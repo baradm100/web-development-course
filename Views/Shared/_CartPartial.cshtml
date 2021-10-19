@@ -1,6 +1,7 @@
 @using web_development_course.Models.OrderModels
 @using web_development_course.Models.ProductModels
 @inject web_development_course.Models.OrderModels.CartService CartService
+@inject web_development_course.Models.CurrencyService CurrencyService
 
 @{
     var user = Context.User.Identity.Name;
@@ -16,9 +17,15 @@
             LastOrderId = OrderItems.Last().Id;
         }
     }
+
+    float currency = CurrencyService.GetCurrentCurrencyValue();
+    string currencySign = CurrencyService.GetCurrencySign();
 }
 
-@* TODO: Use the User to get the Cart items *@
+<script type="text/javascript">
+    var currency = @Json.Serialize(currency);
+    var currencySign = @Json.Serialize(currencySign);
+</script>
 
 <form id="quickCartForm" asp-action="DeleteOrderItem" asp-controller="Orders"></form>
 
@@ -49,6 +56,9 @@
             {
                 String carouselId = "carouselQuickCartIndicators-" + orderItem.Id;
                 String seperatorExtraClass = orderItem.Id == LastOrderId ? "d-none" : "";
+                var priceBeforeDiscount = String.Format("{0:0.00}", currency * orderItem.ProductType.Product.Price * orderItem.Amount);
+                var priceAfterDiscount = String.Format("{0:0.00}", currency * orderItem.ProductType.Product.Price * ((100 - orderItem.ProductType.Product.DiscountPercentage) / 100));
+
                 <li class="row cartItem">
                     <div id="@carouselId" class="carousel slide col" data-bs-ride="carousel">
                         <div class="carousel-indicators">
@@ -90,6 +100,11 @@
                             <span class="visually-hidden">Next</span>
                         </button>
                     </div>
+                    <div class="discountOverlay">
+                        @if(orderItem.ProductType.Product.DiscountPercentage != 0) {
+                            <h5 class="discount-on-card">@orderItem.ProductType.Product.DiscountPercentage%</h5>
+                        }
+                    </div>
                     <div class="col cartItemDetails">
                         <span>
                             <a asp-action="Details" asp-controller="Products" class="link-primary"
@@ -103,7 +118,15 @@
                         </span>
                         <br />
                         <span class="text-secondary">
-                            @orderItem.TotalPrice$
+                            @if(orderItem.ProductType.Product.DiscountPercentage == 0) {
+                                @priceBeforeDiscount
+                            }
+                            else
+                            {
+                                <span class="discount-txt">@priceBeforeDiscount</span>
+                                @priceAfterDiscount
+                            }
+                            @currencySign
                         </span>
                         <div>
                             <select class="form-select" aria-label="Number Of Items" onchange="updateItemQuantity(@orderItem.Id)(arguments[0])">

@@ -9,3 +9,22 @@
 .margin-bottom-0 {
   margin-bottom: 0;
 }
+
+
+h5.discount-on-card {
+  background: indianred;
+  color: white;
+  width: 4rem;
+  border-radius: 8px;
+  padding-left: 1rem;
+}
+
+
+.discount-txt {
+  color: darkgray;
+  text-decoration: line-through;
+}
+
+.line-through {
+  text-decoration: line-through;
+}

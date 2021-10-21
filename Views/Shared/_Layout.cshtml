@@ -6,12 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Fashion Shop</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+          integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="~/css/utils.css" />
     <link rel="stylesheet" href="~/css/cartQuickView.css" />
     <link rel="stylesheet" href="~/css/category.css" />
+    <link rel="stylesheet" href="~/css/index.css" />
     @await RenderSectionAsync("Styles", required: false)
 </head>
 
@@ -50,11 +51,105 @@
         @RenderBody()
     </main>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2021 - Fashion Shop
+    <!-- Footer -->
+    <footer class="text-center text-lg-start bg-light text-muted">
+        <!-- Section: Social media -->
+        <section class="d-flex justify-content-center p-4">
+                <a href="https://facebook.com/clothit" class="me-4 text-reset">
+                    <i class="bi bi-facebook"></i>
+                </a>
+                <a href="https://twitter.com/3SbddPlLRBnryom" class="me-4 text-reset">
+                    <i class="bi bi-twitter"></i>
+                </a>
+                <a href="https://linkedin.com/clothit" class="me-4 text-reset">
+                    <i class="bi bi-linkedin"></i>
+                </a>
+            <!-- Right -->
+        </section>
+        <section class="">
+            <div class="container text-center text-md-start mt-5">
+                <!-- Grid row -->
+                <div class="row mt-3">
+                    <!-- Grid column -->
+                    <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
+                        <!-- Content -->
+                        <h6 class="text-uppercase fw-bold mb-4">
+                            <i class="fas fa-gem me-3"></i>ClothIt
+                        </h6>
+                        <p>
+                            Our company vision is to bring our 
+                            client the best fashionable products in the best prices.
+                        </p>
+                    </div>
+                    <!-- Grid column -->
+                    <!-- Grid column -->
+                    <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
+                        <!-- Links -->
+                        <h6 class="text-uppercase fw-bold mb-4">
+                            Products
+                        </h6>
+                        <p>
+                            <a href="/products?category=women" class="text-reset">Women</a>
+                        </p>
+                        <p>
+                            <a href="/products?category=men" class="text-reset">Men</a>
+                        </p>
+                        <p>
+                            <a href="/products?category=boys" class="text-reset">Boys</a>
+                        </p>
+                        <p>
+                            <a href="/products?category=girls" class="text-reset">Girls</a>
+                        </p>
+                    </div>
+                    <!-- Grid column -->
+                    <!-- Grid column -->
+                    <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
+                        <!-- Links -->
+                        <h6 class="text-uppercase fw-bold mb-4">
+                            Useful links
+                        </h6>
+                        <p>
+                            <a href="about" class="text-reset">About Us</a>
+                        </p>
+                        <p>
+                            <a href="/users/login" class="text-reset">Login</a>
+                        </p>
+                        <p>
+                            <a href="/users/register" class="text-reset">Register</a>
+                        </p>
+                        <p>
+                            <a href="orders" class="text-reset">Orders</a>
+                        </p>
+                    </div>
+                    <!-- Grid column -->
+                    <!-- Grid column -->
+                    <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+                        <!-- Links -->
+                        <h6 class="text-uppercase fw-bold mb-4">
+                            Contact
+                        </h6>
+                        <p><i class="fas fa-home me-3"></i>Israel</p>
+                        <p>
+                            <i class="fas fa-envelope me-3"></i>
+                            clothit@clothit.com
+                        </p>
+                        <p><i class="fas fa-phone me-3"></i> + 972 3 234 56 88</p>
+                        <p><i class="fas fa-print me-3"></i> + 972 3 234 56 89</p>
+                    </div>
+                    <!-- Grid column -->
+                </div>
+                <!-- Grid row -->
+            </div>
+        </section>
+        <!-- Section: Links  -->
+        <!-- Copyright -->
+        <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
+            © 2021 Copyright:
+            <a class="text-reset fw-bold" href="#">ClothIt Ltd</a>
         </div>
+        <!-- Copyright -->
     </footer>
+    <!-- Footer -->
     <script src="~/lib/jquery/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"

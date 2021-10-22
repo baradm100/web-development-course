@@ -6,7 +6,6 @@
     var authanticated = Context.User.Identity.IsAuthenticated;
     var userAuthLevel = Context.User.Identity.AuthenticationType;
 }
-<div class="container">
     <h1>Stores</h1>
     <div class="row">
         @{if (Model.ToList().Count == 0)
@@ -91,7 +90,6 @@
             }
         }
     </div>
-</div>
 
 @section Scripts{
     <link rel="stylesheet" href="~/css/branch.css" />

@@ -1,0 +1,39 @@
+﻿@media screen and (max-width: 600px){
+    .resBtn {
+        height: 2rem;
+        width: 6rem;
+        font-size: small;
+    }
+
+    .resHeaderLarge {
+        font-size: 18px;
+    }
+
+    .resHeaderMedium {
+        font-size: 14px;
+    }
+
+    .resHeaderSmall {
+        font-size: small;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .resBtn {
+        height: 2rem;
+        width: 4rem;
+        font-size: 8px;
+    }
+
+    .resHeaderLarge {
+        font-size: 18px;
+    }
+
+    .resHeaderMedium {
+        font-size: 14px;
+    }
+
+    .resHeaderSmall {
+        font-size: small;
+    }
+}

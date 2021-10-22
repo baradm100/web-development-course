@@ -30,12 +30,10 @@
 <form id="quickCartForm" asp-action="DeleteOrderItem" asp-controller="Orders"></form>
 
 <li class="nav-item dropdown">
-    <button type="button" class="nav-link text-dark dropdown-toggle btn position-relative cartIcon"
-        id="quickCartDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-
+    <button type="button" class="nav-link  text-white dropdown-toggle btn position-relative cartIcon"
+        id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="bi bi-cart-fill"></i>
         Cart
-
         <span class="position-absolute mt-1 start-95 translate-middle badge rounded-pill bg-danger" id="quickCartTotal">
             @OrderItems.Count
             <span class="visually-hidden">items</span>

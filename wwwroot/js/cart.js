@@ -35,6 +35,7 @@ $(function () {
     
     function GetSummary() {
         console.log("GetSummary")
+        updateCart(false);
         $.ajax({
             url: "/Orders/GetSummary",
             type: 'GET',

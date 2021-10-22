@@ -1,5 +1,6 @@
 @using web_development_course.Models.ProductModels
 @model web_development_course.Models.Product
+@inject web_development_course.Models.CurrencyService CurrencyService
 
 @{
     ViewData["Title"] = Model.Name;
@@ -7,6 +8,11 @@
     Dictionary<ProductColor, int> ColorsAndCounts = (Dictionary<ProductColor, int>)ViewData["ColorsAndCounts"];
     Dictionary<int, Dictionary<ProductSize, int>> SizesCountByColorIds = (Dictionary<int, Dictionary<ProductSize,
     int>>)ViewData["SizesCountByColorIds"];
+    float currency = CurrencyService.GetCurrentCurrencyValue();
+    string currencySign = CurrencyService.GetCurrencySign();
+    string priceBeforeDiscount = String.Format("{0:0.00}", currency * Model.Price);
+    string priceAfterDiscount = String.Format("{0:0.00}", currency * Model.Price * ((100 - Model.DiscountPercentage) /
+    100));
 }
 
 <script type="text/javascript">
@@ -17,14 +23,14 @@
 
 <div class="container-fluid productPage">
     <div class="row">
-        <div id="carouselExampleIndicators" class="carousel slide col-12 col-lg-4" data-bs-ride="carousel">
+        <div id="carouselProductIndicators" class="carousel slide col-12 col-lg-4" data-bs-ride="carousel">
             <div class="carousel-indicators">
                 @{
                     for (var i = 0; i < Model.ProductImages.Count(); i++)
                     {
                         String extraClass = i == 0 ? "active" : "";
 
-                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="@i"
+                        <button type="button" data-bs-target="#carouselProductIndicators" data-bs-slide-to="@i"
                         class="@extraClass" aria-current="true" aria-label="Photo @i"></button>
 
                     }
@@ -45,16 +51,22 @@
                     }
                 }
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselProductIndicators"
                 data-bs-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Previous</span>
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselProductIndicators"
                 data-bs-slide="next">
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Next</span>
             </button>
+            <div class="card-img-overlay" style="margin-left: 0px">
+                @if (Model.DiscountPercentage != 0)
+                {
+                    <h5 class="discount-on-card">@Model.DiscountPercentage%</h5>
+                }
+            </div>
         </div>
         <div class="col-6 col-12 col-lg-8">
             <div class="alert alert-success d-none" role="alert" id="successNotification">
@@ -65,7 +77,18 @@
                 Unknown error, please try again
             </div>
             <h1>@Model.Name</h1>
-            <h3>@Model.Price$</h3>
+            <h3>
+                @if (Model.DiscountPercentage == 0)
+                {
+                    @priceBeforeDiscount
+                }
+                else
+                {
+                    <span class="discount-txt">@priceBeforeDiscount</span>
+                    @priceAfterDiscount
+                }
+                @currencySign
+            </h3>
             <form id="productForm" asp-action="AddToCart" asp-controller="Orders">
                 <div class="attribute">
                     <label class="form-check-label h5 margin-bottom-0 quantityLabel" for="colorSelection">Color:</label>

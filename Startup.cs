@@ -14,6 +14,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using web_development_course.Models.ProductModels;
+using web_development_course.Models.OrderModels;
+using web_development_course.Models;
+using web_development_course.WebServices;
 
 namespace web_development_course
 {
@@ -46,6 +49,9 @@ namespace web_development_course
              });
 
              services.AddScoped<CategoryModelService>();
+             services.AddScoped<CartService>();
+             services.AddScoped<CurrencyService>();
+             services.AddSingleton<CurrencyConverter>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

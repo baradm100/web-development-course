@@ -19,10 +19,12 @@ namespace web_development_course.Controllers
     public class OrdersController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly CartService _cartService;
 
-        public OrdersController(ApplicationDbContext context)
+        public OrdersController(ApplicationDbContext context, CartService cartService)
         {
             _context = context;
+            _cartService = cartService;
         }
 
         // GET: Orders
@@ -58,6 +60,48 @@ namespace web_development_course.Controllers
 
             return NotFound();
 
+        }
+
+        // GET: Orders/GetCart
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetCart()
+        {
+            int dbUser = await isValidUserAsync();
+            if (dbUser <= 0)
+            {
+                return Unauthorized();
+            }
+
+            List<Object> cartItems = await _cartService.GetUpdatedCartByUserId(dbUser);
+            return Json(cartItems);
+        }
+
+        // DELETE: Orders/DeleteOrderItem/5
+        [HttpDelete]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteOrderItem(int id)
+        {
+            int dbUser = await isValidUserAsync();
+            if (dbUser <= 0)
+            {
+                return Unauthorized();
+            }
+            OrderItem ItemToDelete = await _context.OrderItem
+                .Include(oi => oi.Order)
+                .Where(oi => oi.Id == id && oi.Order.UserId == dbUser)
+                .FirstOrDefaultAsync();
+
+            if (ItemToDelete == null)
+            {
+                return NotFound();
+            }
+
+            _context.OrderItem.Remove(ItemToDelete);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
 
         // GET: Orders/GetItemFinalPrice
@@ -192,11 +236,18 @@ namespace web_development_course.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateAmount(int id, int amount)
         {
-            var order = await _context.OrderItem.FindAsync(id);
+            OrderItem order = await _context.OrderItem.Include(oi => oi.ProductType).Where(oi => oi.Id == id).FirstOrDefaultAsync();
 
             if (order != null)
             {
-                order.Amount = (int)amount;
+                // Checks if we still have in stock the requested amount
+                if (amount > order.ProductType.Quantity)
+                {
+                    return BadRequest(new { errorMessage = Consts.NOT_IN_STOCK });
+                }
+
+                order.Amount = amount;
+
                 _context.OrderItem.Update(order);
                 await _context.SaveChangesAsync();
 
@@ -251,7 +302,7 @@ namespace web_development_course.Controllers
             {
                 return Unauthorized();
             }
-            Order userCart = await GetOrCreateCartForUser(dbUser);
+            Order userCart = await _cartService.GetOrCreateCartForUser(dbUser);
 
             ProductType releventProductType = await _context.ProductType
                 .Include(pd => pd.Product)
@@ -293,23 +344,6 @@ namespace web_development_course.Controllers
             }
 
             return releventOrderItem;
-        }
-
-        private async Task<Order> GetOrCreateCartForUser(int UserId)
-        {
-            Order userCart = await _context.Order
-                .Where(o => o.UserId == UserId && o.IsCart)
-                .FirstOrDefaultAsync();
-
-            if (userCart == null)
-            {
-                // The user does not have a cart, creating a new one
-                userCart = new Order { UserId = UserId, IsCart = true, OrderItems = new List<OrderItem>() };
-                _context.Add(userCart);
-                await _context.SaveChangesAsync();
-            }
-
-            return userCart;
         }
 
         // POST: Orders/Edit/5

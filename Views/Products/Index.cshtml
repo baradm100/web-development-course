@@ -1,17 +1,23 @@
 ﻿@using web_development_course.Models.ProductModels
 @model IEnumerable<web_development_course.Models.Product>
+@inject web_development_course.Models.CurrencyService CurrencyService
+
 
 @{
     ViewData["Title"] = "Index";
     bool shouldShowEdit = (bool) ViewData["shouldShowEdit"];
     List<Product> Products = Model.ToList();
     IEnumerable<ProductColor> ProductColors = (IEnumerable<ProductColor>) ViewData["Colors"];
+    float currency = CurrencyService.GetCurrentCurrencyValue();
+    string currencySign = CurrencyService.GetCurrencySign();
 }
 
 <div class="container-fluid category p-1 text-center text-xl-start">
     @{
     foreach (var product in Products)
     {
+        var priceBeforeDiscount = String.Format("{0:0.00}", currency * product.Price);
+        var priceAfterDiscount = String.Format("{0:0.00}", currency * product.Price * ((100 - @product.DiscountPercentage) / 100));
         <div class="card item border">
             @{
                 Dictionary<ProductSize, int> SizesAndCounts = new Dictionary<ProductSize, int>();
@@ -58,13 +64,28 @@
                     </button>
                 </div>
             </div>
+            <div class="card-img-overlay" style="margin-left: 0px">
+                @if(product.DiscountPercentage != 0) {
+                    <h5 class="discount-on-card">@product.DiscountPercentage%</h5>
+                }
+            </div>
             <div class="card-body position-relative">
                 <span>
                     @product.Name
                 </span>
                 <br />
                 <span class="text-secondary">
-                    @product.Price$
+                    <span>
+                        @if(product.DiscountPercentage == 0) {
+                            @priceBeforeDiscount
+                        }
+                        else
+                        {
+                            <span class="discount-txt">@priceBeforeDiscount</span>
+                            @priceAfterDiscount
+                        }
+                        @currencySign
+                    </span>
                 </span>
                 <div class="text-align-center">
                     @foreach (var item in SizesAndCounts)

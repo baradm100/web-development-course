@@ -51,29 +51,28 @@
                 },
                 'OpeningHours': openingHours
             }
-
             $.ajax({
-                type: 'POST',
-                url: "/Branches/Create",
-                dataType: 'json',
-                data: newBranch,
-                success: function (response) {
-                    if (!response.success) {
-                        if ($("#create").siblings("#existWarning").length == 0)
-                            $("#create").parent("div").append("<div class='alert alert-danger' id='existWarning'>this branch already exist</div>");
-                    } else {
-                        $("#create").siblings("#existWarning").remove();
-                        window.location.href = "/branches";
+                    type: 'POST',
+                    url: "/Branches/Create",
+                    dataType: 'json',
+                    data: newBranch,
+                    success: function (response) {
+                        if (!response.success) {
+                            if ($("#create").siblings("#existWarning").length == 0)
+                                $("#create").parent("div").append("<div class='alert alert-danger' id='existWarning'>this branch already exist</div>");
+                        } else {
+                            $("#create").siblings("#existWarning").remove();
+                            window.location.href = "/branches";
+                        }
                     }
-                }
-            }).done(function () {
-                console.log("done")
-            });
-
+                }).done(function () {
+                    console.log("done")
+                });
         }
         else {
             // clear opening hour
             openingHours = [];
+            return;
         }
     });
 
@@ -175,23 +174,23 @@
 
     function validDay() {
         console.log("validDay")
-
+        var valid = true
         var daysIndex = document.getElementsByClassName("day_selection")
         var hlper = [0, 0, 0, 0, 0, 0, 0];
 
         for (var i = 0; i < daysIndex.length; i++) {
-            hlper[daysIndex[i].value] += 1
+            hlper[daysIndex[i].value] += 1;
         }
         hlper.forEach(function (item, index) {
+            console.log(item + "  " + index);
             if (item > 1) {
                 //raise toast with index
-                console.log("validDay bad " + index)
-                alert("it is not possible to repeat the same day twice - " + days[index])
-                return false
+                valid = false;
+                alert("it is not possible to repeat the same day twice - " + days[index]);
             }
         });
 
-        return true
+        return valid
     }
 
     function validBranch() {

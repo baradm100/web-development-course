@@ -156,28 +156,6 @@ namespace web_development_course.Controllers
         [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var branch = await _context.Branch
-                .Include(b => b.Address)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (branch == null)
-            {
-                return NotFound();
-            }
-
-            return View(branch);
-        }
-
-        // POST: Branches/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,Editor")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
             var branch = await _context.Branch.FindAsync(id);
             var address = await _context.Address.FindAsync(branch.AddressId);
             _context.Address.Remove(address);

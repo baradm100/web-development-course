@@ -5,12 +5,14 @@
     ViewData["isEdit"] = false;
 }
 
-<partial name="_EditCreateBranchPartial" model="Model" view-data="ViewData"/>
+<div class="container">
+    <partial name="_EditCreateBranchPartial" model="Model" view-data="ViewData" />
+</div>
 
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
-    <script src="~/js/branch.js"></script>
+    <script src="~/js/branch/createBranch.js" type="text/javascript"></script>
 
 }

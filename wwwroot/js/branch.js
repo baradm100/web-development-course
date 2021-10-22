@@ -62,6 +62,7 @@ $("#create").click(function () {
                         $("#create").parent("div").append("<div class='alert alert-danger' id='existWarning'>this branch already exist</div>");
                 } else {
                     $("#create").siblings("#existWarning").remove();
+                    window.location.href = "/branches";
                 }
             }
         }).done(function () {

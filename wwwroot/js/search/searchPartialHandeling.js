@@ -50,8 +50,10 @@
         success: function (response) {
             if (response.success == true) {
                 Success = true;
-                maxPrice = response.max
+                maxPrice = response.max;
+                sign = response.sign;
                 $price.attr("max", maxPrice);
+
             }
         },
         error: function (result) {
@@ -59,7 +61,7 @@
             return false
         },
         complete: function () {
-            $("#dynamicPrice").text(maxPrice);
+            $("#dynamicPrice").text(maxPrice + " " + sign);
             $price.val(maxPrice);
         },
         timeout: 10000,
@@ -88,5 +90,5 @@
         branchAdvancedSearch($branchName.val());
     });
 
-    $price.on("change", (event) => $("#dynamicPrice").text($price.val()));
+    $price.on("change", (event) => $("#dynamicPrice").text($price.val() + " " + sign));
 });

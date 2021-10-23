@@ -21,11 +21,19 @@ namespace web_development_course.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly TwitterApi twitterApi;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly Dictionary<int, string> Currencies;
 
-        public ProductsController(ApplicationDbContext context)
+        public ProductsController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             twitterApi = new TwitterApi();
+            _httpContextAccessor = httpContextAccessor;
+            Currencies = new Dictionary<int, string>();
+            Currencies.Add(1, "$");
+            Currencies.Add(2, "₪");
+            Currencies.Add(3, "€");
+            Currencies.Add(4, "£");
         }
 
         // GET: Products?categoryId=5
@@ -159,9 +167,17 @@ namespace web_development_course.Controllers
             }
 
             var maxPrice = await _context.Product.MaxAsync(p => p.Price);
+            float currency = 1;
+            if (_httpContextAccessor.HttpContext.Request.Cookies["currency"] != null)
+                currency = float.Parse(_httpContextAccessor.HttpContext.Request.Cookies["currency"]);
+            var currencySign = "$";
+            if (_httpContextAccessor.HttpContext.Request.Cookies["currencySign"] != null)
+            {
+                currencySign = Currencies[int.Parse(_httpContextAccessor.HttpContext.Request.Cookies["CurrencySign"])];
+            }
 
             if (maxPrice != 0)
-                return Json(new { success = true, max = maxPrice });
+                return Json(new { success = true, max = maxPrice * currency, sign = currencySign });
             return Json(new { success = false });
         }
 

@@ -25,6 +25,8 @@ namespace web_development_course.Controllers
         {
             if (name != null)
             {
+                var q = await _context.User.FirstOrDefaultAsync(c => (c.FirstName + " " + c.LastName) == User.Identity.Name);
+                ViewData["userType"] = q.UserType;
                 var SearchedBranches = _context.Branch.Include(b => b.Address).Include(d => d.OpeningHours)
                     .Where(p => p.Name.ToLower().Contains(name.ToLower()) ||
                     p.Address.City.Contains(name.ToLower()) || p.Address.Street.ToLower().Contains(name.ToLower()));

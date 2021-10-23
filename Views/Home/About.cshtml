@@ -2,43 +2,71 @@
     ViewData["Title"] = "About Us";
 }
 
+<link rel="stylesheet" href="~/css/about.css" />
 
-<div class="container-fluid category p-1 text-center text-xl-start">
+<div class="container category text-center">
     <div class="col aligm-self-center text-center">
-        <div class="col-12">
-            <canvas id="myCanvas">
+        <section class="patrik-hand">
+            <div class="col-12">
+                <canvas id="myCanvas">
+                </canvas>
+            </div>
+            <aside>
+                We believe in a world where you have total freedom to be you, without judgement.
+                To experiment. To express yourself.<br />
+                To be brave and grab life as the extraordinary adventure it is.<br />
+                So we make sure everyone has an equal chance to discover all the amazing things they’re capable of – no matter who they are, where they’re from or what looks they like to boss.
+                <strong><br /> We exist to give you the confidence to be whoever you want to be.</strong>
+            </aside>
+        </section>
+        <section class="bg-light mt-4 pt-4 pb-2" style="border-radius:30px; box-shadow:5px 10px black;">
+            <div class="d-md-flex justify-content-between mx-4">
+                <div>
+                    <figure class="figure ">
+                        <img src="~/assets/noam.jpg" class="figure-img img-fluid rounded" alt="Main Designer Noam Peleg" style="width:250px; height:250px;">
+                        <figcaption class="figure-caption"><strong>Main Designer Noam Peleg</strong></figcaption>
+                    </figure>
+                </div>
+                <div>
+                    <figure class="figure ">
+                        <img src="~/assets/bar.jpg" class="figure-img img-fluid rounded" alt="CEO Bar Admoni" style="width: 250px; height: 250px;">
+                        <figcaption class="figure-caption"><strong>CEO Bar Admoni</strong></figcaption>
+                    </figure>
+                </div>
+                <div>
+                    <figure class="figure ">
+                        <img src="~/assets/Itay.jpg" class="figure-img img-fluid rounded" alt="CMO Itay Frishman" style="width: 250px; height: 250px; border-radius: 50%">
+                        <figcaption class="figure-caption"><strong>CMO Itay Frishman</strong></figcaption>
+                    </figure>
+                </div>
+            </div>
+        </section>
+        <section class="bg-grey">
+            <canvas id="valuesCanvas">
             </canvas>
-        </div>
-        <div>
-            We believe in a world where you have total freedom to be you, without judgement.
-            To experiment. To express yourself. To be brave and grab life as the extraordinary adventure it is.
-            So we make sure everyone has an equal chance to discover all the amazing things they’re capable of – no matter who they are, where they’re from or what looks they like to boss.
-            We exist to give you the confidence to be whoever you want to be.
-        </div>
+            <div id="values">
+                <p class="patrik-hand"><strong>Fair Prices</strong><br />We are believe that with a fair price both sides can be HAPPY!</p>
+                <p class="patrik-hand"><strong>Good Quality</strong><br /> We know for sure, if our product will be in good quality, you'll be HAPPY!</p>
+                <p class="patrik-hand"><strong>Fast Shipping</strong><br /> If you will get your product fast enough, you'll be HAPPY!</p>
+            </div>
+        </section>
 
-        <div class="mt-4">
-            <figure class="figure">
-                <img src="~/assets/noam.jpg" class="figure-img img-fluid rounded" alt="Main Designer Noam Peleg" style="width:250px; height:250px;">
-                <figcaption class="figure-caption"><strong>Main Designer Noam Peleg</strong></figcaption>
-            </figure>
-            <figure class="figure">
-                <img src="~/assets/bar.jpg" class="figure-img img-fluid rounded" alt="CEO Bar Admoni" style="width: 250px; height: 250px;">
-                <figcaption class="figure-caption"><strong>CEO Bar Admoni</strong></figcaption>
-            </figure>
-            <figure class="figure" >
-                <img src="~/assets/Itay.jpg" class="figure-img img-fluid rounded" alt="CMO Itay Frishman" style="width: 250px; height: 250px; border-radius: 50%">
-                <figcaption class="figure-caption"><strong>CMO Itay Frishman</strong></figcaption>
-            </figure>
-        </div>
 
     </div>
 
-<script>
-    var canvas = document.getElementById("myCanvas");
-    var ctx = canvas.getContext("2d");
-    ctx.font = "40px Comic Sans MS";
-    ctx.fillStyle = "black";
-    ctx.textAlign = "center";
-    ctx.fillText("WHO WE ARE", canvas.width / 2, canvas.height / 2);
+    <script>
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+        ctx.font = "40px Comic Sans MS";
+        ctx.fillStyle = "black";
+        ctx.textAlign = "center";
+        ctx.fillText("WHO WE ARE", canvas.width / 2, canvas.height / 2);
 
-</script>
+        var canvas = document.getElementById("valuesCanvas");
+        var ctx = canvas.getContext("2d");
+        ctx.font = "40px Comic Sans MS";
+        ctx.fillStyle = "black";
+        ctx.textAlign = "center";
+        ctx.fillText("OUR VALUES", canvas.width / 2, canvas.height / 2);
+
+    </script>

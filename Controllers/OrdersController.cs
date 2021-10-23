@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -20,11 +21,19 @@ namespace web_development_course.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly CartService _cartService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly Dictionary<int, string> Currencies;
 
-        public OrdersController(ApplicationDbContext context, CartService cartService)
+        public OrdersController(ApplicationDbContext context, CartService cartService, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _cartService = cartService;
+            _httpContextAccessor = httpContextAccessor;
+            Currencies = new Dictionary<int, string>();
+            Currencies.Add(1, "$");
+            Currencies.Add(2, "₪");
+            Currencies.Add(3, "€");
+            Currencies.Add(4, "£");
         }
 
         // GET: Orders
@@ -116,8 +125,17 @@ namespace web_development_course.Controllers
                                     Include(o => o.ProductType.Product).
                                     Where(o => o.Id == orderId && o.Order.IsCart && o.Order.UserId == dbUser).FirstAsync());
 
+                float currency = 1;
+                if (_httpContextAccessor.HttpContext.Request.Cookies["currency"] != null)
+                    currency = float.Parse(_httpContextAccessor.HttpContext.Request.Cookies["currency"]);
+                var currencySign = "$";
+                if (_httpContextAccessor.HttpContext.Request.Cookies["currencySign"] != null)
+                {
+                    currencySign = Currencies[int.Parse(_httpContextAccessor.HttpContext.Request.Cookies["CurrencySign"])];
+                }
+
                 var amount = order.Amount;
-                var price = order.ProductType.Product.Price;
+                var price = order.ProductType.Product.Price * currency;
                 var discount = order.ProductType.Product.DiscountPercentage;
                 discount = discount > 0 ? ((100 - discount) / 100) : 1;
                 var totalPrice = price * discount * amount;
@@ -126,7 +144,7 @@ namespace web_development_course.Controllers
                 _context.OrderItem.Update(order);
                 await _context.SaveChangesAsync();
 
-                return Json(new { success = true, data = new { totalPrice = totalPrice, currecnyIndex = 0 } });
+                return Json(new { success = true, data = new { totalPrice = totalPrice, sign = currencySign } });
             }
 
             return Json(new { success = false });
@@ -175,9 +193,18 @@ namespace web_development_course.Controllers
                 double totalDiscount = 0;
                 double totalPrice = 0;
 
+                float currency = 1;
+                if (_httpContextAccessor.HttpContext.Request.Cookies["currency"] != null)
+                    currency = float.Parse(_httpContextAccessor.HttpContext.Request.Cookies["currency"]);
+                var currencySign = "$";
+                if (_httpContextAccessor.HttpContext.Request.Cookies["currencySign"] != null)
+                {
+                    currencySign = Currencies[int.Parse(_httpContextAccessor.HttpContext.Request.Cookies["CurrencySign"])];
+                }
+
                 foreach (var data in orders)
                 {
-                    var price = data.Amount * data.ProductType.Product.Price;
+                    var price = data.Amount * data.ProductType.Product.Price * currency;
                     var discountNum = (data.ProductType.Product.DiscountPercentage / 100);
 
                     // if there is no discount the amount will be 0 
@@ -197,8 +224,7 @@ namespace web_development_course.Controllers
                         totalPrice = totalPrice,
                         midPrice = midPrice,
                         saving = totalDiscount,
-                        //later change this!
-                        currencyIndex = 0
+                        sign = currencySign,
                     }
                 });
             }

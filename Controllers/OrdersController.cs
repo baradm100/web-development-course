@@ -206,6 +206,39 @@ namespace web_development_course.Controllers
             return Json(new { success = false });
         }
 
+        // GET: Orders/json
+        [Route("orders/json")]
+        [Authorize(Roles = "Admin,Editor")]
+        public async Task<IActionResult> getOrdersJsonAsync()
+        {
+            var orders = from order in _context.Order
+                         join item in _context.OrderItem on order.Id equals item.OrderId
+                         join user in _context.User on order.UserId equals user.Id
+                         join product in _context.ProductType on item.ProductTypeID equals product.Id
+                         join pCategory in _context.ProductCategory on product.ProductId equals pCategory.ProductId
+                         join category in _context.Category on pCategory.CategoryId equals category.Id
+                         select new { 
+                             order.Id, 
+                             user.FirstName, 
+                             user.LastName ,
+                             date = order.Date.ToShortDateString(),
+                             order.IsCart,
+                             item.TotalPrice,
+                             category.Name 
+                         };
+
+            var o = await orders.ToListAsync();
+            if (orders != null)
+            {
+                return Json(new
+                {
+                    success = true,
+                    orders = o,
+                }) ;
+            }
+            return Json(new { success = false });
+        }
+
         // GET: Orders/Details/5
         [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> Details(int? id)

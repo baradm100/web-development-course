@@ -207,6 +207,7 @@ namespace web_development_course.Controllers
         }
 
         // GET: Orders/json
+        [HttpGet]
         [Route("orders/json")]
         [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> getOrdersJsonAsync()
@@ -214,17 +215,19 @@ namespace web_development_course.Controllers
             var orders = from order in _context.Order
                          join item in _context.OrderItem on order.Id equals item.OrderId
                          join user in _context.User on order.UserId equals user.Id
-                         join product in _context.ProductType on item.ProductTypeID equals product.Id
-                         join pCategory in _context.ProductCategory on product.ProductId equals pCategory.ProductId
-                         join category in _context.Category on pCategory.CategoryId equals category.Id
+                         join productType in _context.ProductType on item.ProductTypeID equals productType.Id
+                         join pCategory in _context.ProductCategory on productType.ProductId equals pCategory.ProductId
+                         //join category in _context.Category on pCategory.CategoryId equals category.Id
+                         join product in _context.Product on productType.ProductId equals product.Id
                          select new { 
                              order.Id, 
                              user.FirstName, 
                              user.LastName ,
                              date = order.Date.ToShortDateString(),
                              order.IsCart,
+                             item.Amount,
                              item.TotalPrice,
-                             category.Name 
+                             product.Name,
                          };
 
             var o = await orders.ToListAsync();

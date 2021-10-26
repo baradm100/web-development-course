@@ -82,6 +82,67 @@ namespace web_development_course.Controllers
             return View(user);
         }
 
+        [HttpGet]
+        [Route("users/json")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> getUsersJson()
+        { 
+            var q = from user in _context.User 
+                    select new { user.Id, user.FirstName, user.LastName, userType = user.UserType.ToString(), user.Email };
+            var users = await q.ToListAsync();
+            return Json(new 
+            { 
+                success = true, 
+                users
+            });
+        }
+
+        [HttpPost]
+        [Route("users/Delete")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteUser(int id, string role)
+        {
+            var q = await _context.User.FirstOrDefaultAsync(a => a.Id == id);
+            if (q == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = "user not found"
+                });
+            }
+            _context.User.Remove(q);
+            _context.SaveChanges();
+            return Json(new
+            {
+                success = true,
+            });
+        }
+
+
+        [HttpPost]
+        [Route("users/ChangeRole")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ChangeRole(int id , string role)
+        {
+            var q = await _context.User.FirstOrDefaultAsync(a => a.Id == id);
+            if (q == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = "user not found"
+                });
+            }
+            q.UserType = Enum.Parse<UserLevel>(role);
+            _context.Update(q);
+            _context.SaveChanges();
+            return Json(new
+            {
+                success = true,
+            });
+        }
+
         // GET: Users/Login
         public IActionResult Login()
         {

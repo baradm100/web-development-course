@@ -106,7 +106,7 @@
                 if (response.success == true) {
                     $this.attr("disabled", true);
                 } else {
-                    console.log(response.error);
+                    alert(response.error);
                 }
             },
             error: function (result) {
@@ -135,7 +135,7 @@
                 if (response.success == true) {
                     $row.remove();
                 } else {
-                    console.log(response.error);
+                    alert(response.error);
                 }
             },
             error: function (result) {

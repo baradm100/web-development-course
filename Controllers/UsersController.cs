@@ -89,6 +89,7 @@ namespace web_development_course.Controllers
         { 
             var q = from user in _context.User 
                     select new { user.Id, user.FirstName, user.LastName, userType = user.UserType.ToString(), user.Email };
+
             var users = await q.ToListAsync();
             return Json(new 
             { 
@@ -103,6 +104,14 @@ namespace web_development_course.Controllers
         public async Task<IActionResult> DeleteUser(int id, string role)
         {
             var q = await _context.User.FirstOrDefaultAsync(a => a.Id == id);
+            if (q.Email == "admin@admin.com")
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = "cannot delete this user",
+                });
+            }
             if (q == null)
             {
                 return Json(new
@@ -132,6 +141,14 @@ namespace web_development_course.Controllers
                 {
                     success = false,
                     error = "user not found"
+                });
+            }
+            if (q.Email == "admin@admin.com")
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = "cannot change this user role",
                 });
             }
             q.UserType = Enum.Parse<UserLevel>(role);

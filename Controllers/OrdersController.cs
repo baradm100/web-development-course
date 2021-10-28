@@ -242,6 +242,26 @@ namespace web_development_course.Controllers
             return Json(new { success = false });
         }
 
+        // GET: Orders/json
+        [HttpGet]
+        [Route("orders/monthsummery/json")]
+        [Authorize(Roles = "Admin,Editor")]
+        public async Task<IActionResult> getOrdersByMonthJsonAsync()
+        {
+            var orders = from order in _context.Order
+                         where order.IsCart == false
+                         join item in _context.OrderItem on order.Id equals item.OrderId
+                         join productType in _context.ProductType on item.ProductTypeID equals productType.Id
+                         join pCategory in _context.ProductCategory on productType.ProductId equals pCategory.ProductId
+                         join category in _context.Category on pCategory.CategoryId equals category.Id
+                         group new { item.Amount } by order.Date.Month into sum
+                         select new { sum.Key, amount = sum.Select(item => item.Amount).Sum() };
+
+            return Json(new { success = true, orders = await orders.ToListAsync() });
+        }
+
+
+
         // GET: Orders/Details/5
         [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> Details(int? id)

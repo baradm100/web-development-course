@@ -1,4 +1,19 @@
-﻿$(function () {
+﻿const months = {
+    1: "January",
+    2: "February",
+    3: "March",
+    4: "April",
+    5: "May",
+    6: "June",
+    7: "July",
+    8: "August",
+    9: "September",
+    10: "October",
+    11: "November",
+    12: "December",
+}
+
+$(function () {
     var $dealsTableBody = $(".dealsTableBody");
     var $usersTableBody = $(".usersBodyTable");
     var formData = new FormData();
@@ -77,6 +92,8 @@
         timeout: 5000,
     });
 
+
+
     function enableSelect() {
         console.log("here");
         var tr = $(this).parents(".tableRow");
@@ -117,6 +134,174 @@
         });
 
     }
+// *********** d3 ***********
+    const purchasesByCategory = () => {
+        const width = 450;
+        const heigt = 400;
+        const margin = { top: 50, bottom: 50, left: 50, right: 50 }
+
+        const svg = d3.select(".d3-container-category-purchases").append('svg')
+            .attr('heigt', heigt - margin.top - margin.bottom)
+            .attr('width', "100%")
+            .attr('viewBox', [0, 0, width, heigt]);
+
+ 
+
+        $.ajax({
+            url: "/products/summery/json/",
+            type: 'GET',
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function (response) {
+                if (response.success == true) {
+                    console.log(response);
+                    const max = Math.max.apply(Math, (response.orders).map(function (o) { return o.amount; }));
+                    const x = d3.scaleBand().domain(d3.range(response.orders.length))
+                        .range([margin.left, width - margin.right]).padding(0.2);
+                    const y = d3.scaleLinear().domain([0, max]).range([heigt - margin.bottom, margin.top])
+                    svg.append('g').attr('fill', 'royalblue').selectAll('rect').data(response.orders.sort((a, b) => d3.descending(a.amount, b.amount)))
+                        .join('rect').attr('x', (d, i) => x(i)).attr('y', (d) => y(d.amount)).attr('height', d => y(0) - y(d.amount))
+                        .attr('width', x.bandwidth());
+                    function yAxis(g) {
+                        g.attr("transform", `translate(${margin.left}, 0)`)
+                            .call(d3.axisLeft(y).ticks(null, (response.orders).format))
+                            .attr("font-size", '15px')
+                    }
+
+                    function xAxis(g) {
+                        g.attr("transform", `translate(0,${heigt - margin.bottom})`)
+                            .call(d3.axisBottom(x).tickFormat(i => (response.orders)[i].key))
+                            .attr("font-size", '15px')
+                    }
+                    svg.append("g").call(xAxis);
+                    svg.append("g").call(yAxis);
+                    svg.node();
+
+                }
+
+            },
+            error: function (result) {
+                console.log(result);
+                return false;
+            },
+            timeout: 5000,
+        });
+    }
+
+    const availableStcok = () => {
+        const width = 450;
+        const heigt = 400;
+        const margin = { top: 50, bottom: 50, left: 50, right: 50 }
+
+        const svg = d3.select(".d3-container-available-stock-category").append('svg')
+            .attr('heigt', heigt - margin.top - margin.bottom)
+            .attr('width', "100%")
+            .attr('viewBox', [0, 0, width, heigt]);
+
+
+        $.ajax({
+            url: "/products/availablestock/json/",
+            type: 'GET',
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function (response) {
+                if (response.success == true) {
+                    console.log(response);
+                    const max = Math.max.apply(Math, (response.products).map(function (o) { return o.amount; }));
+                    const x = d3.scaleBand().domain(d3.range(response.products.length))
+                        .range([margin.left, width - margin.right]).padding(0.1);
+                    const y = d3.scaleLinear().domain([0, max]).range([heigt - margin.bottom, margin.top])
+                    svg.append('g').attr('fill', 'royalblue').selectAll('rect').data(response.products.sort((a, b) => d3.descending(a.amount, b.amount)))
+                        .join('rect').attr('x', (d, i) => x(i)).attr('y', (d) => y(d.amount)).attr('height', d => y(0) - y(d.amount))
+                        .attr('width', x.bandwidth());
+                    function yAxis(g) {
+                        g.attr("transform", `translate(${margin.left}, 0)`)
+                            .call(d3.axisLeft(y).ticks(null, (response.products).format))
+                            .attr("font-size", '15px')
+                    }
+
+                    function xAxis(g) {
+                        g.attr("transform", `translate(0,${heigt - margin.bottom})`)
+                            .call(d3.axisBottom(x).tickFormat(i => (response.products)[i].key))
+                            .attr("font-size", '15px')
+                    }
+                    svg.append("g").call(xAxis);
+                    svg.append("g").call(yAxis);
+                    svg.node();
+
+                }
+
+            },
+            error: function (result) {
+                console.log(result);
+                return false;
+            },
+            timeout: 5000,
+        });
+    }
+
+    const ordersByMonth = () => {
+        const width = 450;
+        const heigt = 400;
+        const margin = { top: 50, bottom: 50, left: 50, right: 50 }
+
+        const svg = d3.select(".d3-container-order-by-month").append('svg')
+            .attr('heigt', heigt - margin.top - margin.bottom)
+            .attr('width', "100%")
+            .attr('viewBox', [0, 0, width, heigt]);
+
+
+        $.ajax({
+            url: "/orders/monthsummery/json/",
+            type: 'GET',
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function (response) {
+                if (response.success == true) {
+                    console.log(response);
+                    const max = Math.max.apply(Math, (response.orders).map(function (o) { return o.amount; }));
+                    const x = d3.scaleBand().domain(d3.range(response.orders.length))
+                        .range([margin.left, width - margin.right]).padding(0.1);
+                    const y = d3.scaleLinear().domain([0, max]).range([heigt - margin.bottom, margin.top])
+                    svg.append('g').attr('fill', 'royalblue').selectAll('rect').data(response.orders.sort((a, b) => d3.descending(a.amount, b.amount)))
+                        .join('rect').attr('x', (d, i) => x(i)).attr('y', (d) => y(d.amount)).attr('height', d => y(0) - y(d.amount))
+                        .attr('width', x.bandwidth());
+                    function yAxis(g) {
+                        g.attr("transform", `translate(${margin.left}, 0)`)
+                            .call(d3.axisLeft(y).ticks(null, (response.orders).format))
+                            .attr("font-size", '15px')
+                    }
+
+                    function xAxis(g) {
+                        g.attr("transform", `translate(0,${heigt - margin.bottom})`)
+                            .call(d3.axisBottom(x).tickFormat(i => months[(response.orders)[i].key]))
+                            .attr("font-size", '15px')
+                    }
+                    svg.append("g").call(xAxis);
+                    svg.append("g").call(yAxis);
+                    svg.node();
+
+                }
+
+            },
+            error: function (result) {
+                console.log(result);
+                return false;
+            },
+            timeout: 5000,
+        });
+    }
+
+    purchasesByCategory();
+    ordersByMonth();
+    availableStcok();
+
 
     function deleteUser() {
         var $row = $(this).parents(".tableRow");

@@ -1,11 +1,4 @@
-﻿@model IEnumerable<web_development_course.Models.OrderModels.OrderItem>
-
-@{
-    //    var orderId = Model.First().OrderId;
-
-}
-
-<div class="modal fade" id="checkoutModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+﻿<div class="modal fade" id="checkoutModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header background-black">
@@ -187,8 +180,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                @*add order id*@
-                <button type="button" class="btn btn-success" id="place-order" orderId="99" disabled style="width:100%">PLACE ORDER</button>
+                <button type="button" class="btn btn-success" id="place-order" disabled style="width:100%">PLACE ORDER</button>
             </div>
         </div>
     </div>

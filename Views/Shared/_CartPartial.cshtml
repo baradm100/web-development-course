@@ -148,23 +148,26 @@
 
                 </div>
             </li>
-
             <li>
                 <hr class="dropdown-divider @seperatorExtraClass">
             </li>
         }
             </div>
-            <li>
-                <hr class="dropdown-divider">
-            </li>
-            <li>
-                <div class="container">
-                    <div class="row">
-                        <a class="btn btn-secondary col-5" href="/Orders/Cart" role="button">View Cart</a>
-                        <button class="btn btn-primary col-5 ms-auto" id="checkout" data-bs-toggle="modal" data-bs-target="#checkoutModal">Checkout</button>
+
+            @if (OrderItems.Count != 0)
+            {
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li>
+                    <div class="container">
+                        <div class="row">
+                            <a class="btn btn-secondary col-5" href="/Orders/Cart" role="button">View Cart</a>
+                            <button class="btn btn-primary col-5 ms-auto" id="checkout" data-bs-toggle="modal" data-bs-target="#checkoutModal">Checkout</button>
+                        </div>
                     </div>
-                </div>
-            </li>
+                </li>
+            }
         </ul>
     </li>
     <partial name="_CheckoutPratial" />

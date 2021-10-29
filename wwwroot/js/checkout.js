@@ -229,7 +229,6 @@ $(function () {
             type: 'Post',
             dataType: 'json',
             data: {
-                "orderId" : 3 /*$("#place-order").attr("orderId")*/,
                 "totalPrice": $("#total-price").val(),
                 "deliveryOption": $(".delivery-border").attr("id"),
                 "phone" : $("#floatingPhone").val(),

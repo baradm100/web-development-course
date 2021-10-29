@@ -37,23 +37,10 @@ namespace web_development_course.Controllers
             Currencies.Add(4, "£");
         }
 
-        // GET: Orders
-        [Authorize(Roles = "Admin,Editor")]
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Order.ToListAsync());
-        }
-
         // GET: Orders/Cart
         //<summary> the context use for know the current loged in user
         public async Task<IActionResult> Cart()
         {
-            // getting the update value of the currency
-            CurrencyConverter converter = new CurrencyConverter();
-            ViewData["ILS"] = converter.Ils;
-            ViewData["GBP"] = converter.Gbp;
-            ViewData["EUR"] = converter.Eur;
-
             int dbUser = await isValidUserAsync();
 
             if (dbUser > 0)
@@ -286,7 +273,7 @@ namespace web_development_course.Controllers
 
         //Post: Orders/PlaceOrder
         [HttpPost]
-        public async Task<IActionResult> PlaceOrder(int? orderId, double totalPrice, string? deliveryOption, string phone, [Bind("Id,City,Street,BuildingNumber")] Address? address)
+        public async Task<IActionResult> PlaceOrder(double totalPrice, string? deliveryOption, string phone, [Bind("Id,City,Street,BuildingNumber")] Address? address)
         {
             int dbUser = await isValidUserAsync();
             DeliveryOptions option = ((DeliveryOptions)DeliveryExtractor(deliveryOption));
@@ -297,88 +284,85 @@ namespace web_development_course.Controllers
 
             if (dbUser > 0)
             {
-                if (orderId != null)
+                 var order = await GetOrderByUser(dbUser);
+
+                if (order != null)
                 {
-                    var order = await _context.Order.FindAsync(orderId);
-
-                    if (order != null)
+                    // check that this is the user order id
+                    if (order.UserId == dbUser)
                     {
-                        // check that this is the user order id
-                        if (order.UserId == dbUser)
+                        order.Delivery = option;
+                        order.Date = DateTime.Now;
+                        order.IsCart = false;
+                        var user = await _context.User.FindAsync(dbUser);
+
+                        // Check if the Address already exsit in the Db
+                        Address dbAdr = await IsAddressinDbAsync(address);
+
+                        if (dbAdr == null)
                         {
-                            order.Delivery = option;
-                            order.Date = DateTime.Now;
-                            order.IsCart = false;
-                            var user = await _context.User.FindAsync(dbUser);
-
-                            // Check if the Address already exsit in the Db
-                            Address dbAdr = await IsAddressinDbAsync(address);
-
-                            if (dbAdr == null)
-                            {
-                                await _context.Address.AddAsync(tempAdr);
-                                _context.SaveChanges();
-                                // Call dbAdr again for getting it's correct id in the database 
-                                dbAdr = await IsAddressinDbAsync(address);
-                            }
-
-                            if (dbAdr == null)
-                            {
-                                return Json(new { success = false, textStatus = "WE have qutatiy problem" });
-                            }
-
-                            // check is the address is in the users adresses
-                            if (user.Addresses == null)
-                            {
-                                user.Addresses = new List<Address> { dbAdr };
-                                _context.User.Update(user);
-                            }
-                            else if (!user.Addresses.Contains(dbAdr))
-                            {
-                                user.Addresses.Append(dbAdr);
-                                _context.User.Update(user);
-                            }
-
-                            // Check if the user phone numbr changed
-                            if (user.Phone != phone)
-                            {
-                                user.Phone = phone;
-                                _context.User.Update(user);
-                            }
-
-                            // check if the user is in the address users list 
-                            if (address.Users == null)
-                            {
-                                address.Users = new List<User> { user };
-                                _context.Address.Update(dbAdr);
-                            }
-                            else if (!address.Users.Contains(user))
-                            {
-                                address.Users.Append(user);
-                                _context.Address.Update(address);
-                            }
-
-                            // Check there is enough items before commit the order
-                            if (await UpdateQuantity(order))
-                            {
-                                _context.Order.Update(order);
-                                await _context.SaveChangesAsync();
-                            }
-                            else
-                            {
-                                return Json(new { success = false, textStatus = "WE have qutatiy problem" });
-                            }
-
-                            return Json(new
-                            {
-                                success = true,
-                                data = new
-                                {
-                                    orderId = order.Id,
-                                    price = totalPrice,
-                                }
-                            });
+                            await _context.Address.AddAsync(tempAdr);
+                            _context.SaveChanges();
+                            // Call dbAdr again for getting it's correct id in the database 
+                            dbAdr = await IsAddressinDbAsync(address);
                         }
+
+                        if (dbAdr == null)
+                        {
+                            return Json(new { success = false, textStatus = "WE have qutatiy problem" });
+                        }
+
+                        // check is the address is in the users adresses
+                        if (user.Addresses == null)
+                        {
+                            user.Addresses = new List<Address> { dbAdr };
+                            _context.User.Update(user);
+                        }
+                        else if (!user.Addresses.Contains(dbAdr))
+                        {
+                            user.Addresses.Append(dbAdr);
+                            _context.User.Update(user);
+                        }
+
+                        // Check if the user phone numbr changed
+                        if (user.Phone != phone)
+                        {
+                            user.Phone = phone;
+                            _context.User.Update(user);
+                        }
+
+                        // check if the user is in the address users list 
+                        if (address.Users == null)
+                        {
+                            address.Users = new List<User> { user };
+                            _context.Address.Update(dbAdr);
+                        }
+                        else if (!address.Users.Contains(user))
+                        {
+                            address.Users.Append(user);
+                            _context.Address.Update(address);
+                        }
+
+                        // Check there is enough items before commit the order
+                        if (await UpdateQuantity(order))
+                        {
+                            _context.Order.Update(order);
+                            await _context.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            return Json(new { success = false, textStatus = "WE have qutatiy problem" });
+                        }
+
+                        return Json(new
+                        {
+                            success = true,
+                            data = new
+                            {
+                                orderId = order.Id,
+                                price = totalPrice,
+                            }
+                        });
                     }
                 }
 
@@ -614,6 +598,12 @@ namespace web_development_course.Controllers
             }
 
             return -1;
+        }
+
+        private async Task<Order> GetOrderByUser(int userid)
+        {
+            var q = await _context.Order.Where(o => o.UserId == userid && o.IsCart).FirstOrDefaultAsync();
+            return q;
         }
 
         private int DeliveryExtractor(string delivery)

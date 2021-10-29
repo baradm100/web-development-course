@@ -12,7 +12,7 @@
     if (authanticated)
     {
         OrderItems = await CartService.GetOrderItemsByUserName(user);
-        if(OrderItems.Count > 0)
+        if (OrderItems.Count > 0)
         {
             LastOrderId = OrderItems.Last().Id;
         }
@@ -31,7 +31,7 @@
 
 <li class="nav-item dropdown">
     <button type="button" class="nav-link  text-white dropdown-toggle btn position-relative cartIcon"
-        id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="bi bi-cart-fill"></i>
         Cart
         <span class="position-absolute mt-1 start-95 translate-middle badge rounded-pill bg-danger" id="quickCartTotal">
@@ -46,10 +46,11 @@
             </div>
         </div>
         <div class="itemList" id="quickCartItemsList">
-            @if(OrderItems.Count == 0) {
+            @if (OrderItems.Count == 0)
+            {
                 <span>Your cart is empty</span>
             }
-            
+
             @foreach (OrderItem orderItem in OrderItems)
             {
                 String carouselId = "carouselQuickCartIndicators-" + orderItem.Id;
@@ -57,111 +58,124 @@
                 var priceBeforeDiscount = String.Format("{0:0.00}", currency * orderItem.ProductType.Product.Price * orderItem.Amount);
                 var priceAfterDiscount = String.Format("{0:0.00}", currency * orderItem.ProductType.Product.Price * ((100 - orderItem.ProductType.Product.DiscountPercentage) / 100));
 
-                <li class="row cartItem">
-                    <div id="@carouselId" class="carousel slide col" data-bs-ride="carousel">
-                        <div class="carousel-indicators">
-                            @{
-                                for (var i = 0; i < orderItem.ProductType.Product.ProductImages.Count(); i++)
-                                {
-                                    String extraClass = i == 0 ? "active" : "";
+            <li class="row cartItem">
+                <div id="@carouselId" class="carousel slide col" data-bs-ride="carousel">
+                    <div class="carousel-indicators">
+                        @{
+                            for (var i = 0; i < orderItem.ProductType.Product.ProductImages.Count(); i++)
+                            {
+                                String extraClass = i == 0 ? "active" : "";
 
-                                    <button type="button" data-bs-target="#@carouselId" data-bs-slide-to="@i"
-                                class="@extraClass" aria-current="true" aria-label="Photo @i"></button>
+                                <button type="button" data-bs-target="#@carouselId" data-bs-slide-to="@i"
+                                        class="@extraClass" aria-current="true" aria-label="Photo @i"></button>
 
-                                }
                             }
-                        </div>
-                        <div class="carousel-inner">
-                            @{
-                                bool isFirst = true;
-                                @foreach (ProductImage image in orderItem.ProductType.Product.ProductImages)
-                                {
-                                    String base64 = Convert.ToBase64String(image.ImageData);
-                                    String extraClass = isFirst ? "active" : "";
-                                    isFirst = false;
-
-                                    <div class="carousel-item @extraClass">
-                                        <img src="data:image/png;base64,@base64" class="d-block w-100 h-100" width="100"
-                                    height="250" />
-                                    </div>
-                                }
-                            }
-                        </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#@carouselId"
-                            data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#@carouselId"
-                            data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
-                    </div>
-                    <div class="discountOverlay">
-                        @if(orderItem.ProductType.Product.DiscountPercentage != 0) {
-                            <h5 class="discount-on-card">@orderItem.ProductType.Product.DiscountPercentage%</h5>
                         }
                     </div>
-                    <div class="col cartItemDetails">
-                        <span>
-                            <a asp-action="Details" asp-controller="Products" class="link-primary"
-                            asp-route-id="@orderItem.ProductType.Product.Id">
-                                @orderItem.ProductType.Product.Name
-                            </a>
-                        </span>
-                        <br />
-                        <span class="text-secondary">
-                            @orderItem.ProductType.Color.Name / @orderItem.ProductType.Size
-                        </span>
-                        <br />
-                        <span class="text-secondary">
-                            @if(orderItem.ProductType.Product.DiscountPercentage == 0) {
-                                @priceBeforeDiscount
-                            }
-                            else
+                    <div class="carousel-inner">
+                        @{
+                            bool isFirst = true;
+                            @foreach (ProductImage image in orderItem.ProductType.Product.ProductImages)
                             {
-                                <span class="discount-txt">@priceBeforeDiscount</span>
-                                @priceAfterDiscount
-                            }
-                            @currencySign
-                        </span>
-                        <div>
-                            <select class="form-select" aria-label="Number Of Items" onchange="updateItemQuantity(@orderItem.Id)(arguments[0])">
-                                @for (var i = 1; i <= orderItem.ProductType.Quantity; i++)
-                                {
-                                    <option value="@i" selected="@(orderItem.Amount == i)">@i</option>
-                                }
-                            </select>
-                            <button type="button" class="btn btn-outline-danger deleteButton" onClick="deleteItemFromCart(@orderItem.Id)">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                class="bi bi-trash-fill" viewBox="0 0 16 16">
-                                    <path
-                                    d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
-                                    </path>
-                                </svg>
-                                <span class="d-none d-sm-inline d-md-inline d-lg-none">Delete From Cart</span>
-                            </button>
-                        </div>
+                                String base64 = Convert.ToBase64String(image.ImageData);
+                                String extraClass = isFirst ? "active" : "";
+                                isFirst = false;
 
+                                <div class="carousel-item @extraClass">
+                                    <img src="data:image/png;base64,@base64" class="d-block w-100 h-100" width="100"
+                                         height="250" />
+                                </div>
+                            }
+                        }
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#@carouselId"
+                            data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#@carouselId"
+                            data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+                <div class="discountOverlay">
+                    @if (orderItem.ProductType.Product.DiscountPercentage != 0)
+                    {
+                        <h5 class="discount-on-card">@orderItem.ProductType.Product.DiscountPercentage%</h5>
+                    }
+                </div>
+                <div class="col cartItemDetails">
+                    <span>
+                        <a asp-action="Details" asp-controller="Products" class="link-primary"
+                           asp-route-id="@orderItem.ProductType.Product.Id">
+                            @orderItem.ProductType.Product.Name
+                        </a>
+                    </span>
+                    <br />
+                    <span class="text-secondary">
+                        @orderItem.ProductType.Color.Name / @orderItem.ProductType.Size
+                    </span>
+                    <br />
+                    <span class="text-secondary">
+                        @if (orderItem.ProductType.Product.DiscountPercentage == 0)
+                        {
+                            @priceBeforeDiscount
+                        }
+                        else
+                        {
+                            <span class="discount-txt">@priceBeforeDiscount</span>
+                            @priceAfterDiscount
+                        }
+                        @currencySign
+                    </span>
+                    <div>
+                        <select class="form-select" aria-label="Number Of Items" onchange="updateItemQuantity(@orderItem.Id)(arguments[0])">
+                            @for (var i = 1; i <= orderItem.ProductType.Quantity; i++)
+                            {
+                                <option value="@i" selected="@(orderItem.Amount == i)">@i</option>
+                            }
+                        </select>
+                        <button type="button" class="btn btn-outline-danger deleteButton" onClick="deleteItemFromCart(@orderItem.Id)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                 class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
+                                </path>
+                            </svg>
+                            <span class="d-none d-sm-inline d-md-inline d-lg-none">Delete From Cart</span>
+                        </button>
+                    </div>
+
+                </div>
+            </li>
+            <li>
+                <hr class="dropdown-divider @seperatorExtraClass">
+            </li>
+                            }
+            </div>
+
+            @{
+                string isShowing = "";
+                if (OrderItems.Count > 0)
+                {
+                    isShowing = "";
+                }
+                else
+                {
+                    isShowing = "d-none";
+                }
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li>
+                    <div class="container">
+                        <div class="row @isShowing" id="bottom-btn">
+                            <a class="btn btn-secondary col-5" href="/Orders/Cart" role="button">View Cart</a>
+                            <button class="btn btn-primary col-5 ms-auto" id="checkout" data-bs-toggle="modal" data-bs-target="#checkoutModal">Checkout</button>
+                        </div>
                     </div>
                 </li>
-
-                <li>
-                    <hr class="dropdown-divider @seperatorExtraClass">
-                </li>
-            }
-        </div>
-        <li>
-            <hr class="dropdown-divider">
-        </li>
-        <li>
-            <div class="container">
-                <div class="row">
-                    <a class="btn btn-secondary col-5" href="/Orders/Cart" role="button">View Cart</a>
-                    <a class="btn btn-primary col-5 ms-auto" href="/Orders/Index" role="button">Checkout</a>
-                </div>
-            </div>
-        </li>
-    </ul>
-</li>
+                }
+        </ul>
+    </li>
+    <partial name="_CheckoutPratial" />

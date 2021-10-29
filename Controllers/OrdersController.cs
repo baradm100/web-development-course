@@ -14,6 +14,7 @@ using web_development_course.Data;
 using web_development_course.Models;
 using web_development_course.Models.OrderModels;
 using web_development_course.WebServices;
+using static System.Net.WebRequestMethods;
 
 namespace web_development_course.Controllers
 {
@@ -36,23 +37,10 @@ namespace web_development_course.Controllers
             Currencies.Add(4, "£");
         }
 
-        // GET: Orders
-        [Authorize(Roles = "Admin,Editor")]
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Order.ToListAsync());
-        }
-
         // GET: Orders/Cart
         //<summary> the context use for know the current loged in user
         public async Task<IActionResult> Cart()
         {
-            // getting the update value of the currency
-            CurrencyConverter converter = new CurrencyConverter();
-            ViewData["ILS"] = converter.Ils;
-            ViewData["GBP"] = converter.Gbp;
-            ViewData["EUR"] = converter.Eur;
-
             int dbUser = await isValidUserAsync();
 
             if (dbUser > 0)
@@ -136,6 +124,7 @@ namespace web_development_course.Controllers
 
                 var amount = order.Amount;
                 var price = order.ProductType.Product.Price * currency;
+
                 var discount = order.ProductType.Product.DiscountPercentage;
                 discount = discount > 0 ? ((100 - discount) / 100) : 1;
                 var totalPrice = price * discount * amount;
@@ -210,7 +199,6 @@ namespace web_development_course.Controllers
                     // if there is no discount the amount will be 0 
                     var discountAmount = price * discountNum;
 
-                    // add logic in case we in a diffrent currency
                     totalPrice += (price - discountAmount);
                     midPrice += price;
                     totalDiscount += discountAmount;
@@ -281,6 +269,107 @@ namespace web_development_course.Controllers
             }
 
             return Json(new { success = false, textStatus = "didnt find order" });
+        }
+
+        //Post: Orders/PlaceOrder
+        [HttpPost]
+        public async Task<IActionResult> PlaceOrder(double totalPrice, string? deliveryOption, string phone, [Bind("Id,City,Street,BuildingNumber")] Address? address)
+        {
+            int dbUser = await isValidUserAsync();
+            DeliveryOptions option = ((DeliveryOptions)DeliveryExtractor(deliveryOption));
+            Address tempAdr = new Address();
+            tempAdr.City = address.City;
+            tempAdr.Street = address.Street;
+            tempAdr.BuildingNumber = address.BuildingNumber;
+
+            if (dbUser > 0)
+            {
+                 var order = await GetOrderByUser(dbUser);
+
+                if (order != null)
+                {
+                    // check that this is the user order id
+                    if (order.UserId == dbUser)
+                    {
+                        order.Delivery = option;
+                        order.Date = DateTime.Now;
+                        order.IsCart = false;
+                        var user = await _context.User.FindAsync(dbUser);
+
+                        // Check if the Address already exsit in the Db
+                        Address dbAdr = await IsAddressinDbAsync(address);
+
+                        if (dbAdr == null)
+                        {
+                            await _context.Address.AddAsync(tempAdr);
+                            _context.SaveChanges();
+                            // Call dbAdr again for getting it's correct id in the database 
+                            dbAdr = await IsAddressinDbAsync(address);
+                        }
+
+                        if (dbAdr == null)
+                        {
+                            return Json(new { success = false, textStatus = "WE have Quantity problem" });
+                        }
+
+                        // check is the address is in the users adresses
+                        if (user.Addresses == null)
+                        {
+                            user.Addresses = new List<Address> { dbAdr };
+                            _context.User.Update(user);
+                        }
+                        else if (!user.Addresses.Contains(dbAdr))
+                        {
+                            user.Addresses.Append(dbAdr);
+                            _context.User.Update(user);
+                        }
+
+                        // Check if the user phone numbr changed
+                        if (user.Phone != phone)
+                        {
+                            user.Phone = phone;
+                            _context.User.Update(user);
+                        }
+
+                        // check if the user is in the address users list 
+                        if (address.Users == null)
+                        {
+                            address.Users = new List<User> { user };
+                            _context.Address.Update(dbAdr);
+                        }
+                        else if (!address.Users.Contains(user))
+                        {
+                            address.Users.Append(user);
+                            _context.Address.Update(address);
+                        }
+
+                        // Check there is enough items before commit the order
+                        if (await UpdateQuantity(order))
+                        {
+                            _context.Order.Update(order);
+                            await _context.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            return Json(new { success = false, textStatus = "WE have Quantity problem" });
+                        }
+
+                        return Json(new
+                        {
+                            success = true,
+                            data = new
+                            {
+                                orderId = order.Id,
+                                price = totalPrice,
+                            }
+                        });
+                    }
+                }
+
+                return Json(new { success = false, textStatus = "didnt find order" });
+            }
+
+            return Json(new { success = false, textStatus = "didnt find user" });
         }
 
         // POST: Orders/Create
@@ -510,6 +599,52 @@ namespace web_development_course.Controllers
 
             return -1;
         }
-    }
 
+        private async Task<Order> GetOrderByUser(int userid)
+        {
+            var q = await _context.Order.Where(o => o.UserId == userid && o.IsCart).FirstOrDefaultAsync();
+            return q;
+        }
+
+        private int DeliveryExtractor(string delivery)
+        {
+            var helper = delivery.Split("_");
+            return Int16.Parse(helper[1]);
+        }
+
+        private async Task<Address> IsAddressinDbAsync(Address address)
+        {
+            var adr = await _context.Address.FirstOrDefaultAsync(c => (c.City == address.City &&
+                                                                    c.Street == address.Street &&
+                                                                    c.BuildingNumber == address.BuildingNumber));
+
+            return adr;
+        }
+        private async Task<bool> UpdateQuantity(Order order)
+        {
+            // should return a list of all order items that in the order and there products
+            var orderItems = await (_context.OrderItem.Include(o => o.Order).
+                                        Include(o => o.Order.OrderItems).
+                                        Include(o => o.ProductType).
+                                        Include(o => o.ProductType.Product).
+                                        Where(o => o.Order.Id == order.Id).ToListAsync());
+
+            foreach (var orderItem in orderItems)
+            {
+                var productType = await _context.ProductType.FindAsync(orderItem.ProductType.Id);
+
+                if (productType.Quantity < orderItem.Amount)
+                {
+                    return false;
+                }
+                else
+                {
+                    productType.Quantity -= orderItem.Amount;
+                }
+            }
+            return true;
+        }
+
+    }
 }
+

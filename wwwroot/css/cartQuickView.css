@@ -5,8 +5,8 @@
 }
 
 .cartQuickView .cartItem > .cartItemDetails > div > select {
-  width: unset;
-  display: inline;
+    width: unset;
+    display: inline;
 }
 
 .cartQuickView .goToCart {
@@ -51,7 +51,7 @@ ul.dropdown-menu.container.cartQuickView {
 }
 
 ul.dropdown-menu.container.cartQuickView.noLogin {
-  left: -80px;
+    left: -80px;
 }
 
 .cartQuickView .discountOverlay {

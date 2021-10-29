@@ -48,9 +48,9 @@ $(function () {
                 success: function (response) {
                     Success = true;
                     if (response != null) {
-                        $("#summary-price").text(Number(Number(response.data.midPrice).toFixed(2)) + " " + currecny[(response.data.currencyIndex)])
-                        $("#summary-discount").text(Number(Number(response.data.saving).toFixed(2)) + " " + currecny[(response.data.currencyIndex)])
-                        $("#summary-total").text(Number(Number(response.data.totalPrice).toFixed(2)) + " " + currecny[(response.data.currencyIndex)])
+                        $("#summary-price").text(Number(Number(response.data.midPrice).toFixed(2)) + " " + response.data.sign)
+                        $("#summary-discount").text(Number(Number(response.data.saving).toFixed(2)) + " " + response.data.sign)
+                        $("#summary-total").text(Number(Number(response.data.totalPrice).toFixed(2)) + " " + response.data.sign)
                     }
                 },
                 error: function (result) {
@@ -100,7 +100,7 @@ $(function () {
             },
             success: function (response) {
                 Success = true;
-                $("#total-price_" + rowIndex).text(Number(Number(response.data.totalPrice).toFixed(2)) + " " + currecny[(response.data.currecnyIndex)])
+                $("#total-price_" + rowIndex).text(Number(Number(response.data.totalPrice).toFixed(2)) + " " + response.data.sign)
                 GetSummary()
 
             },

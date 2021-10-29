@@ -72,22 +72,6 @@ namespace web_development_course.Controllers
 
         }
 
-
-        // GET: Orders/GetItemFinalPrice
-        public async Task<IActionResult> GetItemFinalPrice(int orderId)
-        {
-            int dbUser = await IsValidUserAsync();
-
-            if (dbUser > 0)
-            {
-                var order = await (_context.OrderItem.Include(o=>o.Order).
-                                    Include(o=>o.ProductType).
-                                    Include(o=>o.ProductType.Product).
-                                    Where(o=>o.Id == orderId && o.Order.IsCart && o.Order.UserId == dbUser).FirstAsync());
-           
-                var amount =  order.Amount;
-                var price = order.ProductType.Product.Price;
-                
         // GET: Orders/GetCart
         [HttpGet]
         [Authorize]
@@ -175,7 +159,7 @@ namespace web_development_course.Controllers
         public async Task<IActionResult> GetOrderItemData(int orderItemId)
         {
             var dbUser = await isValidUserAsync();
-            
+
             if (dbUser > 0)
             {
                 var order = await (_context.OrderItem.Include(o => o.Order).
@@ -198,7 +182,6 @@ namespace web_development_course.Controllers
         // GET: Orders/GetSummary
         public async Task<IActionResult> GetSummary()
         {
-
             int dbUser = await isValidUserAsync();
 
             if (dbUser > 0)
@@ -303,9 +286,9 @@ namespace web_development_course.Controllers
 
         //Post: Orders/PlaceOrder
         [HttpPost]
-        public async Task<IActionResult> PlaceOrder(int? orderId, double totalPrice, string? deliveryOption, string phone ,[Bind("Id,City,Street,BuildingNumber")] Address? address)
+        public async Task<IActionResult> PlaceOrder(int? orderId, double totalPrice, string? deliveryOption, string phone, [Bind("Id,City,Street,BuildingNumber")] Address? address)
         {
-            int dbUser = await IsValidUserAsync();
+            int dbUser = await isValidUserAsync();
             DeliveryOptions option = ((DeliveryOptions)DeliveryExtractor(deliveryOption));
             Address tempAdr = new Address();
             tempAdr.City = address.City;
@@ -317,7 +300,7 @@ namespace web_development_course.Controllers
                 if (orderId != null)
                 {
                     var order = await _context.Order.FindAsync(orderId);
-                    
+
                     if (order != null)
                     {
                         // check that this is the user order id
@@ -402,7 +385,7 @@ namespace web_development_course.Controllers
                 return Json(new { success = false, textStatus = "didnt find order" });
             }
 
-            return Json(new { success = false, textStatus = "didnt find user"});
+            return Json(new { success = false, textStatus = "didnt find user" });
         }
 
         // POST: Orders/Create
@@ -641,9 +624,9 @@ namespace web_development_course.Controllers
 
         private async Task<Address> IsAddressinDbAsync(Address address)
         {
-             var adr = await _context.Address.FirstOrDefaultAsync(c => (c.City == address.City && 
-                                                                  c.Street == address.Street &&
-                                                                  c.BuildingNumber == address.BuildingNumber));
+            var adr = await _context.Address.FirstOrDefaultAsync(c => (c.City == address.City &&
+                                                                    c.Street == address.Street &&
+                                                                    c.BuildingNumber == address.BuildingNumber));
 
             return adr;
         }
@@ -651,15 +634,15 @@ namespace web_development_course.Controllers
         {
             // should return a list of all order items that in the order and there products
             var orderItems = await (_context.OrderItem.Include(o => o.Order).
-                                     Include(o => o.Order.OrderItems).
-                                     Include(o => o.ProductType).
-                                     Include(o => o.ProductType.Product).
-                                     Where(o => o.Order.Id == order.Id).ToListAsync());
+                                        Include(o => o.Order.OrderItems).
+                                        Include(o => o.ProductType).
+                                        Include(o => o.ProductType.Product).
+                                        Where(o => o.Order.Id == order.Id).ToListAsync());
 
-            foreach(var orderItem in orderItems)
+            foreach (var orderItem in orderItems)
             {
                 var productType = await _context.ProductType.FindAsync(orderItem.ProductType.Id);
-                
+
                 if (productType.Quantity < orderItem.Amount)
                 {
                     return false;
@@ -673,5 +656,5 @@ namespace web_development_course.Controllers
         }
 
     }
-
 }
+

@@ -476,8 +476,6 @@ namespace web_development_course.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
-
                     b.ToTable("Product");
                 });
 
@@ -495,8 +493,6 @@ namespace web_development_course.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
 
                     b.HasIndex("ProductId");
 

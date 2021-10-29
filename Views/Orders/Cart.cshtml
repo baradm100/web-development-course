@@ -6,7 +6,6 @@
     var ProductColors = (IEnumerable<web_development_course.Models.ProductModels.ProductColor>)ViewData["Colors"];
     float currency = CurrencyService.GetCurrentCurrencyValue();
     string currencySign = CurrencyService.GetCurrencySign();
-    string priceDisplay = "";
 }
 
 <link rel="stylesheet" href="~/css/cartLargeView.css" />
@@ -99,7 +98,7 @@
                                                                 }
                                                             </select>
                                                         </div>
-                                                        <div class="col-4 col-md-3 d-flex bd-highlight">
+                                                        <div class="col-4 col-md-4 d-flex bd-highlight">
                                                             @{
                                                                 var discount = 1.0;
                                                                 if (Model.ToList()[index].ProductType.Product.DiscountPercentage != 0)
@@ -137,7 +136,6 @@
                                     <div class="row" style="margin-top:1rem">
                                         <span class="col-6">Price</span>
                                         <span class="col-3 d-flex flex-fill bd-highlight justify-content-end" id="summary-price">
-                                            100
                                             <i class="bi bi-currency-dollar"></i>
                                         </span>
                                     </div>
@@ -146,7 +144,6 @@
                                     <div class="row" style="margin-top:1rem">
                                         <span class="col-6">Discount</span>
                                         <span class="col-3 d-flex flex-fill bd-highlight justify-content-end" id="summary-discount">
-                                            100
                                             <i class="bi bi-currency-dollar"></i>
                                         </span>
                                     </div>
@@ -155,7 +152,6 @@
                                     <div class="row d-flex justify-content-between" style="margin-top:.5rem">
                                         <b class="col-6">Total</b>
                                         <b class="col-3 d-flex flex-fill bd-highlight justify-content-end" id="summary-total">
-                                            100
                                             <i class="bi bi-currency-dollar"></i>
                                         </b>
                                     </div>

@@ -20,33 +20,45 @@ $(function () {
     var token = $('input[name="__RequestVerificationToken"]').val();
     formData.append("__RequestVerificationToken", token);
 
-    $.ajax({
-        url: "/orders/json/",
-        type: 'GET',
-        dataType: 'json',
-        processData: false,
-        contentType: false,
-        data: formData,
-        success: function (response) {
-            if (response.success == true) {
-                Success = true;
-                var a = response.orders;
-                a.sort((a, b) => parseInt(a.id) - parseInt(b.id));
-                for (let i = 0; i < response.orders.length; i++) {
-                    var order = a[i];
-                    var closedDeal = order.isCart == true ? "false" : "true";
-                    var orders = "<tr><th scope='row'>" + order.id + "</th><td>" + order.firstName + " " + order.lastName + "</td><td>" + order.date + "</td><td>"
-                        + order.name + "</td><td>" + order.amount + "</td><td>" + order.totalPrice + "</td><td>" + closedDeal + "</td></tr>"
-                    $dealsTableBody.append(orders);
-                };
-            }
-        },
-        error: function (result) {
-            console.log(result);
-            return false;
-        },
-        timeout: 5000,
-    });
+    const orders = (product = "", category = "", username = "") => {
+        var form = new FormData();
+        var token = $('input[name="__RequestVerificationToken"]').val();
+        form.append("__RequestVerificationToken", token);
+        form.append("product", product);
+        form.append("category", category);
+        form.append("username", username);
+        $dealsTableBody.empty();
+        console.log(product, category, username);
+        $.ajax({
+            url: "/orders/json/",
+            type: 'GET',
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function (response) {
+                if (response.success == true) {
+                    Success = true;
+                    var a = response.orders;
+                    a.sort((a, b) => parseInt(a.id) - parseInt(b.id));
+                    for (let i = 0; i < response.orders.length; i++) {
+                        var order = a[i];
+                        var closedDeal = order.isCart == true ? "false" : "true";
+                        var orders = "<tr><th scope='row'>" + order.id + "</th><td>" + order.firstName + " " + order.lastName + "</td><td>" + order.date + "</td><td>"
+                            + order.name + "</td><td>" + order.amount + "</td><td>" + order.totalPrice + "</td><td>" + closedDeal + "</td></tr>"
+                        $dealsTableBody.append(orders);
+                    };
+                }
+            },
+            error: function (result) {
+                console.log(result);
+                return false;
+            },
+            timeout: 5000,
+        });
+    }
+
+    orders();
 
     var selectOption = (selected, id) => {
         var roles = { "Admin": false, "Editor": false, "Client": false }
@@ -91,7 +103,6 @@ $(function () {
         },
         timeout: 5000,
     });
-
 
 
     function enableSelect() {
@@ -298,6 +309,8 @@ $(function () {
         });
     }
 
+    
+
     purchasesByCategory();
     ordersByMonth();
     availableStcok();
@@ -330,6 +343,15 @@ $(function () {
             timeout: 5000,
         });
 
+
+        $(".ProductDealSearch").click(function () {
+            console.log("here");
+            var $searchDiv = $(this).parent("#dealSearchDiv");
+            var $product = $searchDiv.children("#userProductSearch");
+            var $category = $searchDiv.children("#userCategorySearch");
+            var $username = $searchDiv.children("#userNameSearch");
+            orders($product.val(), $category.val(), $username.val());
+        })
     }
 
 });

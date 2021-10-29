@@ -309,7 +309,7 @@ namespace web_development_course.Controllers
 
                         if (dbAdr == null)
                         {
-                            return Json(new { success = false, textStatus = "WE have qutatiy problem" });
+                            return Json(new { success = false, textStatus = "WE have Quantity problem" });
                         }
 
                         // check is the address is in the users adresses
@@ -351,7 +351,7 @@ namespace web_development_course.Controllers
                         }
                         else
                         {
-                            return Json(new { success = false, textStatus = "WE have qutatiy problem" });
+                            return Json(new { success = false, textStatus = "WE have Quantity problem" });
                         }
 
                         return Json(new

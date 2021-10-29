@@ -35,6 +35,8 @@ namespace web_development_course.Models
         public string Email { get; set; }
 
         [DataType(DataType.PhoneNumber)]
+        [MaxLength(10)] 
+        [MinLength(10)]
         public string Phone{ get; set; }
 
         public UserLevel UserType { get; set; } = UserLevel.Client;

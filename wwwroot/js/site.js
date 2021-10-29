@@ -1,4 +1,14 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
-
-// Write your JavaScript code.
+﻿    /*
+function initMap() {
+    const myLatLng = { lat: 32.084694, lng: 34.7912818 };
+    map = new google.maps.Map(document.getElementById("googleMap"), {
+        zoom: 8,
+        center: myLatLng,
+    });
+    new google.maps.Marker({
+        position: myLatLng,
+        map,
+        title: "Hello World!",
+    });
+}
+*/

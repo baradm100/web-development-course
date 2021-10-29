@@ -91,7 +91,7 @@ namespace web_development_course.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login([Bind("Email,Password")] User user)
+        public IActionResult Login([Bind("Email,Password")] User user)
         {
             var q = from u in _context.User
                     where u.Email.ToLower() == user.Email.ToLower() && 

@@ -1,115 +1,151 @@
+﻿@using Microsoft.AspNetCore.Http;
+@inject web_development_course.Models.CurrencyService CurrencyService
 @{
-    var user = Context.User.Identity.Name;
-    var authanticated = Context.User.Identity.IsAuthenticated;
-    var userAuthLevel = Context.User.Identity.AuthenticationType;
     var Products = (IEnumerable<web_development_course.Models.Product>)ViewData["Products"];
     var ProductColors = (IEnumerable<web_development_course.Models.ProductModels.ProductColor>)ViewData["Colors"];
+    float currency = CurrencyService.GetCurrentCurrencyValue();
+    string currencySign = CurrencyService.GetCurrencySign();
+    string priceDisplay = "";
 }
 
 <div class="container">
-    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4 align-items-start">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xxl-4 align-items-start">
         @{ foreach (var product in Products)
             {
                 <div class="col">
-                    <div class="card" style="width: 18rem;">
-                        @{ var carouselId = "carousel" + product.Id;}
-                        @if (product.ProductImages != null)
-                        {
-                            <div id=@carouselId class="carousel slide" data-bs-touch="false" data-bs-interval="false">
-                                <div class="carousel-inner">
-                                    @for (var i = 0; i < product.ProductImages.Count(); i++)
-                                    {
-                                        if (i == 0)
-                                        {
-                                            <div class="carousel-item active">
-                                                @{
-                                                    string img = Convert.ToBase64String(product.ProductImages.ElementAt(i).ImageData);
-                                                    <img src="data:image/png;base64,@img" class="card-img-top d-block w-100" width="100" height="250" />
-                                                }
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <div class="carousel-item">
-                                                @{
-                                                    string img = Convert.ToBase64String(product.ProductImages.ElementAt(i).ImageData);
-                                                    <img src="data:image/png;base64,@img" class="card-img-top d-block w-100" width="100" height="250" />
-                                                }
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                                <button class="carousel-control-prev" type="button" data-bs-target="#@carouselId" data-bs-slide="prev">
-                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden">Previous</span>
-                                </button>
-                                <button class="carousel-control-next" type="button" data-bs-target="#@carouselId" data-bs-slide="next">
-                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden">Next</span>
-                                </button>
-                            </div>
-
-                        }
-                        <div class="card-body">
-                            <p class="card-text category" category="@product.Name">
-
-                            </p>
-                            <h5 class="card-title">@product.Name</h5>
-                            <p class="card-text"><strong>Discount: </strong> @product.DiscountPercentage%</p>
-                            <p class="card-text"><strong>Price (after discount): </strong> @{ var priceAfterDiscount = product.Price * ((100 - @product.DiscountPercentage) / 100); } @priceAfterDiscount</p>
-                        </div>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">
-                                <strong>Colors: </strong>  
-                                @if (product.ProductTypes != null)
+                            <div class="card productCard mb-2" style="width: 18rem;">
+                                @{ var carouselId = "carousel" + product.Id;}
+                                @if (product.ProductImages != null)
                                 {
-                                    foreach (var pr in product.ProductTypes)
-                                    {
-                                        var color = "";
-                                        foreach (var col in ProductColors)
+                                    <div id=@carouselId class="carousel slide" data-bs-touch="false" data-bs-interval="false">
+                                        <div class="carousel-inner">
+                                            @for (var i = 0; i < product.ProductImages.Count(); i++)
                                             {
-                                                if (col.Id == pr.ColorId)
-                                                    color = col.Color;
+                                                if (i == 0)
+                                                {
+                                                    <div class="carousel-item active">
+                                                        @{
+                                                            string img = Convert.ToBase64String(product.ProductImages.ElementAt(i).ImageData);
+                                                            <img src="data:image/png;base64,@img" class="card-img-top d-block w-100" width="100" height="250" />
+                                                        }
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="carousel-item">
+                                                        @{
+                                                            string img = Convert.ToBase64String(product.ProductImages.ElementAt(i).ImageData);
+                                                            <img src="data:image/png;base64,@img" class="card-img-top d-block w-100" width="100" height="250" />
+                                                        }
+                                                    </div>
+                                                }
                                             }
-                                        <button class="editProductType text-center" style="border-radius: 10px;  display: inline-block; background:#@color; width: 20px; height: 20px; " id="color" name="@product.Name" data-bs-toggle="tooltip" data-bs-placement="top" quantity="@pr.Quantity" size="@pr.Size" title="Amount Available: @pr.Quantity  Size: @pr.Size">
+                                        </div>
+                                        <button class="carousel-control-prev" type="button" data-bs-target="#@carouselId" data-bs-slide="prev">
+                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Previous</span>
                                         </button>
-                                    }
+                                        <button class="carousel-control-next" type="button" data-bs-target="#@carouselId" data-bs-slide="next">
+                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Next</span>
+                                        </button>
+                                    </div>
+                                    <div class="card-img-overlay" style="margin-left: 0px">
+                                        @{ if(product.DiscountPercentage != 0)
+                                            {
+                                            <h5 class="discount-on-card">@product.DiscountPercentage%</h5>
+                                            }
+                                        }
+                                    </div>
+
                                 }
-                            </li>
-                            <li class="list-group-item">
-                                <strong>Total Stock Amount: </strong>  @if (product.ProductTypes != null)
-                                {
-                                    var totalAmount = 0;
-                                    @foreach (var pr in product.ProductTypes)
-                                    {
-                                        totalAmount = totalAmount + pr.Quantity;
-                                    }
-                                    @totalAmount
-                                }
-                            </li>
-                        </ul>
-                        <div class="card-body">
-                            @{var editAccordion = "editAccordion" + product.Id;
-                                var EditAccordionHeading = "editAccordionHeading" + product.Id;
-                                var Heading = "heading" + product.Id;}
-                            <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Edit options
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                    <li><a class="dropdown-item btnAddGoods" href="#" style="border-radius: 18px;" id="@product.Name">
-                                        Add goods
-                                    </a></li>
-                                    <li><a class="dropdown-item btnEditProduct" href="#" id=@product.Id style="border-radius: 18px;">
-                                            Edit product
-                                    </a></li>
-                                    <li><a class="dropdown-item btnDeleteProduct" href="#" id=@product.Id style="border-radius: 18px;">
-                                        Delete product
-                                    </a></li>
+                                <div class="card-body">
+                                    <p class="card-text category" category="@product.Name">
+                                    </p>
+                                    <p><h5 class="card-title justify-self-center">@product.Name</h5></p>
+                                    <p class="card-text">
+                                        <strong>Price: </strong>@{
+                                            if (@product.DiscountPercentage == 0)
+                                            {
+                                                var priceWithCurrency = product.Price * currency;
+                                                @String.Format("{0:0.00}", priceWithCurrency);
+                                            }
+                                            else
+                                            {
+                                                var priceAfterDiscount = currency * product.Price * ((100 - @product.DiscountPercentage) / 100);
+                                                var priceBeforeDiscount = currency * product.Price;
+                                                <span class='discount-txt'>@String.Format("{0:0.00}", priceBeforeDiscount)</span>
+                                                @String.Format("{0:0.00}", priceAfterDiscount);
+                                            }
+                                        } @currencySign
+                                    </p>
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <strong>Colors: </strong>
+                                        @if (product.ProductTypes != null)
+                                        {
+                                            HashSet<string> colors = new HashSet<string>();
+                                            foreach (var pr in product.ProductTypes)
+                                            {
+                                                var color = "";
+                                                foreach (var col in ProductColors)
+                                                {
+                                                    if (col.Id == pr.ColorId && pr.Quantity > 0)
+                                                    {
+                                                        color = col.Color;
+                                                        if (!colors.Contains(color))
+                                                        {
+                                                            colors.Add(color);
+                                                            <button class="editProductType text-center" style="border-radius: 10px;  display: inline-block; background:#@color; width: 15px; height: 15px;" id="color" name="@product.Name" data-bs-toggle="tooltip" data-bs-placement="top" quantity="@pr.Quantity" size="@pr.Size">
+                                                            </button>
+                                                        }
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Total Stock Amount: </strong>  @if (product.ProductTypes != null)
+                                        {
+                                            var totalAmount = 0;
+                                            @foreach (var pr in product.ProductTypes)
+                                            {
+                                                totalAmount = totalAmount + pr.Quantity;
+                                            }
+                                            @totalAmount
+                                        }
+                                    </li>
                                 </ul>
+                                <div class="card-body">
+                                    @{var editAccordion = "editAccordion" + product.Id;
+                                        var EditAccordionHeading = "editAccordionHeading" + product.Id;
+                                        var Heading = "heading" + product.Id;}
+                                    <div class="dropdown" >
+                                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Edit options
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                            <li>
+                                                <a class="dropdown-item btnAddGoods"  href="#" style="border-radius: 18px" id="@product.Name">
+                                                    Add goods
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item btnEditProduct"  href="#" id=@product.Id style="border-radius: 18px;">
+                                                    Edit product
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item btnDeleteProduct"  href="#" id=@product.Id style="border-radius: 18px;">
+                                                    Delete product
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
                 </div>
             }
         }

@@ -12,54 +12,195 @@ using web_development_course.Common;
 using web_development_course.Data;
 using web_development_course.Models;
 using web_development_course.Models.ProductModels;
+using web_development_course.WebServices;
+
 
 namespace web_development_course.Controllers
 {
     public class ProductsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly TwitterApi twitterApi;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly Dictionary<int, string> Currencies;
 
-        public ProductsController(ApplicationDbContext context)
+        public ProductsController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            twitterApi = new TwitterApi();
+            _httpContextAccessor = httpContextAccessor;
+            Currencies = new Dictionary<int, string>();
+            Currencies.Add(1, "$");
+            Currencies.Add(2, "₪");
+            Currencies.Add(3, "€");
+            Currencies.Add(4, "£");
         }
 
-        // GET: Products
-        public async Task<IActionResult> Index()
+        // GET: Products?categoryId=5
+        public async Task<IActionResult> Index(int? categoryId)
+        {
+            ViewBag.Colors = await _context.ProductColor.ToListAsync();
+            ViewBag.shouldShowEdit = User.IsInRole("Admin") || User.IsInRole("Editor");
+
+            Category[] RelevantCategories;
+            if (categoryId == null)
+            {
+                RelevantCategories = await _context.Category.ToArrayAsync();
+            }
+            else
+            {
+                RelevantCategories = await _context.Category.Where(c => c.Id == categoryId || c.ParentCategoryId == categoryId).ToArrayAsync();
+            }
+
+            HashSet<int> RelevantCategoryIds = RelevantCategories.Select(c => c.Id).ToHashSet();
+
+            var ProductsQuery = _context.Product
+                    .Include(product => product.ProductImages)
+                    .Include(product => product.ProductTypes)
+                    .ThenInclude(pt => pt.Color)
+                    .Include(product => product.ProductCategories)
+                    .Where(p => p.ProductCategories.Any(pc => RelevantCategoryIds.Contains(pc.CategoryId)));
+            List<Product> ProductsToShow = await ProductsQuery.ToListAsync();
+            return View(ProductsToShow);
+        }
+
+        public async Task<IActionResult> AdvancedSearch(string? productName, float? maximumPrice, int? categoryId)
         {
 
-            if (User.IsInRole("Admin") || User.IsInRole("Edtior"))
-                return RedirectToAction("EditorIndex", "Products");
             ViewBag.Colors = await _context.ProductColor.ToListAsync();
-            return View(await _context.Product.Include(product => product.ProductImages)
-                    .Include(product => product.ProductTypes).Include(product => product.ProductCategories)
-                    .ToListAsync());
+            ViewBag.shouldShowEdit = User.IsInRole("Admin") || User.IsInRole("Editor");
 
+            Category[] RelevantCategories;
+            if (categoryId == null)
+            {
+                RelevantCategories = await _context.Category.ToArrayAsync();
+            }
+            else
+            {
+                RelevantCategories = await _context.Category.Where(c => c.Id == categoryId || c.ParentCategoryId == categoryId).ToArrayAsync();
+            }
+            float maximumPriceValue;
+            if (maximumPrice == null)
+            {
+                maximumPriceValue = await _context.Product.MaxAsync(p => p.Price);
+            }
+            else
+            {
+                maximumPriceValue = (float)maximumPrice;
+            }
+            string productNameValue;
+            if (productName == null)
+            {
+                productNameValue = "";
+            }
+            else
+            {
+                productNameValue = productName.ToLower();
+            }
+
+            HashSet<int> RelevantCategoryIds = RelevantCategories.Select(c => c.Id).ToHashSet();
+
+            var ProductsQuery = _context.Product
+                    .Include(product => product.ProductImages)
+                    .Include(product => product.ProductTypes)
+                    .ThenInclude(pt => pt.Color)
+                    .Include(product => product.ProductCategories)
+                    .Where(p => p.ProductCategories.Any(pc => RelevantCategoryIds.Contains(pc.CategoryId)) &&
+                    p.Name.ToLower().Contains(productNameValue) && p.Price <= maximumPriceValue);
+            List<Product> ProductsToShow = await ProductsQuery.ToListAsync();
+            return View("index", ProductsToShow);
         }
 
         [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> EditorIndex(int? categoryId)
         {
-            if(categoryId != null)
+            if (categoryId != null)
             {
                 Category category = await _context.Category.FirstOrDefaultAsync(q => q.Id == categoryId);
                 if (category != null)
                 {
-                var products =   from q in _context.ProductCategory
-                                 join CategoryName in _context.Category on q.CategoryId equals CategoryName.Id
-                                 where q.CategoryId == category.Id
-                                 join p in _context.Product.Include(a => a.ProductImages).Include(a=>a.ProductTypes)
-                                 on q.ProductId equals p.Id
-                                 where q.ProductId == p.Id
-                                 select p;
+                    var products = from q in _context.ProductCategory
+                                   join CategoryName in _context.Category on q.CategoryId equals CategoryName.Id
+                                   where q.CategoryId == category.Id
+                                   join p in _context.Product.Include(a => a.ProductImages).Include(a => a.ProductTypes)
+                                   on q.ProductId equals p.Id
+                                   where q.ProductId == p.Id
+                                   orderby p.Id descending
+                                   select p;
                     ViewBag.Colors = await _context.ProductColor.ToListAsync();
                     return View(await products.ToListAsync());
                 }
             }
             ViewBag.Colors = await _context.ProductColor.ToListAsync();
             return View(await _context.Product.Include(product => product.ProductImages)
-                    .Include(product => product.ProductTypes).Include(product => product.ProductCategories).ToListAsync());
+                    .Include(product => product.ProductTypes).Include(product => product.ProductCategories).OrderByDescending(p => p.Id).ToListAsync());
 
+        }
+
+        // GET: Products/json
+        [Route("products/json")]
+        public async Task<IActionResult> getProductsJson(string? color, string? name)
+        {
+
+            ProductColor productColor = await _context.ProductColor.FirstOrDefaultAsync(c => color.Contains(c.Color));
+            if (productColor != null)
+            {
+                var productType = from product in _context.Product
+                                  join type in _context.ProductType on product.Id equals type.Product.Id
+                                  where type.ColorId == productColor.Id && product.Name.ToLower() == name.ToLower()
+                                  select type;
+                var productTypes = await productType.ToListAsync();
+                return Json(new { success = true, types = productTypes });
+            }
+            return NotFound();
+
+        }
+
+        [Route("products/MaxPrice/json")]
+        public async Task<IActionResult> getMaxPriceJson()
+        {
+            int numOfProducts = await _context.Product.CountAsync();
+            if (numOfProducts == 0)
+            {
+                // No products in the DB
+                return Json(new { success = false });
+            }
+
+            var maxPrice = await _context.Product.MaxAsync(p => p.Price);
+            float currency = 1;
+            if (_httpContextAccessor.HttpContext.Request.Cookies["currency"] != null)
+                currency = float.Parse(_httpContextAccessor.HttpContext.Request.Cookies["currency"]);
+            var currencySign = "$";
+            if (_httpContextAccessor.HttpContext.Request.Cookies["currencySign"] != null)
+            {
+                currencySign = Currencies[int.Parse(_httpContextAccessor.HttpContext.Request.Cookies["CurrencySign"])];
+            }
+
+            if (maxPrice != 0)
+                return Json(new { success = true, max = maxPrice * currency, sign = currencySign });
+            return Json(new { success = false });
+        }
+
+        [Authorize(Roles = "Admin,Editor")]
+        public async Task<IActionResult> EditorIndexSearch(string? product)
+        {
+            try
+            {
+                ViewBag.Colors = await _context.ProductColor.ToListAsync();
+                if (product != null)
+                {
+                    var q = _context.Product.Include(product => product.ProductTypes)
+                        .Include(product => product.ProductCategories).Include(product => product.ProductImages)
+                        .Where(q => q.Name.ToLower().Contains(product.ToLower()));
+                    return View("EditorIndex", await q.ToListAsync());
+                }
+                return View("EditorIndex", await _context.Product.Include(product => product.ProductImages)
+                        .Include(product => product.ProductTypes).Include(product => product.ProductCategories).ToListAsync());
+            }
+            catch
+            {
+                return NotFound();
+            }
         }
 
         // GET: Products/Details/5
@@ -70,12 +211,50 @@ namespace web_development_course.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Product
-                .FirstOrDefaultAsync(m => m.Id == id);
+            Product product = await _context.Product
+                    .Include(product => product.ProductImages)
+                    .Include(product => product.ProductTypes)
+                    .ThenInclude(pt => pt.Color)
+                    .Include(product => product.ProductCategories)
+                    .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
                 return NotFound();
             }
+
+            Dictionary<ProductSize, int> SizesAndCounts = new Dictionary<ProductSize, int>();
+            Dictionary<ProductColor, int> ColorsAndCounts = new Dictionary<ProductColor, int>();
+            Dictionary<int, Dictionary<ProductSize, int>> SizesCountByColorIds = new Dictionary<int, Dictionary<ProductSize, int>>();
+
+            foreach (ProductSize size in Enum.GetValues(typeof(ProductSize)))
+            {
+                SizesAndCounts[size] = 0;
+            }
+
+            foreach (ProductType type in product.ProductTypes)
+            {
+                if (!ColorsAndCounts.ContainsKey(type.Color))
+                {
+                    ColorsAndCounts[type.Color] = 0;
+                }
+
+                if (!SizesCountByColorIds.ContainsKey(type.Color.Id))
+                {
+                    SizesCountByColorIds[type.Color.Id] = new Dictionary<ProductSize, int>();
+                    foreach (ProductSize size in Enum.GetValues(typeof(ProductSize)))
+                    {
+                        SizesCountByColorIds[type.Color.Id][size] = 0;
+                    }
+                }
+
+                SizesAndCounts[type.Size] += type.Quantity;
+                ColorsAndCounts[type.Color] += type.Quantity;
+                SizesCountByColorIds[type.Color.Id][type.Size] += type.Quantity;
+            }
+        
+            ViewBag.SizesAndCounts = SizesAndCounts;
+            ViewBag.ColorsAndCounts = ColorsAndCounts;
+            ViewBag.SizesCountByColorIds = SizesCountByColorIds;
 
             return View(product);
         }
@@ -87,9 +266,9 @@ namespace web_development_course.Controllers
             var product = await _context.Product.Include(m => m.ProductImages)
                 .FirstOrDefaultAsync(m => m.Id == id);
             var categories = from q in _context.ProductCategory
-                                    join CategoryName in _context.Category on q.CategoryId equals CategoryName.Id
-                                    where q.ProductId == id
-                                    select CategoryName.Name;
+                             join CategoryName in _context.Category on q.CategoryId equals CategoryName.Id
+                             where q.ProductId == id
+                             select CategoryName.Name;
             var imagesNames = product.ProductImages.Select(m => new { m.Name, m.ImageData, m.Id }).ToList();
             if (product == null)
             {
@@ -113,7 +292,8 @@ namespace web_development_course.Controllers
         [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> AddProduct([Bind("Id,Price,Name,DiscountPercentage")] Product product, List<string> categories)
         {
-            try {
+            try
+            {
                 // adding the product to the DB
                 var pro = _context.Product.FirstOrDefault(p => p.Name.ToLower() == product.Name.ToLower());
                 if (pro != null)
@@ -134,22 +314,30 @@ namespace web_development_course.Controllers
                         // adding category and product to the many to many table: ProductCategory.
                         ProductCategory bind = new ProductCategory();
                         bind.CategoryId = category.Id;
-                        bind.Categories.Append(category);
                         bind.ProductId = product.Id;
-                        bind.Products.Append(product);
                         category.ProductCategories.Append(bind);
                         product.ProductCategories.Append(bind);
                         _context.Category.Update(category);
                         _context.ProductCategory.Add(bind);
                     }
                 }
+
                 await _context.SaveChangesAsync();
+                float priceAfterDiscount = product.Price * ((100 - product.DiscountPercentage) / 100);
+                try
+                {
+                    await twitterApi.PostTweetAsync("ClothIt has a new Product: '" + product.Name + "' just in " + priceAfterDiscount + " come and check it!");
+                }
+                catch
+                { }
                 return Json(new { success = true, productId = product.Id });
-            } catch
+            }
+            catch
             {
                 return Json(new { success = false, errorDetails = "sorry, we had a problem in server" });
             }
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -169,9 +357,10 @@ namespace web_development_course.Controllers
                 }
                 await _context.SaveChangesAsync();
                 return Json(new { success = true });
-            } catch
+            }
+            catch
             {
-            return Json(new { success = false });
+                return Json(new { success = false });
             }
         }
 
@@ -244,10 +433,10 @@ namespace web_development_course.Controllers
                 product.Name = Name;
                 product.Price = Price;
                 product.DiscountPercentage = DiscountPercentage;
-                var pc =_context.ProductCategory.Where(q => q.ProductId == id);
-                foreach(var cat in pc)
+                var pc = _context.ProductCategory.Where(q => q.ProductId == id);
+                foreach (var cat in pc)
                 {
-                 _context.ProductCategory.Remove(cat);
+                    _context.ProductCategory.Remove(cat);
                 }
                 foreach (var cat in Categories)
                 {
@@ -256,9 +445,7 @@ namespace web_development_course.Controllers
                     {
                         ProductCategory bind = new ProductCategory();
                         bind.CategoryId = category.Id;
-                        bind.Categories.Append(category);
                         bind.ProductId = product.Id;
-                        bind.Products.Append(product);
                         category.ProductCategories.Append(bind);
                         product.ProductCategories.Append(bind);
                         _context.Category.Update(category);
@@ -267,7 +454,8 @@ namespace web_development_course.Controllers
                 }
                 await _context.SaveChangesAsync();
                 return Json(new { success = true });
-            } catch
+            }
+            catch
             {
                 return Json(new { success = false, errorDetails = "sorry, we had a problem in server" });
             }

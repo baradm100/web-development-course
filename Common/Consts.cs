@@ -37,11 +37,15 @@ namespace web_development_course.Common
 
         public const string HOUR_VIOLATION_ERROR = "Please enter valid hour";
 
+        public const string ITEM_NOT_FOUND = "Item was not found";
+
+        public const string NOT_IN_STOCK = "Not enough item in stock";
+
         #endregion
 
         #region Regex
 
-        public const string HOUR24_REGEX = "^(2[0 - 3]|[01]?[0 - 9]):([0 - 5]?[0 - 9])$";
+        public const string HOUR24_REGEX = "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$";
 
         # endregion
     }

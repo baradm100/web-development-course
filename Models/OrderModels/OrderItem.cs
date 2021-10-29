@@ -12,7 +12,8 @@ namespace web_development_course.Models.OrderModels
     {
         public int Id { get; set; }
 
-        public int OrderId{ get; set; }
+
+        public int OrderId { get; set; }
 
         [Required]
         public Order Order { get; set; }
@@ -22,9 +23,10 @@ namespace web_development_course.Models.OrderModels
 
         [Required]
         [Display(Name = "total price")]
-        [Range(0,Consts.MaxProductsTotalPrice,ErrorMessage = Consts.ProductTotalPriceErrorMessage)]
+
+        [Range(0, Consts.MaxProductsTotalPrice, ErrorMessage = Consts.ProductTotalPriceErrorMessage)]
         public double TotalPrice { get; set; }
-        
+
         public int ProductTypeID { get; set; }
 
         [Required]

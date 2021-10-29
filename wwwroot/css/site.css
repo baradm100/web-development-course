@@ -60,9 +60,8 @@ html {
 }
 
 body {
-    /* Margin bottom by footer height */
-    margin-bottom: 60px;
-    background-color: #f0f0f0;
+  /* Margin bottom by footer height */
+  background-color: #f0f0f0;
 }
 .footer {
   position: absolute;
@@ -71,51 +70,11 @@ body {
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
 }
-
-/*Text
-    -------------------------------------------------------*/
-
-.discount-txt{
-    color:darkgray;
-    text-decoration: line-through;
+.discount-txt {
+  color: darkgray;
+  text-decoration: line-through;
 }
 
-/* Color palate
-    ---------------------------------------------------------------*/
-
-/*regular black
-*/
-
-color-white {
-    color:white;
+.line-through {
+  text-decoration: line-through;
 }
-
-.blue {
-    color: #14213d;
-}
-
-.orange {
-    color: #fca311;
-}
-
-.gray {
-    color: #e5e5e5;
-}
-
-.background-orange {
-    background-color: #fca311;
-}
-
-.background-blue {
-    background-color: #14213d;
-}
-
-.background-gray {
-    background-color: #e5e5e5;
-}
-
-.background-black {
-    background-color: black;
-}
-
-/*reguler white*/

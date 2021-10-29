@@ -4,11 +4,12 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
+using web_development_course.Common;
 using web_development_course.Data;
 using web_development_course.Models;
 using web_development_course.Models.OrderModels;
@@ -20,10 +21,20 @@ namespace web_development_course.Controllers
     public class OrdersController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly CartService _cartService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly Dictionary<int, string> Currencies;
 
-        public OrdersController(ApplicationDbContext context)
+        public OrdersController(ApplicationDbContext context, CartService cartService, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _cartService = cartService;
+            _httpContextAccessor = httpContextAccessor;
+            Currencies = new Dictionary<int, string>();
+            Currencies.Add(1, "$");
+            Currencies.Add(2, "₪");
+            Currencies.Add(3, "€");
+            Currencies.Add(4, "£");
         }
 
         // GET: Orders
@@ -43,7 +54,7 @@ namespace web_development_course.Controllers
             ViewData["GBP"] = converter.Gbp;
             ViewData["EUR"] = converter.Eur;
 
-            int dbUser = await IsValidUserAsync();
+            int dbUser = await isValidUserAsync();
 
             if (dbUser > 0)
             {
@@ -61,6 +72,7 @@ namespace web_development_course.Controllers
 
         }
 
+
         // GET: Orders/GetItemFinalPrice
         public async Task<IActionResult> GetItemFinalPrice(int orderId)
         {
@@ -75,15 +87,82 @@ namespace web_development_course.Controllers
            
                 var amount =  order.Amount;
                 var price = order.ProductType.Product.Price;
+                
+        // GET: Orders/GetCart
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetCart()
+        {
+            int dbUser = await isValidUserAsync();
+            if (dbUser <= 0)
+            {
+                return Unauthorized();
+            }
+
+            List<Object> cartItems = await _cartService.GetUpdatedCartByUserId(dbUser);
+            return Json(cartItems);
+        }
+
+        // DELETE: Orders/DeleteOrderItem/5
+        [HttpDelete]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteOrderItem(int id)
+        {
+            int dbUser = await isValidUserAsync();
+            if (dbUser <= 0)
+            {
+                return Unauthorized();
+            }
+            OrderItem ItemToDelete = await _context.OrderItem
+                .Include(oi => oi.Order)
+                .Where(oi => oi.Id == id && oi.Order.UserId == dbUser)
+                .FirstOrDefaultAsync();
+
+            if (ItemToDelete == null)
+            {
+                return NotFound();
+            }
+
+            _context.OrderItem.Remove(ItemToDelete);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        // GET: Orders/GetItemFinalPrice
+        public async Task<IActionResult> GetItemFinalPrice(int orderId)
+        {
+            int dbUser = await isValidUserAsync();
+
+            if (dbUser > 0)
+            {
+                var order = await (_context.OrderItem.Include(o => o.Order).
+                                    Include(o => o.ProductType).
+                                    Include(o => o.ProductType.Product).
+                                    Where(o => o.Id == orderId && o.Order.IsCart && o.Order.UserId == dbUser).FirstAsync());
+
+                float currency = 1;
+                if (_httpContextAccessor.HttpContext.Request.Cookies["currency"] != null)
+                    currency = float.Parse(_httpContextAccessor.HttpContext.Request.Cookies["currency"]);
+                var currencySign = "$";
+                if (_httpContextAccessor.HttpContext.Request.Cookies["currencySign"] != null)
+                {
+                    currencySign = Currencies[int.Parse(_httpContextAccessor.HttpContext.Request.Cookies["CurrencySign"])];
+                }
+
+                var amount = order.Amount;
+                var price = order.ProductType.Product.Price * currency;
+
                 var discount = order.ProductType.Product.DiscountPercentage;
                 discount = discount > 0 ? ((100 - discount) / 100) : 1;
                 var totalPrice = price * discount * amount;
 
-                order.TotalPrice = (double) totalPrice;
+                order.TotalPrice = (double)totalPrice;
                 _context.OrderItem.Update(order);
                 await _context.SaveChangesAsync();
 
-                return Json(new { success = true, data = new { totalPrice = totalPrice, currecnyIndex = 0 }});
+                return Json(new { success = true, data = new { totalPrice = totalPrice, sign = currencySign } });
             }
 
             return Json(new { success = false });
@@ -95,8 +174,8 @@ namespace web_development_course.Controllers
         /// </summary>
         public async Task<IActionResult> GetOrderItemData(int orderItemId)
         {
-            var dbUser = await IsValidUserAsync();
-
+            var dbUser = await isValidUserAsync();
+            
             if (dbUser > 0)
             {
                 var order = await (_context.OrderItem.Include(o => o.Order).
@@ -119,7 +198,8 @@ namespace web_development_course.Controllers
         // GET: Orders/GetSummary
         public async Task<IActionResult> GetSummary()
         {
-            int dbUser = await IsValidUserAsync();
+
+            int dbUser = await isValidUserAsync();
 
             if (dbUser > 0)
             {
@@ -132,24 +212,39 @@ namespace web_development_course.Controllers
                 double totalDiscount = 0;
                 double totalPrice = 0;
 
-                foreach (var data in orders) {
-                    var price = data.Amount * data.ProductType.Product.Price;
+                float currency = 1;
+                if (_httpContextAccessor.HttpContext.Request.Cookies["currency"] != null)
+                    currency = float.Parse(_httpContextAccessor.HttpContext.Request.Cookies["currency"]);
+                var currencySign = "$";
+                if (_httpContextAccessor.HttpContext.Request.Cookies["currencySign"] != null)
+                {
+                    currencySign = Currencies[int.Parse(_httpContextAccessor.HttpContext.Request.Cookies["CurrencySign"])];
+                }
+
+                foreach (var data in orders)
+                {
+                    var price = data.Amount * data.ProductType.Product.Price * currency;
                     var discountNum = (data.ProductType.Product.DiscountPercentage / 100);
 
                     // if there is no discount the amount will be 0 
                     var discountAmount = price * discountNum;
 
-                    // add logic in case we in a diffrent currency
-                    totalPrice += (price - discountAmount); 
+                    totalPrice += (price - discountAmount);
                     midPrice += price;
                     totalDiscount += discountAmount;
                 }
 
-                return Json(new { success = true, data = new { totalPrice = totalPrice,
-                                                               midPrice = midPrice,
-                                                               saving = totalDiscount,
-                                                               //later change this!
-                                                               currencyIndex = 0 } });
+                return Json(new
+                {
+                    success = true,
+                    data = new
+                    {
+                        totalPrice = totalPrice,
+                        midPrice = midPrice,
+                        saving = totalDiscount,
+                        sign = currencySign,
+                    }
+                });
             }
 
             return Json(new { success = false });
@@ -185,18 +280,25 @@ namespace web_development_course.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateAmount(int id, int amount)
         {
-            var order = await _context.OrderItem.FindAsync(id);
+            OrderItem order = await _context.OrderItem.Include(oi => oi.ProductType).Where(oi => oi.Id == id).FirstOrDefaultAsync();
 
-            if(order != null)
+            if (order != null)
             {
-                order.Amount = (int)amount;
+                // Checks if we still have in stock the requested amount
+                if (amount > order.ProductType.Quantity)
+                {
+                    return BadRequest(new { errorMessage = Consts.NOT_IN_STOCK });
+                }
+
+                order.Amount = amount;
+
                 _context.OrderItem.Update(order);
                 await _context.SaveChangesAsync();
 
                 return Json(new { success = true });
             }
 
-            return Json(new { success = false, textStatus = "didnt find order" }) ;
+            return Json(new { success = false, textStatus = "didnt find order" });
         }
 
         //Post: Orders/PlaceOrder
@@ -337,6 +439,61 @@ namespace web_development_course.Controllers
             return View(order);
         }
 
+        // POST: Orders/AddToCart
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> AddToCart(int productId, int colorId, ProductSize size, int quantity)
+        {
+            int dbUser = await isValidUserAsync();
+            if (dbUser <= 0)
+            {
+                return Unauthorized();
+            }
+            Order userCart = await _cartService.GetOrCreateCartForUser(dbUser);
+
+            ProductType releventProductType = await _context.ProductType
+                .Include(pd => pd.Product)
+                .Where(pd => pd.ProductId == productId && pd.ColorId == colorId)
+                .FirstOrDefaultAsync();
+
+            if (releventProductType == null)
+            {
+                return NotFound(new { errorMessage = Consts.ITEM_NOT_FOUND });
+            }
+
+            if (quantity > releventProductType.Quantity)
+            {
+                return BadRequest(new { errorMessage = Consts.NOT_IN_STOCK });
+            }
+
+            OrderItem releventOrderItem = await GetOrCreateOrderItem(userCart.Id, releventProductType.Id);
+
+            releventOrderItem.Amount = quantity;
+            releventOrderItem.TotalPrice = releventProductType.Product.TotalPrice() * quantity;
+            _context.OrderItem.Update(releventOrderItem);
+            await _context.SaveChangesAsync();
+
+            // TODO: Send the updated order deatiles
+            return Json(new { });
+        }
+
+        private async Task<OrderItem> GetOrCreateOrderItem(int OrderId, int ProductTypeID)
+        {
+            OrderItem releventOrderItem = await _context.OrderItem
+                .Where(oi => oi.OrderId == OrderId && oi.ProductTypeID == ProductTypeID)
+                .FirstOrDefaultAsync();
+
+            if (releventOrderItem == null)
+            {
+                releventOrderItem = new OrderItem { OrderId = OrderId, Amount = 0, TotalPrice = 0, ProductTypeID = ProductTypeID };
+                _context.Add(releventOrderItem);
+                await _context.SaveChangesAsync();
+            }
+
+            return releventOrderItem;
+        }
+
         // POST: Orders/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -395,17 +552,17 @@ namespace web_development_course.Controllers
         //GET: Orders/DeleteByUser
         public async Task<IActionResult> DeleteByUser(int? orderItemId)
         {
-            if (orderItemId == null )
+            if (orderItemId == null)
             {
                 return NotFound();
             }
 
-            var dbUser = IsValidUserAsync();
+            var dbUser = isValidUserAsync();
 
             if (dbUser.Result > 0)
             {
                 var orderItem = await (_context.OrderItem.Include(o => o.Order).
-                                    Include(o=>o.Order.OrderItems).
+                                    Include(o => o.Order.OrderItems).
                                     Include(o => o.ProductType).
                                     Include(o => o.ProductType.Product).
                                     Where(o => o.Id == orderItemId && o.Order.IsCart).ToListAsync());
@@ -423,14 +580,15 @@ namespace web_development_course.Controllers
                         _context.Order.Remove(orderItem[0].Order);
                         isLastItem = true;
                     }
+
                     _context.OrderItem.Remove(orderItem[0]);
                     await _context.SaveChangesAsync();
 
-                    return Json(new {success = true, isLastItem = isLastItem });
+                    return Json(new { success = true, isLastItem = isLastItem });
                 }
             }
 
-            return Json( new {success = false });
+            return Json(new { success = false });
         }
 
         // POST: Orders/Delete/5
@@ -450,7 +608,7 @@ namespace web_development_course.Controllers
             return _context.Order.Any(e => e.Id == id);
         }
 
-        private async Task<int> IsValidUserAsync()
+        private async Task<int> isValidUserAsync()
         {
             string user = HttpContext.User.Identity.Name;
 
@@ -513,5 +671,7 @@ namespace web_development_course.Controllers
             }
             return true;
         }
+
     }
+
 }

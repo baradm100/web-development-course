@@ -75,18 +75,6 @@ namespace web_development_course.Controllers
             return Json(new { success = true, Colors });
         }
 
-        [Authorize(Roles = "Admin,Editor")]
-        public async Task<IActionResult> AddGoodsAsync(int? id)
-        {
-            var product = await _context.Product.FirstOrDefaultAsync(p => p.Id == id);
-            if (product == null)
-            {
-                return View("Create");
-            }
-
-            return View(product.Id);
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Editor")]
@@ -101,7 +89,7 @@ namespace web_development_course.Controllers
                 {
                     foreach (var p in product.ProductTypes)
                     {
-                        if (p.Size == pt.Size && p.ColorId == pt.ColorId)
+                        if (p.ColorId == Color.Id && p.Size == Size)
                         {
                             p.Quantity = pt.Quantity;
                             _context.Update(p);

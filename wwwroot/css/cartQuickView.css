@@ -53,3 +53,17 @@ ul.dropdown-menu.container.cartQuickView {
 ul.dropdown-menu.container.cartQuickView.noLogin {
     left: -80px;
 }
+
+.cartQuickView .discountOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.5rem 1rem;
+  width: 100%;
+  max-width: 0;
+}
+
+.cartQuickView .discountOverlay .discount-on-card {
+  width: 4em;
+  margin: 0;
+}

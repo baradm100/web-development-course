@@ -1,0 +1,49 @@
+﻿.centered {
+    position: inherit;
+    margin-top: 50%;
+    text-align: center;
+}
+
+.centered-bottom {
+    position: sticky;
+    bottom: 0%;
+    width: fit-content;
+    text-align: center;
+}
+
+.centered-left {
+    position: relative;
+    top: 50%;
+    left: 0%;
+    text-align: center;
+}
+
+.centered-right {
+    position: relative;
+    top: 50%;
+    right: 0%;
+    text-align: center;
+}
+
+#google-map {
+    height: 100%;
+    width: 100%;
+}
+
+#map-container {
+    height: 100%;
+    max-height: calc(100vh - var(--header-height) - 10rem);
+    top: calc(var(--header-height) + 5rem);
+    position: -webkit-sticky;
+    position: sticky;
+}
+
+@media screen and (max-width: 1200px) {
+    #stores {
+        max-height: 100%;
+    }
+
+    #map-container {
+        height: 60vh;
+    }
+}

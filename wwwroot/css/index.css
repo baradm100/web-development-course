@@ -1,0 +1,57 @@
+﻿@media screen and (max-width: 600px){
+    .resBtn {
+        height: 2rem;
+        width: 6rem;
+        font-size: small;
+    }
+
+    .resHeaderLarge {
+        font-size: 18px;
+    }
+
+    .resHeaderMedium {
+        font-size: 14px;
+    }
+
+    .resHeaderSmall {
+        font-size: small;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .resBtn {
+        height: 2rem;
+        width: 4rem;
+        font-size: 8px;
+    }
+
+    .resHeaderLarge {
+        font-size: 18px;
+    }
+
+    .resHeaderMedium {
+        font-size: 14px;
+    }
+
+    .resHeaderSmall {
+        font-size: small;
+    }
+}
+
+
+.image-container {
+    position: relative;
+    text-align: center;
+    color: white;
+}
+
+.centerd-image-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: color 1s;
+}
+.centerd-image-text:hover {
+    color: red;
+}

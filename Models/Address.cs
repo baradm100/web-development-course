@@ -22,5 +22,8 @@ namespace web_development_course.Models
         [Required]
         [Range(Consts.FIRST_BUILDING_NUM, Consts.MAX_BUILDING_NUM, ErrorMessage = Consts.ONLY_DIGITS_ERROR)]
         public int BuildingNumber { get; set; }
+
+        // Collection of users used this address for delivery
+        public IEnumerable<User> Users{ get; set; }
     }
 }

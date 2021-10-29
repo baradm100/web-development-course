@@ -79,3 +79,43 @@ body {
     color:darkgray;
     text-decoration: line-through;
 }
+
+/* Color palate
+    ---------------------------------------------------------------*/
+
+/*regular black
+*/
+
+color-white {
+    color:white;
+}
+
+.blue {
+    color: #14213d;
+}
+
+.orange {
+    color: #fca311;
+}
+
+.gray {
+    color: #e5e5e5;
+}
+
+.background-orange {
+    background-color: #fca311;
+}
+
+.background-blue {
+    background-color: #14213d;
+}
+
+.background-gray {
+    background-color: #e5e5e5;
+}
+
+.background-black {
+    background-color: black;
+}
+
+/*reguler white*/

@@ -8,10 +8,10 @@
         var option = initDays()
 
         // get the amount of days we already have
-        var rowNum = $("tr").length - 1
+        var rowNum = $(".days").length + 1
 
-        if ($("tr").length < 8) {
-            $("#table_body").append('<tr id="tr_' + rowNum
+        if ($(".days").length < 7) {
+            $("#table_body").append('<tr class="days" id="tr_' + rowNum
                 + '"><th scope="row"><select class="form-select day_selection" id="day_selection_' + rowNum
                 + '" aria-label="Default select example">' + option
                 + '</select><span class="text-danger d-none" id="day_error_' + rowNum
@@ -124,15 +124,15 @@
     });
 
     $("#delete_day").click(function () {
-        var lastRow = $("tr").length - 1
-        if (lastRow > 1) {
-            $("#tr_" + (lastRow - 1)).remove()
+        var lastRow = $(".days").length
+        if (lastRow > 0) {
+            $("#tr_" + (lastRow)).remove()
         }
     });
 
     function validHour() {
         console.log("validHour")
-        var rowNumberIndex = $("tr").length - 2;
+        var rowNumberIndex = $(".days").length;
 
         while (rowNumberIndex >= 0) {
             if (!$("#open_error_" + rowNumberIndex).hasClass("d-none")) {
@@ -142,8 +142,8 @@
                 $("#close_error_" + rowNumberIndex).addClass("d-none")
             }
 
-            var openHour = document.getElementById("open_" + rowNumberIndex).value
-            var closeHour = document.getElementById("close_" + rowNumberIndex).value
+            var openHour = $("#open_" + rowNumberIndex).val()
+            var closeHour = $("#close_" + rowNumberIndex).val()
 
             if (!openHour || !closeHour || openHour > closeHour) {
                 console.log("all bad")

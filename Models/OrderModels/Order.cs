@@ -19,7 +19,7 @@ namespace web_development_course.Models.OrderModels
         [Required]
         public bool IsCart { get; set; } = true;
 
-        public DeliveryOptions Delivery { get; set; } = DeliveryOptions.Nearest_Store;
+        public DeliveryOptions Delivery { get; set; } = DeliveryOptions.Pick_Store;
 
         [Required]
         [DataType(DataType.Date)]

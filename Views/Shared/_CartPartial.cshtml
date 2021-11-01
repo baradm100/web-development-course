@@ -29,8 +29,8 @@
 
 <form id="quickCartForm" asp-action="DeleteOrderItem" asp-controller="Orders"></form>
 
-<li class="nav-item dropdown">
-    <button type="button" class="nav-link  text-white dropdown-toggle btn position-relative cartIcon"
+<li class="nav-item dropdown mini-cart">
+    <button type="button" class="nav-link text-white dropdown-toggle btn position-relative cartIcon mini-cart"
             id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="bi bi-cart-fill"></i>
         Cart
@@ -39,7 +39,7 @@
             <span class="visually-hidden">items</span>
         </span>
     </button>
-    <ul class="dropdown-menu container cartQuickView" aria-labelledby="quickCartDropdown">
+    <ul class="dropdown-menu container cartQuickView quickCartDropdown" id="quickCartDropdown" aria-labelledby="quickCartDropdown">
         <div class="d-none justify-content-center" id="quickCartLoading">
             <div class="spinner-border" role="status">
                 <span class="visually-hidden">Loading...</span>

@@ -2,11 +2,20 @@
 let sizes = ["XS", "S", "M", "L", "XL", "XXL"]
 
 $(function () {
+    disableMiniCart()
     GetSummary()
     initAmountListeners()
     initDeleteListener()
     initEditListener()
 
+    window.addEventListener('locationchange', function () {
+        $(".mini-cart").prop("disabled",false)
+
+    })
+
+    function disableMiniCart() {
+        $(".mini-cart").prop("disabled",true)
+    }
 
     function initAmountListeners() {
         $(".amount").change(function () {
@@ -62,7 +71,6 @@ $(function () {
     }
 
     function updateAmount(id, index) {
-        console.log("updateAmount")
         $.ajax({
             url: "/Orders/UpdateAmount",
             type: 'Post',
@@ -88,7 +96,6 @@ $(function () {
     }
 
     function getItemFinalPrice(orderId, rowIndex) {
-        console.log("orderid" + orderId)
         $.ajax({
             url: "/Orders/GetItemFinalPrice?orderId=" + orderId,
             type: 'GET',

@@ -98,7 +98,7 @@ namespace web_development_course.Controllers
             _context.OrderItem.Remove(ItemToDelete);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Json(new {success = true });
         }
 
         // GET: Orders/GetItemFinalPrice

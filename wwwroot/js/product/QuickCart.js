@@ -156,9 +156,15 @@ function renderCart(items) {
             <hr class="dropdown-divider">
         </li>
     `);
+
     }
+      $("#bottom-btn").removeClass("d-none")
   }
 
+    if (items.length == 0) {
+        $("#bottom-btn").addClass("d-none")
+    }
+  
   $("#quickCartTotal").text(items.length);
 }
 
@@ -170,7 +176,6 @@ function updateCart(shouldOpen = true) {
       console.error("fail", arguments);
     },
     success: function (response) {
-      console.log("success", arguments);
       renderCart(response);
     },
     error: function (result) {
@@ -260,7 +265,6 @@ function updateItemQuantity(itemId) {
         console.log("fail", arguments);
       },
       success: function (response) {
-        console.log("success", arguments);
         updateCart();
       },
       error: function (result) {

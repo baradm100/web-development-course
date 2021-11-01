@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace web_development_course.Models.OrderModels
 {
+
+
     public class Order
     {
         public int Id { get; set; }
@@ -16,6 +18,8 @@ namespace web_development_course.Models.OrderModels
 
         [Required]
         public bool IsCart { get; set; } = true;
+
+        public DeliveryOptions Delivery { get; set; } = DeliveryOptions.Pick_Store;
 
         [Required]
         [DataType(DataType.Date)]

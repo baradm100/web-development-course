@@ -27,7 +27,7 @@ namespace web_development_course.Common
 
         public const int FIRST_BUILDING_NUM = 1;
 
-        public const int MAX_BUILDING_NUM = 10000;
+        public const int MAX_BUILDING_NUM = 1000;
 
         # endregion
 

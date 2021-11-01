@@ -1,0 +1,234 @@
+﻿<div class="modal fade" id="checkoutModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-black">
+                <h5 class="modal-title text-center" style="color:white" id="checkoutModalLabel">Checkout</h5>
+                <button type="button" id="checkoutModalClose" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12 p-3 col-lg-8">
+                        <ul class="nav nav-tabs" id="myTab" role="tablist" >
+                            <li class="nav-item black" role="presentation" >
+                                <button class="nav-link active" style="color:black" id="delivery-tab" data-bs-toggle="tab" data-bs-target="#delivery_methods" type="button" role="tab" aria-controls="delivery" aria-selected="true">Delivery</button>
+                            </li>
+                            <li class="nav-item black" role="presentation">
+                                <button class="nav-link" style="color:black" id="details-tab" data-bs-toggle="tab" data-bs-target="#details_input" type="button" role="tab" aria-controls="details" aria-selected="false">Details</button>
+                            </li>
+                            <li class="nav-item black" role="presentation">
+                                <button class="nav-link " style="color:black" id="payment-tab" data-bs-toggle="tab" data-bs-target="#payment_input" type="button" role="tab" aria-controls="payment" aria-selected="false">Payment</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="delivery_methods" role="tabpanel" aria-labelledby="delivery-tab">
+                                <div class="row g-2 justify-content-between" style="margin-top:2rem">
+                                    @{ foreach (int value in Enum.GetValues(typeof(DeliveryOptions)))
+                                        {
+                                            var deliveryPrice = ((DeliveryOptions)value);
+                                            var deliveryAsString = deliveryPrice.ToString("D").Equals("1") ? "Free" : deliveryPrice.ToString("D");
+
+                                            string deliveryMethod = "";
+
+                                            if (deliveryPrice.ToString().Contains("_"))
+                                            {
+                                                deliveryMethod = deliveryPrice.ToString().Replace("_", " ");
+
+                                                <div class="card col-12 col-lg-5 delivery" id="delivery_@value">
+                                                    <div class="dropdown card-body justify-content-between" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor:pointer">
+                                                        <h5 class="card-title col-12 algin-start">@deliveryMethod</h5>
+                                                        <p class="card-text col-3 align-text-bottom">@deliveryAsString</p>
+                                                        <span class="col-12 card-text" id="selected_branch"></span>
+                                                    </div>
+                                                    <ul class="dropdown-menu" id="branches_list" aria-labelledby="delivery_@value" style="z-index:200">
+                                                    </ul>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                deliveryMethod = deliveryPrice.ToString();
+                                                <div class="card col-12 col-lg-5 button delivery" id="delivery_@value">
+                                                    <div class="card-body justify-content-between" style="cursor:pointer">
+                                                        <h5 class="card-title algin-start">@deliveryMethod</h5>
+                                                        <p class="card-text align-text-bottom">@deliveryAsString</p>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="details_input" role="tabpanel" aria-labelledby="details-tab">
+                                <form class="needs-validation" novalidate style="margin-top:2rem" id="Details-form">
+                                    <div class="row g-2" style="margin-bottom:.5rem">
+                                        <div class="col-md">
+                                            <div class="form-floating">
+                                                <input disabled type="text" class="form-control" id="floatingName" pattern="([A-Za-z]{2,30}) ([A-Za-z]{2,30})" maxlength="30" placeholder="Name" required>
+                                                <label for="floatingName">Name</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md">
+                                            <div class="form-floating">
+                                                <input type="tel" class="form-control" id="floatingPhone" pattern="[0]{1}[0-9]{8,9}" maxlength="10" placeholder="Phone" required>
+                                                <label for="floatingPhone">Phone</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row g-3" style="margin-bottom:.5rem">
+                                        <div class="col-md">
+                                            <div class="form-floating ">
+                                                <input type="text" class="form-control" pattern="(^[a-zA-Z\s]{2,20})" id="floatingCity" maxlength="20" placeholder="City" required>
+                                                <label for="floatingCity">City</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md">
+                                            <div class="form-floating ">
+                                                <input type="text" maxlength="20" pattern="(^[a-zA-Z\s]{2,20})" class="form-control" id="floatingStreet" placeholder="Street" required>
+                                                <label for="floatingStreet">Street</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md">
+                                            <div class="form-floating ">
+                                                <input type="text" min="1" max="1000" maxlength="4" pattern="([1-9]{1}[0-9]*)" class="form-control" id="floatingNumber" placeholder="Building number" required>
+                                                <label for="floatingNumber">Number</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row g-1" style="margin-bottom:1rem">
+                                        <div class="col-md">
+                                            <div class="form-floating ">
+                                                <input disabled type="email" class="form-control" id="floatingEmail" pattern="([A-Za-z0-9]{2-15})@@([a-z]{2-15})\..([a-z]{2,4})" placeholder="Email" maxlength="30" required>
+                                                <label for="floatingPhone">Email</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="tab-pane fade" id="payment_input" role="tabpanel" aria-labelledby="payment-tab">
+                                <form class="container needs-validation" novalidate style="margin-top:2rem" id="payment-form">
+                                    <div class="row g-1" style="margin-bottom:.5rem">
+                                        <div class="col-md">
+                                            <div class="form-floating">
+                                                <input type="text" maxlength="16" minlength="16" pattern="([0-9]{16})" class="form-control" id="floatingCreditNumber" placeholder="Credit Number" required>
+                                                <label for="floatingCreditNumber">Credit Number</label>
+                                                <div class="invalid-feedback">
+                                                    Credit number must contains 16 digits
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row g-2" style="margin-bottom:.5rem">
+                                        <div class="col-md">
+                                            <div class="row g-2" style="margin-bottom:.5rem" novalidate>
+                                                <div class="col-md">
+                                                    <div class="form-floating has-validation">
+                                                        <input type="text" min="1" max="12" maxlength="2" pattern="^(0?[1-9]|1[012])$" class="form-control" id="floatingMM" placeholder="MM" required>
+                                                        <label for="floatingMM">MM</label>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md">
+                                                    <div class="form-floating has-validation">
+                                                        <input type="text" maxlength="2" min="21" max="99" pattern="([2-9]{1})([0-9]{1})" class="form-control" id="floatingYY" placeholder="YY" required>
+                                                        <label for="floatingYY">YY</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md">
+                                            <div class="form-floating ">
+                                                <input type="text" maxlength="3" minlength="3" class="form-control" pattern="^([0-9]{3})$" id="floatingCVV" placeholder="CVV" required>
+                                                <label for="floatingCVV">CVV</label>
+                                            </div>
+                                        </div>
+                                        <div id="floatingMMFeedback" class="text-danger visually-hidden">
+                                            Card date was expired, please enter new card
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-4 p-3 mb-5">
+                        <div class="row d-flex justify-content-center">
+                            <h5>Summary</h5>
+                            <div>IM going to enter here the cart partial after merge</div>
+                            <div class="cart-totals ms-auto">
+                                <table>
+                                    <tfoot>
+                                        <tr class="row justify-content-between">
+                                            <td class="col-9">
+                                                <b>Total to pay</b>
+                                            </td>
+                                            <td class="d-flex ms-auto col-3 ">
+                                                <b id="total-price">0</b>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                        <tr class="row justify-content-between">
+                                            <td class="col-9">
+                                                <div>Subtotal</div>
+                                            </td>
+                                            <td class="d-flex ms-auto col-3 ">
+                                                <div id="subtotal-price">0</div>
+                                            </td>
+                                        </tr>
+                                        <tr class="row justify-content-between">
+                                            <td class="col-9">
+                                                <div>Delivery</div>
+                                            </td>
+                                            <td class="d-flex ms-auto col-3">
+                                                <div id="delivery_price">0</div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="place-order" disabled style="width:100%">PLACE ORDER</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="orderSummary" aria-hidden="true" aria-labelledby="orderSummaryLabel" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background:black">
+                <h5 class="modal-title" id="orderSummaryLabel" style="color:white">Order Approvment</h5>
+                <button type="button" class="btn-close orderSummaryClose  btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="flex-row">
+                    <h3 id="title">Thanks for buying in CLOTHIT</h3>
+                    <div class="col">
+                        <div class="row">
+                            <h5 class="col-auto">Your Order Number: </h5>
+                            <h5 class="col" id="orderNumer" style="margin-left:0.3rem"></h5>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div>
+                            <h6 class="col-auto d-none" id="delivery_guy">Delivery guy will contact you at:</h6>
+                            <h6 class="col-3 ms-auto" id="phone_number"></h6>
+                            <h6 class="col-auto d-none" id="store_info">We looking for you at:</h6>
+                            <h6 class="col-3 ms-auto" id="store_name"></h6>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div>
+                            <b class="col-auto">Total payment:</b>
+                            <b class="col-3 ms-auto" id="total_price_sum"></b>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary orderSummaryClose" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -24,10 +24,11 @@ namespace web_development_course.Models
         [Range(Consts.FIRST_BUILDING_NUM, Consts.MAX_BUILDING_NUM, ErrorMessage = Consts.ONLY_DIGITS_ERROR)]
         public int BuildingNumber { get; set; }
 
-        [Required]
+        // Collection of users used this address for delivery
+        public IEnumerable<User> Users{ get; set; }
+      
         public double Longitude { get; set; }
 
-        [Required]
         public double Latitude { get; set; }
 
         public override string ToString()

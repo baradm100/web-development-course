@@ -34,6 +34,11 @@ namespace web_development_course.Models
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
 
+        [DataType(DataType.PhoneNumber)]
+        [MaxLength(10)] 
+        [MinLength(10)]
+        public string Phone{ get; set; }
+
         public UserLevel UserType { get; set; } = UserLevel.Client;
 
         [Required]
@@ -41,6 +46,9 @@ namespace web_development_course.Models
         public DateTime DateOfBirth { get; set; }
 
         public IEnumerable<Order> Orders { get; set; }
+
+        // used for delivery addresses
+        public IEnumerable<Address> Addresses { get; set; }
 
     }
 }

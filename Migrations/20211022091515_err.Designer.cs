@@ -3,36 +3,23 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using web_development_course.Data;
 
 namespace web_development_course.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211022091515_err")]
+    partial class err
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.9")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("AddressUser", b =>
-                {
-                    b.Property<int>("AddressesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UsersId")
-                        .HasColumnType("int");
-
-                    b.HasKey("AddressesId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("AddressUser");
-                });
 
             modelBuilder.Entity("CategoryProductCategory", b =>
                 {
@@ -411,13 +398,13 @@ namespace web_development_course.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Delivery")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsCart")
                         .HasColumnType("bit");
 
                     b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("delivery")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -653,9 +640,6 @@ namespace web_development_course.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Phone")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("UserType")
                         .HasColumnType("int");
 
@@ -674,21 +658,6 @@ namespace web_development_course.Migrations
                             Password = "1234",
                             UserType = 2
                         });
-                });
-
-            modelBuilder.Entity("AddressUser", b =>
-                {
-                    b.HasOne("web_development_course.Models.Address", null)
-                        .WithMany()
-                        .HasForeignKey("AddressesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("web_development_course.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("CategoryProductCategory", b =>

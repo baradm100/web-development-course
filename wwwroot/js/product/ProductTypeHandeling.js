@@ -14,6 +14,13 @@
     const rgb2hex = (rgb) => `#${rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/).slice(1).map(n => parseInt(n, 10).toString(16).padStart(2, '0')).join('')}`
 
     $('.btnAddGoods').click(function () {
+        if (DuplicateSize() == true) {
+            if ($(this).siblings("#SizeWarning").length == 0)
+                $(this).parent("div").append("<div class='alert alert-danger' style='color: red' id='SizeWarning'>There is an Duplicate Sizes</div>");
+            return false;
+        } else {
+            $(this).parent("#SizeWarning").remove()
+        }
         editType = false;
         productName = $(this).get(0).id;
         $("#addGoodsModal").modal("show");
@@ -106,7 +113,6 @@
                 return false
             },
             complete: async function () {
-
                 var color = $btn.css("background-color");
                 productName = $btn.attr("name");
                 var types = await getProductsInColor(color, productName);
@@ -131,6 +137,7 @@
                     }
                 };
                 $(".modal-title").text("Edit Goods");
+                $("button#addGoodsModalBtn").text("Save");
             },
             timeout: 5000,
         })

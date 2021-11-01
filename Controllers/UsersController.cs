@@ -303,6 +303,38 @@ namespace web_development_course.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: Users/Info/
+        [Authorize(Roles = "Admin,Editor")]
+        public async Task<IActionResult> Info()
+        {
+            string user = HttpContext.User.Identity.Name;
+
+            if (user != null)
+            {
+                var dbUser = await _context.User.FirstOrDefaultAsync(v => (v.FirstName + " " + v.LastName) == user);
+
+                if (dbUser != null)
+                {
+                    return Json(new { success = true, data = new
+                                                                {
+                                                                    name = user,
+                                                                    email = dbUser.Email,
+                                                                    phone = dbUser.Phone,
+                                                                }});
+                }
+                else
+                {
+                    return Json(new { success = false });
+
+                }
+            }
+            else
+            {
+                return Json(new { success = false});
+            }
+
+        }
+    
         private bool UserExists(int id)
         {
             return _context.User.Any(e => e.Id == id);

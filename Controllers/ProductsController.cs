@@ -534,6 +534,43 @@ namespace web_development_course.Controllers
             return View(product);
         }
 
+        // GET: Orders/json
+        [HttpGet]
+        [Route("products/summery/json")]
+        [Authorize(Roles = "Admin,Editor")]
+        public async Task<IActionResult> getProductSummeryJsonAsync()
+        {
+            var orders = from order in _context.Order
+                         where order.IsCart == false
+                         join item in _context.OrderItem on order.Id equals item.OrderId
+                         join productType in _context.ProductType on item.ProductTypeID equals productType.Id
+                         join pCategory in _context.ProductCategory on productType.ProductId equals pCategory.ProductId
+                         join category in _context.Category on pCategory.CategoryId equals category.Id
+                         group new { item.Amount } by category.Name into sum
+                         select new { sum.Key, amount = sum.Select(item => item.Amount).Sum() };
+
+            
+            return Json(new { success = true, orders = await orders.ToListAsync() });
+        }
+
+        // GET: Orders/json
+        [HttpGet]
+        [Route("/products/availablestock/json/")]
+        [Authorize(Roles = "Admin,Editor")]
+        public async Task<IActionResult> getAvialableStockSummeryJsonAsync()
+        {
+            var products = from product in _context.Product
+                         join productType in _context.ProductType on product.Id equals productType.Id
+                         where productType.Quantity > 0
+                         join pCategory in _context.ProductCategory on product.Id equals pCategory.ProductId
+                         join category in _context.Category on pCategory.CategoryId equals category.Id
+                         group new { productType.Quantity } by category.Name into sum
+                         select new { sum.Key, amount = sum.Select(item => item.Quantity).Sum() };
+
+
+            return Json(new { success = true, products = await products.ToListAsync() });
+        }
+
         // POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]

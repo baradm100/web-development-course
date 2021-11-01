@@ -1,7 +1,7 @@
+@using Microsoft.AspNetCore.Authorization;
 @{
-    var user = Context.User.Identity.Name;
-    var authanticated = Context.User.Identity.IsAuthenticated;
-    var userAuthLevel = Context.User.Identity.AuthenticationType;
+ var user = Context.User.Identity.Name;
+ var authanticated = Context.User.Identity.IsAuthenticated;
 }
 
 <ul class="navbar-nav">
@@ -12,6 +12,12 @@
 
     @if (authanticated)
     {
+        @if(User.IsInRole("Admin"))
+        {
+            <li class="nav-item">
+                <a class="nav-link text-white" asp-controller="Home" asp-action="Dashboard">Dashboard</a>
+            </li>
+        }
         <li class="nav-item">
             <a class="nav-link text-white" asp-area="Identity" asp-controller="Users" asp-action="Edit" title="Manage">
                 Hello

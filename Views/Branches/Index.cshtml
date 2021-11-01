@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<web_development_course.Models.Branch>
+@using Microsoft.AspNetCore.Authorization;
 
 @{
     ViewData["Title"] = "Stores";
@@ -59,7 +60,7 @@
                                             <div class="col  d-flex justify-content-center align-items-center">
                                                 <button type="button" class="btn btn-primary text-center shadow" marker-position-show="@i">Show In Map</button>
                                             </div>
-                                            @if (authanticated)
+                                            @if (authanticated && (User.IsInRole("Admin") || User.IsInRole("Editor")))
                                             {
                                                 <div id="@Model.ToList()[i].Id" class="col mt-2 d-flex justify-content-center align-items-center">
                                                     <a type="button" class="mx-2 text-center text-black" asp-action="Edit" asp-route-id="@Model.ToList()[i].Id"><i class="bi bi-pencil-fill"></i></a>
@@ -74,7 +75,7 @@
                     }
                 }
             </div>
-            @if (authanticated)
+            @if (authanticated && (User.IsInRole("Admin") || User.IsInRole("Editor")))
             {
                 <p>
                     <a type="button" class="btn btn-success text-center shadow mt-2" asp-action="Create">Create New</a>

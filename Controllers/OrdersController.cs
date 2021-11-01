@@ -210,15 +210,23 @@ namespace web_development_course.Controllers
         [HttpGet]
         [Route("orders/json")]
         [Authorize(Roles = "Admin,Editor")]
-        public async Task<IActionResult> getOrdersJsonAsync()
+        public async Task<IActionResult> getOrdersJsonAsync(string product, string category, string username)
         {
+            if (product == null)
+                product = "";
+            if (category == null || category == "Select")
+                category = "";
+            if (username == null)
+                username = "";
+
             var orders = from order in _context.Order
                          join item in _context.OrderItem on order.Id equals item.OrderId
                          join user in _context.User on order.UserId equals user.Id
                          join productType in _context.ProductType on item.ProductTypeID equals productType.Id
                          join pCategory in _context.ProductCategory on productType.ProductId equals pCategory.ProductId
-                         //join category in _context.Category on pCategory.CategoryId equals category.Id
-                         join product in _context.Product on productType.ProductId equals product.Id
+                         join c in _context.Category on pCategory.CategoryId equals c.Id
+                         join p in _context.Product on productType.ProductId equals p.Id
+                         where p.Name.Contains(product) && c.Name.Contains(category) && (user.FirstName + " " + user.LastName).Contains(username)
                          select new { 
                              order.Id, 
                              user.FirstName, 
@@ -227,7 +235,7 @@ namespace web_development_course.Controllers
                              order.IsCart,
                              item.Amount,
                              item.TotalPrice,
-                             product.Name,
+                             p.Name,
                          };
 
             var o = await orders.ToListAsync();

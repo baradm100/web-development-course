@@ -20,22 +20,66 @@ $(function () {
     var token = $('input[name="__RequestVerificationToken"]').val();
     formData.append("__RequestVerificationToken", token);
 
+    $("button#ProductDealSearch").on("click", function () {
+        var $searchDiv = $(this).parents("#dealSearchDiv");
+        var $product = $searchDiv.find("input#userProductSearch");
+        var $category = $searchDiv.find(".userCategorySearch");
+        var $username = $searchDiv.find("input#userNameSearch");
+        orders($product.val(), $category.val(), $username.val());
+    })
+
+    const categories = () => {
+        $.ajax({
+            url: "/Categories/json/",
+            type: 'GET',
+            dataType: 'json',
+            data: null,
+            fail: function (xhr, textStatus, errorThrown) {
+                Success = false;
+                alert("Something went wrong in server")
+            },
+            success: function (response) {
+                Success = true;
+                if (response.categories.length > 0) {
+                    $('#categoriesDropDownList').html('');
+                    const params = new URLSearchParams(window.location.search);
+                    const categoryId = params.get("categoryId");
+                    var options = '';
+                    options += '<option value="Select">All Categories</option>';
+                    for (var i = 0; i < response.categories.length; i++) {
+                        if (categoryId == response.categories[i].id)
+                            options += '<option selected value="' + response.categories[i].name + '">' + response.categories[i].name + '</option>';
+                        else
+                            options += '<option value="' + response.categories[i].name + '">' + response.categories[i].name + '</option>'
+                    }
+                    $('#categoriesDropDownList').append(options);
+                }
+            },
+            error: function (result) {
+                console.log(result);
+                return false
+            },
+            timeout: 5000,
+        });
+    }
+
+    categories()
+
     const orders = (product = "", category = "", username = "") => {
         var form = new FormData();
         var token = $('input[name="__RequestVerificationToken"]').val();
-        form.append("__RequestVerificationToken", token);
-        form.append("product", product);
-        form.append("category", category);
-        form.append("username", username);
+        form.set("__RequestVerificationToken", token);
+        form.set("product", product);
+        form.set("category", category);
+        form.set("username", username);
         $dealsTableBody.empty();
-        console.log(product, category, username);
         $.ajax({
-            url: "/orders/json/",
+            url: "/orders/json/?product=" + product + "&category=" + category + "&username=" + username + "&__RequestVerificationToken=" + token,
             type: 'GET',
             dataType: 'json',
             processData: false,
             contentType: false,
-            data: formData,
+            data: form,
             success: function (response) {
                 if (response.success == true) {
                     Success = true;
@@ -344,14 +388,7 @@ $(function () {
         });
 
 
-        $(".ProductDealSearch").click(function () {
-            console.log("here");
-            var $searchDiv = $(this).parent("#dealSearchDiv");
-            var $product = $searchDiv.children("#userProductSearch");
-            var $category = $searchDiv.children("#userCategorySearch");
-            var $username = $searchDiv.children("#userNameSearch");
-            orders($product.val(), $category.val(), $username.val());
-        })
+        
     }
 
 });

@@ -8,7 +8,7 @@ $(function () {
     initDeleteListener()
     initEditListener()
 
-    indow.addEventListener('locationchange', function () {
+    window.addEventListener('locationchange', function () {
         $(".mini-cart").prop("disabled",false)
 
     })

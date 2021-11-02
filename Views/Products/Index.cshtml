@@ -5,14 +5,36 @@
 
 @{
     ViewData["Title"] = "Index";
-    bool shouldShowEdit = (bool) ViewData["shouldShowEdit"];
+    bool shouldShowEdit = (bool)ViewData["shouldShowEdit"];
     List<Product> Products = Model.ToList();
-    IEnumerable<ProductColor> ProductColors = (IEnumerable<ProductColor>) ViewData["Colors"];
+    IEnumerable<ProductColor> ProductColors = (IEnumerable<ProductColor>)ViewData["Colors"];
     float currency = CurrencyService.GetCurrentCurrencyValue();
     string currencySign = CurrencyService.GetCurrencySign();
 }
 <div class="container">
     <div class="container-fluid category p-1 text-center text-xl-start mt-2">
+        <div class="card-body ">
+            <div id="dealSearchDiv" class="row g-3 bg-light mb-3 pb-3 d-flex flex-column flex-md-row align-items-center">
+                <div class="col form-floating">
+                    <input type="text" id="productNameSearch" class="form-control" style="height:3rem;" placeholder="Product Name" aria-label="Product Name">
+                    <label for="productSearch">Product Name</label>
+                </div>
+                <div class="col form-floating">
+                    <input type="number" min=0 id="maxPriceSearch" class="form-control" style="height:3rem;" placeholder="Max Price" aria-label="Product">
+                    <label for="maxPriceSearch">Max Price</label>
+                </div>
+                <div class="dropdown col-2">
+                    <select class="userCategorySearch btn btn-outline-secondary dropdown-toggle" id="categoriesDropDownList" style="height:3rem;" aria-label="Default select example">
+                        <option selected multiple>Category Select</option>
+                    </select>
+                </div>
+                <div class="col-1 padding-0 margin-0">
+                    <button id="btnSearch" type="button" class="nav-link text-black btn btn-light position-relative" role="button">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
         @{
             foreach (var product in Products)
             {
@@ -132,6 +154,11 @@
     </div>
 </div>
 
-@if(shouldShowEdit) {
-    <partial name="_EditFloatingButton"/>
+@if (shouldShowEdit)
+{
+    <partial name="_EditFloatingButton" />
+}
+
+@section Scripts {
+    <script src="~/js/product/mainProductPage.js"></script>
 }

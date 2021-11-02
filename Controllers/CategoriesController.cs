@@ -88,7 +88,7 @@ namespace web_development_course.Controllers
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Editor")]
         [Route("Categories")]
-        public async Task<IActionResult> AddCategory([Bind("Id,Name")] Category category)
+        public async Task<IActionResult> AddCategory([Bind("Id,Name")] Category category, string parent)
         {
             try
             {
@@ -97,7 +97,13 @@ namespace web_development_course.Controllers
                 {
                     return Json(new { fail = true, success = false, textStatus = "Category is already exist!" });
                 }
+                Category p = await _context.Category.FirstOrDefaultAsync(c => c.Name == parent);
                 _context.Add(category);
+                await _context.SaveChangesAsync();
+                Category n = await _context.Category.FirstOrDefaultAsync(c => c.Name.ToLower() == category.Name.ToLower());
+                n.ParentCategoryId = p.Id;
+                n.ParentCategory = p;
+                _context.Update(n);
                 await _context.SaveChangesAsync();
                 return Json(new { success = true });
             } catch

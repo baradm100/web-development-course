@@ -5,7 +5,7 @@
     if (item.SubCategories.Count() == 0)
     {
         <li class="nav-item">
-             @Html.ActionLink(item.Category.Name, "Index", "Products", new {categoryId=item.Category.Id}, new  {@class="nav-link text-dark"})
+             @Html.ActionLink(item.Category.Name, "Index", "Products", new {categoryId=item.Category.Id}, new  {@class="nav-link text-white"})
         </li>
     }
     else

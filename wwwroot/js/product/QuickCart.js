@@ -97,8 +97,9 @@ function createDetails(item) {
   const selectAmount = document.createElement("select");
   selectAmount.classList.add("form-select");
   editItemDiv.appendChild(selectAmount);
-
-  for (let i = 1; i <= item.productQuantity; i++) {
+  let productlimit = Math.min(10, Number(item.productQuantity))
+    
+    for (let i = 1; i <= productlimit; i++) {
     const option = document.createElement("option");
     option.value = i;
     option.text = i;
@@ -225,8 +226,7 @@ function deleteItemFromCart(itemId) {
             location.reload()
         }
         else {
-            removeCard(index)
-            GetSummary()
+            updateCart()
         }
 
     },
@@ -235,11 +235,7 @@ function deleteItemFromCart(itemId) {
       return false;
     },
     complete: function () {
-       console.log("complete")
         showCartWasLoaded();
-        console.log("complete_show_cart")
-        console.log("finish_complete")
-
     },
     timeout: 5000,
   });

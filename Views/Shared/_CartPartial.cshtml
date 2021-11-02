@@ -131,9 +131,12 @@
                     </span>
                     <div>
                         <select class="form-select" aria-label="Number Of Items" onchange="updateItemQuantity(@orderItem.Id)(arguments[0])">
-                            @for (var i = 1; i <= orderItem.ProductType.Quantity; i++)
-                            {
-                                <option value="@i" selected="@(orderItem.Amount == i)">@i</option>
+                            @{
+                                var minVal = Math.Min(10, orderItem.ProductType.Quantity);
+                                @for (var i = 1; i <= minVal; i++)
+                                {
+                                    <option value="@i" selected="@(orderItem.Amount == i)">@i</option>
+                                }
                             }
                         </select>
                         <button type="button" class="btn btn-outline-danger deleteButton" onClick="deleteItemFromCart(@orderItem.Id)">

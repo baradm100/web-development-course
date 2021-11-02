@@ -67,8 +67,13 @@
         timeout: 10000,
     });
 
+    const getCookieValue = (name) => (
+        document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)')?.pop() || ''
+    )
+
     const productAdvancedSearch = (categoryId, maximumPrice, name) => {
-        var url = "/Products/AdvancedSearch?productName=" + name + "&maximumPrice=" + maximumPrice + "&categoryId=" + categoryId;
+        var coin = getCookieValue("currency");
+        var url = "/Products/AdvancedSearch?productName=" + name + "&maximumPrice=" + maximumPrice/coin + "&categoryId=" + categoryId;
         window.location.href = url;
     };
 

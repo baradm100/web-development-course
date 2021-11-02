@@ -106,7 +106,7 @@ namespace web_development_course.Controllers
                     .ThenInclude(pt => pt.Color)
                     .Include(product => product.ProductCategories)
                     .Where(p => p.ProductCategories.Any(pc => RelevantCategoryIds.Contains(pc.CategoryId)) &&
-                    p.Name.ToLower().Contains(productNameValue) && p.Price <= maximumPriceValue);
+                    p.Name.ToLower().Contains(productNameValue) && (1 - (p.DiscountPercentage / 100)) * p.Price <= maximumPriceValue);
             List<Product> ProductsToShow = await ProductsQuery.ToListAsync();
             return View("index", ProductsToShow);
         }

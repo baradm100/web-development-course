@@ -40,6 +40,7 @@
     })
 
     $("#AddNewCategoryBtn").click(function () {
+        categories();
         $("#addCategoryModal").modal("show");
     })
 
@@ -49,6 +50,8 @@
         $("#CategoryErrorIcon").addClass("d-none");
         $("#CategorySuccessIcon").addClass("d-none");
         var category = $("#CategoryName").val();
+        var parentCategory = $(".parentCategory").val();
+        console.log(parentCategory);
         var token = $('input[name="__RequestVerificationToken"]').val();
         var Success = false;
         $.ajax({
@@ -58,11 +61,11 @@
             data: {
                 __RequestVerificationToken: token,
                 Name: category,
+                Parent: parentCategory,
             },
             success: function (result) {
                 if (result.success) {
                     Success = true;
-                    console.log(result);
                     $("#CategoryloadingSpinner").addClass("d-none");
                     $("#addCategoryForm").removeClass("d-none");
                     $("#CategorySuccessIcon").removeClass("d-none");
@@ -92,5 +95,35 @@
     $('#closeCategoryBtn').click(function () {
         location.reload();
     });
+
+    const categories = () => {
+        $.ajax({
+            url: "/Categories/json/",
+            type: 'GET',
+            dataType: 'json',
+            data: null,
+            fail: function (xhr, textStatus, errorThrown) {
+                Success = false;
+                alert("Something went wrong in server")
+            },
+            success: function (response) {
+                Success = true;
+                if (response.categories.length > 0) {
+                    $('.parentCategory').html('');
+                    var options = '';
+                    options += '<option value="Select">--</option>';
+                    for (var i = 0; i < response.categories.length; i++) {
+                            options += '<option value="' + response.categories[i].name + '">' + response.categories[i].name + '</option>'
+                    }
+                    $('.parentCategory').append(options);
+                }
+            },
+            error: function (result) {
+                console.log(result);
+                return false
+            },
+            timeout: 5000,
+        });
+    }
 
 });

@@ -46,12 +46,12 @@
 
 <partial name="_ProductsEditPartial" model="Model" view-data="ViewData" />
 
-<div class="modal" id="addGoodsModal" tabindex="-1">
+<div class="modal" id="addGoodsModal" data-bs-backdrop="static" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="title">Add Goods</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" id="closeBtn" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="alert alert-success d-none" id="successIcon" role="alert">

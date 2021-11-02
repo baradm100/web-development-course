@@ -21,148 +21,150 @@
     var isLoggedIn = @Json.Serialize(Context.User.Identity.IsAuthenticated);
 </script>
 
-<div class="container-fluid productPage">
-    <div class="row">
-        <div id="carouselProductIndicators" class="carousel slide col-12 col-lg-4" data-bs-ride="carousel">
-            <div class="carousel-indicators">
-                @{
-                    for (var i = 0; i < Model.ProductImages.Count(); i++)
-                    {
-                        String extraClass = i == 0 ? "active" : "";
-
-                        <button type="button" data-bs-target="#carouselProductIndicators" data-bs-slide-to="@i"
-                        class="@extraClass" aria-current="true" aria-label="Photo @i"></button>
-
-                    }
-                }
-            </div>
-            <div class="carousel-inner">
-                @{
-                    bool isFirst = true;
-                    @foreach (ProductImage image in Model.ProductImages)
-                    {
-                        String base64 = Convert.ToBase64String(image.ImageData);
-                        String extraClass = isFirst ? "active" : "";
-                        isFirst = false;
-
-                        <div class="carousel-item @extraClass">
-                            <img src="data:image/png;base64,@base64" class="d-block w-100 h-100" width="100" height="250" />
-                        </div>
-                    }
-                }
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselProductIndicators"
-                data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselProductIndicators"
-                data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
-            <div class="card-img-overlay" style="margin-left: 0px">
-                @if (Model.DiscountPercentage != 0)
-                {
-                    <h5 class="discount-on-card">@Model.DiscountPercentage%</h5>
-                }
-            </div>
-        </div>
-        <div class="col-6 col-12 col-lg-8">
-            <div class="alert alert-success d-none" role="alert" id="successNotification">
-                Item was added to the cart!
-            </div>
-
-            <div class="alert alert-danger d-none" role="alert" id="failNotification">
-                Unknown error, please try again
-            </div>
-            <h1>@Model.Name</h1>
-            <h3>
-                @if (Model.DiscountPercentage == 0)
-                {
-                    @priceBeforeDiscount
-                }
-                else
-                {
-                    <span class="discount-txt">@priceBeforeDiscount</span>
-                    @priceAfterDiscount
-                }
-                @currencySign
-            </h3>
-            <form id="productForm" asp-action="AddToCart" asp-controller="Orders">
-                <div class="attribute">
-                    <label class="form-check-label h5 margin-bottom-0 quantityLabel" for="colorSelection">Color:</label>
-                    <div class="btn-group" role="group" aria-label="color selection">
-                        @foreach (var item in ColorsAndCounts)
+<div class="container">
+    <div class="container-fluid productPage mt-4">
+        <div class="row">
+            <div id="carouselProductIndicators" class="carousel slide col-12 col-lg-4" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    @{
+                        for (var i = 0; i < Model.ProductImages.Count(); i++)
                         {
-                            bool noStock = item.Value <= 0;
-                            <input type="radio" class="btn-check" name="colorSelection" id="color-button-@item.Key.Id"
-                            value="@item.Key.Id" autocomplete="off" @(noStock ? "disabled" : "" )>
-                            <label class="btn btn-outline-secondary colorLabel" for="color-button-@item.Key.Id">
-                                <span class="p-2 border border-dark rounded-circle color"
-                                style="background-color: #@item.Key.Color;"></span>
-                            </label>
+                            String extraClass = i == 0 ? "active" : "";
+
+                            <button type="button" data-bs-target="#carouselProductIndicators" data-bs-slide-to="@i"
+                                    class="@extraClass" aria-current="true" aria-label="Photo @i"></button>
+
                         }
-                    </div>
+                    }
                 </div>
-                <div class="attribute">
-                    <label class="form-check-label h5 margin-bottom-0 quantityLabel" for="Size">Size:</label>
-                    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                        @foreach (var item in SizesAndCounts)
+                <div class="carousel-inner">
+                    @{
+                        bool isFirst = true;
+                        @foreach (ProductImage image in Model.ProductImages)
                         {
-                            bool noStock = item.Value <= 0;
-                            String ExtraClass = noStock ? "line-through" : "";
+                            String base64 = Convert.ToBase64String(image.ImageData);
+                            String extraClass = isFirst ? "active" : "";
+                            isFirst = false;
 
-                            <input type="radio" class="btn-check" name="Size" id="size-@item.Key" autocomplete="off"
-                            value="@item.Key" disabled>
-                            <label class="btn btn-outline-secondary @ExtraClass" for="size-@item.Key">
-                                @item.Key.ToString().ToUpper()
-                            </label>
+                            <div class="carousel-item @extraClass">
+                                <img src="data:image/png;base64,@base64" class="d-block w-100 h-100" width="100" height="250" />
+                            </div>
                         }
-                    </div>
+                    }
                 </div>
-                <div class="attribute" style="display: flex;">
-                    <label class="form-check-label h5 margin-bottom-0 quantityLabel" for="Quantity">Quantity:</label>
-
-                    <select class="form-select" aria-label="Quantity" name="Quantity" id="Quantity" disabled>
-                        <option selected value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                    </select>
-                </div>
-                <div class="spinner-border d-none" role="status" id="loadingSpinner">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <button type="submit" class="btn btn-primary" id="addToCart" disabled>
-                    <i class="bi bi-cart-plus"></i>
-                    Add to cart
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselProductIndicators"
+                        data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
                 </button>
-            </form>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselProductIndicators"
+                        data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+                <div class="card-img-overlay" style="margin-left: 0px">
+                    @if (Model.DiscountPercentage != 0)
+                    {
+                        <h5 class="discount-on-card">@Model.DiscountPercentage%</h5>
+                    }
+                </div>
+            </div>
+            <div class="col-6 col-12 col-lg-8">
+                <div class="alert alert-success d-none" role="alert" id="successNotification">
+                    Item was added to the cart!
+                </div>
+
+                <div class="alert alert-danger d-none" role="alert" id="failNotification">
+                    Unknown error, please try again
+                </div>
+                <h1>@Model.Name</h1>
+                <h3>
+                    @if (Model.DiscountPercentage == 0)
+                    {
+                        @priceBeforeDiscount
+                    }
+                    else
+                    {
+                        <span class="discount-txt">@priceBeforeDiscount</span>
+                        @priceAfterDiscount
+                    }
+                    @currencySign
+                </h3>
+                <form id="productForm" asp-action="AddToCart" asp-controller="Orders">
+                    <div class="attribute">
+                        <label class="form-check-label h5 margin-bottom-0 quantityLabel" for="colorSelection">Color:</label>
+                        <div class="btn-group" role="group" aria-label="color selection">
+                            @foreach (var item in ColorsAndCounts)
+                            {
+                                bool noStock = item.Value <= 0;
+                                <input type="radio" class="btn-check" name="colorSelection" id="color-button-@item.Key.Id"
+                                       value="@item.Key.Id" autocomplete="off" @(noStock ? "disabled" : "" )>
+                                <label class="btn btn-outline-secondary colorLabel" for="color-button-@item.Key.Id">
+                                    <span class="p-2 border border-dark rounded-circle color"
+                                          style="background-color: #@item.Key.Color;"></span>
+                                </label>
+                            }
+                        </div>
+                    </div>
+                    <div class="attribute">
+                        <label class="form-check-label h5 margin-bottom-0 quantityLabel" for="Size">Size:</label>
+                        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                            @foreach (var item in SizesAndCounts)
+                            {
+                                bool noStock = item.Value <= 0;
+                                String ExtraClass = noStock ? "line-through" : "";
+
+                                <input type="radio" class="btn-check" name="Size" id="size-@item.Key" autocomplete="off"
+                                       value="@item.Key" disabled>
+                                <label class="btn btn-outline-secondary @ExtraClass" for="size-@item.Key">
+                                    @item.Key.ToString().ToUpper()
+                                </label>
+                            }
+                        </div>
+                    </div>
+                    <div class="attribute" style="display: flex;">
+                        <label class="form-check-label h5 margin-bottom-0 quantityLabel" for="Quantity">Quantity:</label>
+
+                        <select class="form-select" aria-label="Quantity" name="Quantity" id="Quantity" disabled>
+                            <option selected value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </div>
+                    <div class="spinner-border d-none" role="status" id="loadingSpinner">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="addToCart" disabled>
+                        <i class="bi bi-cart-plus"></i>
+                        Add to cart
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-labelledby="staticBackdropLabel" aria-hidden="true" id="notLoggedModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-black">
+                    <h5 class="modal-title text-white" id="staticBackdropLabel">Opps</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    In order to add items to your cart you need to
+                    <a class="link-primary" asp-area="Identity" asp-controller="Users" asp-action="Login">Login</a>
+                    or
+                    <a class="link-primary" asp-area="Identity" asp-controller="Users" asp-action="Register">Register</a>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-    aria-labelledby="staticBackdropLabel" aria-hidden="true" id="notLoggedModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-black">
-                <h5 class="modal-title text-white" id="staticBackdropLabel">Opps</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                In order to add items to your cart you need to
-                <a class="link-primary" asp-area="Identity" asp-controller="Users" asp-action="Login">Login</a>
-                or
-                <a class="link-primary" asp-area="Identity" asp-controller="Users" asp-action="Register">Register</a>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-<script src="~/js/product/ProductPage.js"></script>
-}
+    @section Scripts {
+        <script src="~/js/product/ProductPage.js"></script>
+    }

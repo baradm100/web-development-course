@@ -3,6 +3,7 @@
     getUserInfo()
     validationHelper()
     GetBranches()
+    getCart()
 
 
     //#region Listeners
@@ -46,6 +47,15 @@
     //#endregion
 
     //#region Helpers
+
+    function addItems(response) {
+        for (let index = 0; index < response.length; index++) {
+            $("#table-body").append('<tr><th scope="row">' + (Number(index)+1) +
+                '</th><td>' + response[index].productName + '</td><td>' + response[index].amount +
+                '</td><td>' + (Number(response[index].totalPrice)).toFixed(2) +'</td></tr>')
+        }
+    }
+
 
     function initStores(branches) {
         let index = 1
@@ -300,6 +310,36 @@
             timeout: 5000,
         });
     })
+
+    function getCart() {
+        $.ajax({
+            url: "/Orders/GetCart",
+            type: 'GET',
+            dataType: 'json',
+            data: null,
+            fail: function (xhr, textStatus, errorThrown) {
+                Success = false;
+                alert("Something went wrong in server")
+            },
+            success: function (response) {
+                if (response != null) {
+                    addItems(response)
+                   
+                }
+                else {
+                    Success = false;
+                    alert("Something went wrong in server")
+                }
+
+            },
+            error: function (result) {
+                console.log(result);
+                return false
+            },
+            timeout: 5000,
+        });
+    }
+
 
     //#endregion
 

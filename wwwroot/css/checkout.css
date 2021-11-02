@@ -1,0 +1,11 @@
+﻿.table-scrollbar {
+    position: relative;
+    max-height: 175px;
+    width:100%;
+    overflow: auto;
+}
+
+.table-wrapper-scroll-y {
+    display: block;
+}
+    

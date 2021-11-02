@@ -21,10 +21,10 @@
     var isLoggedIn = @Json.Serialize(Context.User.Identity.IsAuthenticated);
 </script>
 
-<div class="container">
-    <div class="container-fluid productPage mt-4">
+<div class="container bg-light pb-4 rounded border border-5 mt-4">
+    <div class="container-fluid productPage mt-4 ">
         <div class="row">
-            <div id="carouselProductIndicators" class="carousel slide col-12 col-lg-4" data-bs-ride="carousel">
+            <div id="carouselProductIndicators" class="carousel slide col-12 col-lg-4 mt-2" data-bs-ride="carousel">
                 <div class="carousel-indicators">
                     @{
                         for (var i = 0; i < Model.ProductImages.Count(); i++)
@@ -77,7 +77,7 @@
                 <div class="alert alert-danger d-none" role="alert" id="failNotification">
                     Unknown error, please try again
                 </div>
-                <h1>@Model.Name</h1>
+                <h1 class="mt-1">@Model.Name</h1>
                 <h3>
                     @if (Model.DiscountPercentage == 0)
                     {
@@ -97,11 +97,12 @@
                             @foreach (var item in ColorsAndCounts)
                             {
                                 bool noStock = item.Value <= 0;
-                                <input type="radio" class="btn-check" name="colorSelection" id="color-button-@item.Key.Id"
-                                       value="@item.Key.Id" autocomplete="off" @(noStock ? "disabled" : "" )>
-                                <label class="btn btn-outline-secondary colorLabel" for="color-button-@item.Key.Id">
+                                <input type="radio" class="btn-check @(noStock ? "d-none" : "" )" name="colorSelection" id="color-button-@item.Key.Id"
+                                       value="@item.Key.Id" autocomplete="off" >
+                                <label class="btn btn-outline-secondary colorLabel @(noStock ? "d-none" : "" )" for="color-button-@item.Key.Id">
                                     <span class="p-2 border border-dark rounded-circle color"
-                                          style="background-color: #@item.Key.Color;"></span>
+                                          style="background-color: #@item.Key.Color;">
+                                    </span>
                                 </label>
                             }
                         </div>
@@ -113,19 +114,19 @@
                             {
                                 bool noStock = item.Value <= 0;
                                 String ExtraClass = noStock ? "line-through" : "";
+                                String ExtraStyle = noStock ? "color: lightgrey" : "color:black";
 
                                 <input type="radio" class="btn-check" name="Size" id="size-@item.Key" autocomplete="off"
                                        value="@item.Key" disabled>
-                                <label class="btn btn-outline-secondary @ExtraClass" for="size-@item.Key">
+                                <label class="btn btn-outline-secondary @ExtraClass" style="@ExtraStyle" for="size-@item.Key">
                                     @item.Key.ToString().ToUpper()
                                 </label>
                             }
                         </div>
                     </div>
-                    <div class="attribute" style="display: flex;">
-                        <label class="form-check-label h5 margin-bottom-0 quantityLabel" for="Quantity">Quantity:</label>
-
-                        <select class="form-select" aria-label="Quantity" name="Quantity" id="Quantity" disabled>
+                    <div class="attribute d-flex flex-row" >
+                        <label class="h5 margin-bottom-0 quantityLabel" for="Quantity">Quantity:</label>
+                        <select class="px-2" aria-label="Quantity" name="Quantity" id="Quantity" disabled>
                             <option selected value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>

@@ -1,4 +1,11 @@
 ﻿$(function () {
+    const sign = {
+        1: "$",
+        2: "₪",
+        3: "€",
+        4: "£",
+    }
+
     GetSummary()
     getUserInfo()
     validationHelper()
@@ -49,10 +56,12 @@
     //#region Helpers
 
     function addItems(response) {
+        var currency = getCookieValue("currency");
+        var cSign = sign[getCookieValue("currencySign")];
         for (let index = 0; index < response.length; index++) {
             $("#table-body").append('<tr><th scope="row">' + (Number(index)+1) +
                 '</th><td>' + response[index].productName + '</td><td>' + response[index].amount +
-                '</td><td>' + (Number(response[index].totalPrice)).toFixed(2) +'</td></tr>')
+                '</td><td>' + (Number(response[index].totalPrice) * currency).toFixed(2))
         }
     }
 
@@ -100,14 +109,19 @@
         updatePrice()
     }
 
+    const getCookieValue = (name) => (
+        document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)')?.pop() || ''
+    )
 
     function updatePrice() {
+        var currency = getCookieValue("currency");
+        var cSign = sign[getCookieValue("currencySign")];
         deliveryPrice = 0;
         if ($(".delivery-border")[0]) {
             let id = $($(".delivery-border")[0]).attr("id")
             id = id.split("_")
             if (id[1] > 1) {
-                deliveryPrice = Number(id[1])
+                deliveryPrice = Number(id[1]) * currency;
             }
             $("#delivery_price").text(deliveryPrice)
         }
@@ -115,7 +129,7 @@
             $("#delivery_price").text("0")
         }
 
-        $("#total-price").text(Number((Number(deliveryPrice) + Number($("#subtotal-price").val())).toFixed(2)))
+        $("#total-price").text(Number((Number(deliveryPrice) + Number($("#subtotal-price").val())).toFixed(2)) + cSign)
         $("#total-price").val(Number((Number(deliveryPrice) + Number($("#subtotal-price").val())).toFixed(2)))
 
     }
@@ -220,10 +234,10 @@
             success: function (response) {
                 Success = true;
                 if (response != null) {
+                    let cSign = sign[getCookieValue("currencySign")];
                     let subtotalPrice = Number(Number(response.data.totalPrice).toFixed(2))
-                    $("#subtotal-price").text(subtotalPrice)
+                    $("#subtotal-price").text(subtotalPrice + cSign)
                     $("#subtotal-price").val(subtotalPrice)
-                    console.log("subtotal-price " + subtotalPrice)
                     updatePrice()
                 }
             },

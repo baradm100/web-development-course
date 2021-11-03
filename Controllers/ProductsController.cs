@@ -37,10 +37,17 @@ namespace web_development_course.Controllers
         }
 
         // GET: Products?categoryId=5
-        public async Task<IActionResult> Index(int? categoryId)
+        public async Task<IActionResult> Index(int? categoryId, string? categoryName)
         {
             ViewBag.Colors = await _context.ProductColor.ToListAsync();
             ViewBag.shouldShowEdit = User.IsInRole("Admin") || User.IsInRole("Editor");
+
+            if (categoryName != null)
+            {
+                var cat = await _context.Category.FirstOrDefaultAsync(p => p.Name == categoryName);
+                if (cat != null)
+                    categoryId = cat.Id;
+            }
 
             Category[] RelevantCategories;
             if (categoryId == null)

@@ -1,4 +1,12 @@
-﻿<div class="modal fade" id="checkoutModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+﻿@inject web_development_course.Models.CurrencyService CurrencyService
+@{
+    var Products = (IEnumerable<web_development_course.Models.Product>)ViewData["Products"];
+    var ProductColors = (IEnumerable<web_development_course.Models.ProductModels.ProductColor>)ViewData["Colors"];
+    float currency = CurrencyService.GetCurrentCurrencyValue();
+    string currencySign = CurrencyService.GetCurrencySign();
+}
+
+<div class="modal fade" id="checkoutModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-black">
@@ -8,8 +16,8 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-12 p-3 col-lg-8">
-                        <ul class="nav nav-tabs" id="myTab" role="tablist" >
-                            <li class="nav-item black" role="presentation" >
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item black" role="presentation">
                                 <button class="nav-link active" style="color:black" id="delivery-tab" data-bs-toggle="tab" data-bs-target="#delivery_methods" type="button" role="tab" aria-controls="delivery" aria-selected="true">Delivery</button>
                             </li>
                             <li class="nav-item black" role="presentation">

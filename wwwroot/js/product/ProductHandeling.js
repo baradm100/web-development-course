@@ -6,6 +6,7 @@
     var productPriceValid = true;
     var productDiscountValid = true;
     var productNameValid = false;
+    const $CategorieTable = $(".editCategoriesTableBody");
 
     const insertCategoriesToCards = (name) => {
         for (let i = 0; i < name.length; i++) {
@@ -45,6 +46,74 @@
     };
 
     insertCategoriesToCards(product_names);
+
+    function deleteCategory()  {
+        var form = new FormData();
+        var token = $('input[name="__RequestVerificationToken"]').val();
+        var id = $(this).parents("tr").attr("id");
+        form.set("__RequestVerificationToken", token);
+        form.set("id", id);
+        $.ajax({
+            url: "/categories/delete/",
+            type: 'POST',
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            data: form,
+            success: function (response) {
+                if (response.success == true) {
+                    $CategorieTable.children("tr#" + id).remove()
+                }
+            },
+            error: function (result) {
+                console.log(result);
+                return false;
+            },
+            timeout: 5000,
+        });
+    }
+
+    const buttons = (id) => "<button class='btn px-0 mx-0' id='deleteCategory" + id + "'><i class='bi bi-trash'></i></button>";
+
+    const getCategoriesTree = () => {
+        var form = new FormData();
+        var token = $('input[name="__RequestVerificationToken"]').val();
+        form.set("__RequestVerificationToken", token);
+        $.ajax({
+            url: "/categoriesTree/json/",
+            type: 'GET',
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            data: form,
+            success: function (response) {
+                if (response.success == true) {
+                    Success = true;
+                    var a = response.categories;
+                    a.sort((a, b) => parseInt(a.id) - parseInt(b.id));
+                    for (let i = 0; i < response.categories.length; i++) {
+                        var category = a[i];
+                        var categories = "<tr id='" + category.id + "'><th>" + category.name + "</th><td>" + category.parent + "</td>"
+                            + "<td>" + buttons(category.id) + "</td></tr>"
+                        $CategorieTable.append(categories);
+                        $("button#deleteCategory" + category.id).bind("click", deleteCategory);
+                    }
+                }
+            },
+            error: function (result) {
+                console.log(result);
+                return false;
+            },
+            timeout: 5000,
+        });
+    }
+
+
+    $('#EdtiCategoriesBtn').click(function () {
+        $CategorieTable.empty();
+        $("#editCategoriesModal").modal("show");
+        getCategoriesTree();
+    });
 
     $('#AddNewProductBtn').click(function () {
         $("#addProductModal").modal("show");

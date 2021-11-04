@@ -50,7 +50,7 @@
         $("#CategoryErrorIcon").addClass("d-none");
         $("#CategorySuccessIcon").addClass("d-none");
         var category = $("#CategoryName").val();
-        var parentCategory = $(".parentCategory").val();
+        var parentCategory = $(".parentCategory").val() == "Select" ? "" : $(".parentCategory").val();
         console.log(parentCategory);
         var token = $('input[name="__RequestVerificationToken"]').val();
         var Success = false;

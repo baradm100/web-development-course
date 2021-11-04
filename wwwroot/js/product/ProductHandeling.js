@@ -444,7 +444,7 @@
         return Success;
     });
 
-    $('#closeProductBtn').click(function () {
+    $(".closeBtn").click(function () {
         document.location.reload(true);
     });
 

@@ -41,11 +41,15 @@ namespace web_development_course.Common
 
         public const string NOT_IN_STOCK = "Not enough item in stock";
 
+        public const string PHONE_ERROR = "Please enter valid phone number";
+
         #endregion
 
         #region Regex
 
         public const string HOUR24_REGEX = "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$";
+
+        public const string PHONE_REGEX = "[0]{1}[0-9]{8,9}";
 
         # endregion
     }

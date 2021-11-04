@@ -23,9 +23,11 @@ $(function () {
   $("#productForm input[name=Size]").change(function (e) {
     const color = $("#productForm input[name=colorSelection]:checked").val();
     const size = e.target.value;
-    const maxQuantity = SizesCountByColorIds[color][size];
+    let maxQuantity = SizesCountByColorIds[color][size];
     const quantitySelection = $("#Quantity").empty()[0];
 
+    maxQuantity = Math.min(Number(maxQuantity), 10)
+        
     for (let i = 1; i <= maxQuantity; i++) {
       // Adding all the available quantity, will set `1` as selected
       quantitySelection.append(new Option(i, i, i === 1, i === 1));

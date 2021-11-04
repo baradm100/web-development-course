@@ -44,6 +44,7 @@
         cleanorderSummary()
         var url = "/Home/Index"
         window.location.href = url;
+
         return false;
     })
 

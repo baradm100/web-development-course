@@ -38,6 +38,11 @@ $(function () {
     $("#addToCart").prop("disabled", false);
   });
 
+    $("#back_btn").click(function () {
+        console.log("clicked")
+        window.history.back();
+    });
+
   const indicateLoading = () => {
     $("#loadingSpinner").removeClass("d-none");
     $("#addToCart").addClass("d-none");

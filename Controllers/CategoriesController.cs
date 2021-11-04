@@ -74,6 +74,16 @@ namespace web_development_course.Controllers
             return View(category);
         }
 
+        // GET: categoriesTree/json
+        [Route("categoriesTree/json")]
+        [Authorize(Roles = "Admin,Editor")]
+        public async Task<IActionResult> getCategoriesTreeJson()
+        {
+            var categories = from category in _context.Category
+                             select new { id = category.Id, name = category.Name, parent = category.ParentCategory.Name };
+            return Json(new { success = true, categories = await categories.ToListAsync() });
+        }
+
         // GET: Categories/Create
         [Authorize(Roles = "Admin,Editor")]
         public IActionResult Create()
@@ -97,9 +107,14 @@ namespace web_development_course.Controllers
                 {
                     return Json(new { fail = true, success = false, textStatus = "Category is already exist!" });
                 }
-                Category p = await _context.Category.FirstOrDefaultAsync(c => c.Name == parent);
                 _context.Add(category);
                 await _context.SaveChangesAsync();
+                if (parent == null)
+                {
+                    return Json(new { success = true });
+
+                }
+                Category p = await _context.Category.FirstOrDefaultAsync(c => c.Name == parent);
                 Category n = await _context.Category.FirstOrDefaultAsync(c => c.Name.ToLower() == category.Name.ToLower());
                 n.ParentCategoryId = p.Id;
                 n.ParentCategory = p;
@@ -165,35 +180,15 @@ namespace web_development_course.Controllers
             return View(category);
         }
 
-        // GET: Categories/Delete/5
+        // GET: Categories/Delete/
+        [HttpPost]
         [Authorize(Roles = "Admin,Editor")]
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var category = await _context.Category
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (category == null)
-            {
-                return NotFound();
-            }
-
-            return View(category);
-        }
-
-        // POST: Categories/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,Editor")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var category = await _context.Category.FindAsync(id);
             _context.Category.Remove(category);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return Json(new { success = true });
         }
 
         private bool CategoryExists(int id)

@@ -98,7 +98,7 @@
                             {
                                 bool noStock = item.Value <= 0;
                                 <input type="radio" class="btn-check @(noStock ? "d-none" : "" )" name="colorSelection" id="color-button-@item.Key.Id"
-                                       value="@item.Key.Id" autocomplete="off" >
+                                       value="@item.Key.Id" autocomplete="off">
                                 <label class="btn btn-outline-secondary colorLabel @(noStock ? "d-none" : "" )" for="color-button-@item.Key.Id">
                                     <span class="p-2 border border-dark rounded-circle color"
                                           style="background-color: #@item.Key.Color;">
@@ -124,7 +124,7 @@
                             }
                         </div>
                     </div>
-                    <div class="attribute d-flex flex-row" >
+                    <div class="attribute d-flex flex-row">
                         <label class="h5 margin-bottom-0 quantityLabel" for="Quantity">Quantity:</label>
                         <select class="px-2" aria-label="Quantity" name="Quantity" id="Quantity" disabled>
                             <option selected value="1">1</option>
@@ -140,6 +140,12 @@
                         Add to cart
                     </button>
                 </form>
+                <button type="button" class="btn btn-success" id="back_btn" style="margin-top:0.3rem">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"></path>
+                    </svg>
+                    Back
+                </button>
             </div>
         </div>
     </div>
@@ -164,8 +170,9 @@
             </div>
         </div>
     </div>
+    
 </div>
 
-    @section Scripts {
-        <script src="~/js/product/ProductPage.js"></script>
-    }
+@section Scripts {
+    <script src="~/js/product/ProductPage.js"></script>
+}

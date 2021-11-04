@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using web_development_course.Common;
 using web_development_course.Models.OrderModels;
 
 namespace web_development_course.Models
@@ -35,8 +36,7 @@ namespace web_development_course.Models
         public string Email { get; set; }
 
         [DataType(DataType.PhoneNumber)]
-        [MaxLength(10)] 
-        [MinLength(10)]
+        [RegularExpression(Consts.PHONE_REGEX, ErrorMessage = Consts.PHONE_ERROR)]
         public string Phone{ get; set; }
 
         public UserLevel UserType { get; set; } = UserLevel.Client;

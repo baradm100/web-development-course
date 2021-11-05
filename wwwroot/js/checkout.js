@@ -123,7 +123,7 @@
             if (id[1] > 1) {
                 deliveryPrice = Number(id[1]) * currency;
             }
-            $("#delivery_price").text(deliveryPrice)
+            $("#delivery_price").text(deliveryPrice.toFixed(2));
         }
         else {
             $("#delivery_price").text("0")
@@ -403,7 +403,7 @@
     //#region Open Modal
     function openOrderApprovment(response) {
         $("#orderNumer").text(response.data.orderId)
-        $("#total_price_sum").text(response.data.price)
+        $("#total_price_sum").text(response.data.price + " " + currencySign)
         $("#orderSummary").modal('show')
 
         if (response.data.branchName != null) {

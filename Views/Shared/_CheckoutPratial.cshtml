@@ -33,7 +33,7 @@
                                     @{ foreach (int value in Enum.GetValues(typeof(DeliveryOptions)))
                                         {
                                             var deliveryPrice = ((DeliveryOptions)value);
-                                            var deliveryAsString = deliveryPrice.ToString("D").Equals("1") ? "Free" : deliveryPrice.ToString("D");
+                                            var deliveryAsString = deliveryPrice.ToString("D").Equals("1") ? "Free" : (Int32.Parse(deliveryPrice.ToString("D")) * currency).ToString("0.00");
 
                                             string deliveryMethod = "";
 
@@ -57,7 +57,7 @@
                                                 <div class="card col-12 col-lg-5 button delivery" id="delivery_@value">
                                                     <div class="card-body justify-content-between" style="cursor:pointer">
                                                         <h5 class="card-title algin-start">@deliveryMethod</h5>
-                                                        <p class="card-text align-text-bottom">@deliveryAsString</p>
+                                                        <p class="card-text align-text-bottom">@deliveryAsString @currencySign</p>
                                                     </div>
                                                 </div>
                                             }

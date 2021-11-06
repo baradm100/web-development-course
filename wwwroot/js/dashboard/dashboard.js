@@ -28,6 +28,10 @@ $(function () {
         orders($product.val(), $category.val(), $username.val());
     })
 
+    $("#usersSearchBtn").click(function () {
+        users($("#userNameSearch").val(), $("#userEmailSearch").val())
+    })
+
     const categories = () => {
         $.ajax({
             url: "/Categories/json/",
@@ -68,10 +72,10 @@ $(function () {
     const orders = (product = "", category = "", username = "") => {
         var form = new FormData();
         var token = $('input[name="__RequestVerificationToken"]').val();
-        form.set("__RequestVerificationToken", token);
+/*        form.set("__RequestVerificationToken", token);
         form.set("product", product);
         form.set("category", category);
-        form.set("username", username);
+        form.set("username", username);*/
         $dealsTableBody.empty();
         $.ajax({
             url: "/orders/json/?product=" + product + "&category=" + category + "&username=" + username + "&__RequestVerificationToken=" + token,
@@ -117,36 +121,41 @@ $(function () {
         return select
     }
 
-    $.ajax({
-        url: "/users/json/",
-        type: 'GET',
-        dataType: 'json',
-        processData: false,
-        contentType: false,
-        data: formData,
-        success: function (response) {
-            if (response.success == true) {
-                Success = true;
-                var users = response.users;
-                console.log(users);
-                for (let i = 0; i < users.length; i++) {
-                    var user = users[i];
-                    var select = selectOption(user.userType, user.id);
-                    var orders = "<tr class='tableRow'><th scope='row'>" + user.id + "</th><td>" + user.firstName + " " + user.lastName
-                        + "</td><td>" + user.email + "</td><td>" + select + "</td>"
-                        + "<td><a id='editUser" + user.id + "'class='mx-2' type='button'><i class='bi bi-pencil - square'></i></a> <a id='" + user.id +"'class='deleteUser" + user.id + "'type='button'><i class='bi bi-trash'></i></a></td></tr>"
-                    $usersTableBody.append(orders);
-                    $('#editUser' + user.id).bind("click", enableSelect);
-                    $('.deleteUser' + user.id).bind("click", deleteUser);
-                };
-            }
-        },
-        error: function (result) {
-            console.log(result);
-            return false;
-        },
-        timeout: 5000,
-    });
+    users()
+
+    function users(name = "", email = "") {
+        $.ajax({
+            url: "/users/json/?name=" + name + "&email=" + email,
+            type: 'GET',
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function (response) {
+                if (response.success == true) {
+                    Success = true;
+                    var users = response.users;
+                    console.log(users);
+                    for (let i = 0; i < users.length; i++) {
+                        var user = users[i];
+                        var select = selectOption(user.userType, user.id);
+                        var orders = "<tr class='tableRow'><th scope='row'>" + user.id + "</th><td>" + user.firstName + " " + user.lastName
+                            + "</td><td>" + user.email + "</td><td>" + select + "</td>"
+                            + "<td><a id='editUser" + user.id + "'class='mx-2' type='button'><i class='bi bi-pencil - square'></i></a> <a id='" + user.id + "'class='deleteUser" + user.id + "'type='button'><i class='bi bi-trash'></i></a></td></tr>"
+                        $usersTableBody.append(orders);
+                        $('#editUser' + user.id).bind("click", enableSelect);
+                        $('.deleteUser' + user.id).bind("click", deleteUser);
+                    };
+                }
+            },
+            error: function (result) {
+                console.log(result);
+                return false;
+            },
+            timeout: 5000,
+        });
+
+    }
 
 
     function enableSelect() {

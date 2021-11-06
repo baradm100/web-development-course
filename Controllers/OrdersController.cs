@@ -224,7 +224,7 @@ namespace web_development_course.Controllers
         [HttpGet]
         [Route("orders/json")]
         [Authorize(Roles = "Admin,Editor")]
-        public async Task<IActionResult> getOrdersJsonAsync(string product, string category, string username)
+        public async Task<IActionResult> getOrdersJsonAsync(string product, string category, string username, string orderid)
         {
             if (product == null)
                 product = "";
@@ -232,6 +232,8 @@ namespace web_development_course.Controllers
                 category = "";
             if (username == null)
                 username = "";
+            if(orderid == null)
+                orderid = "";
             float currency = 1;
             if (_httpContextAccessor.HttpContext.Request.Cookies["currency"] != null)
                 currency = float.Parse(_httpContextAccessor.HttpContext.Request.Cookies["currency"]);
@@ -259,8 +261,12 @@ namespace web_development_course.Controllers
                              totalPrice = (item.TotalPrice * currency).ToString("#.##") + currencySign,
                              p.Name,
                          };
+             var o = await orders.ToListAsync();
 
-            var o = await orders.ToListAsync();
+            if (!orderid.Equals(""))
+            {
+                o = await orders.Where(o=>o.Id == Int16.Parse(orderid)).ToListAsync();
+            }
             if (orders != null)
             {
                 return Json(new

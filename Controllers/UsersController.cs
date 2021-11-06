@@ -95,9 +95,19 @@ namespace web_development_course.Controllers
         [HttpGet]
         [Route("users/json")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> getUsersJson()
-        { 
-            var q = from user in _context.User 
+        public async Task<IActionResult> getUsersJson(string name, string email)
+        {
+            if(name == null)
+            {
+                name = "";
+            }
+            if (email == null)
+            {
+                email = "";
+            }
+
+            var q = from user in _context.User
+                    where (user.FirstName + " " + user.LastName).Contains(name) && user.Email.Contains(email)
                     select new { user.Id, user.FirstName, user.LastName, userType = user.UserType.ToString(), user.Email };
 
             var users = await q.ToListAsync();

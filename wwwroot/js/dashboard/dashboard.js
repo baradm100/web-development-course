@@ -25,11 +25,14 @@ $(function () {
         var $product = $searchDiv.find("input#userProductSearch");
         var $category = $searchDiv.find(".userCategorySearch");
         var $username = $searchDiv.find("input#userNameSearch");
-        orders($product.val(), $category.val(), $username.val());
+        var $orderid = $searchDiv.find("input#orderIdSearch");
+        orders($product.val(), $category.val(), $username.val(), $orderid.val());
     })
 
     $("#usersSearchBtn").click(function () {
-        users($("#userNameSearch").val(), $("#userEmailSearch").val())
+        var name = $("#nameSearch").val()
+        var email = $("#userEmailSearch").val()
+        users(name, email)
     })
 
     const categories = () => {
@@ -69,16 +72,12 @@ $(function () {
 
     categories()
 
-    const orders = (product = "", category = "", username = "") => {
+    const orders = (product = "", category = "", username = "", orderid = "") => {
         var form = new FormData();
         var token = $('input[name="__RequestVerificationToken"]').val();
-/*        form.set("__RequestVerificationToken", token);
-        form.set("product", product);
-        form.set("category", category);
-        form.set("username", username);*/
         $dealsTableBody.empty();
         $.ajax({
-            url: "/orders/json/?product=" + product + "&category=" + category + "&username=" + username + "&__RequestVerificationToken=" + token,
+            url: "/orders/json/?product=" + product + "&category=" + category + "&username=" + username + "&orderid=" + orderid + "&__RequestVerificationToken=" + token,
             type: 'GET',
             dataType: 'json',
             processData: false,
@@ -132,7 +131,8 @@ $(function () {
             contentType: false,
             data: formData,
             success: function (response) {
-                if (response.success == true) {
+                $usersTableBody.empty()
+                if (response.success) {
                     Success = true;
                     var users = response.users;
                     console.log(users);

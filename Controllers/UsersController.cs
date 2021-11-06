@@ -96,7 +96,7 @@ namespace web_development_course.Controllers
         [Route("users/json")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> getUsersJson(string name, string email)
-        { 
+        {
             if(name == null)
             {
                 name = "";

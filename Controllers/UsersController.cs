@@ -313,7 +313,6 @@ namespace web_development_course.Controllers
         }
 
         // GET: Users/Info/
-        [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> Info()
         {
             string user = HttpContext.User.Identity.Name;

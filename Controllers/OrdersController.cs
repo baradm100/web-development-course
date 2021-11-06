@@ -209,8 +209,8 @@ namespace web_development_course.Controllers
                     success = true,
                     data = new
                     {
-                        totalPrice = totalPrice,
-                        midPrice = midPrice,
+                        totalPrice = totalPrice.ToString("#.##"),
+                        midPrice = midPrice.ToString("#.##"),
                         saving = totalDiscount,
                         sign = currencySign,
                     }
@@ -234,6 +234,14 @@ namespace web_development_course.Controllers
                 username = "";
             if(orderid == null)
                 orderid = "";
+            float currency = 1;
+            if (_httpContextAccessor.HttpContext.Request.Cookies["currency"] != null)
+                currency = float.Parse(_httpContextAccessor.HttpContext.Request.Cookies["currency"]);
+            var currencySign = "$";
+            if (_httpContextAccessor.HttpContext.Request.Cookies["currencySign"] != null)
+            {
+                currencySign = Currencies[int.Parse(_httpContextAccessor.HttpContext.Request.Cookies["CurrencySign"])];
+            }
 
             var orders = from order in _context.Order
                          join item in _context.OrderItem on order.Id equals item.OrderId
@@ -250,7 +258,7 @@ namespace web_development_course.Controllers
                              date = order.Date.ToShortDateString(),
                              order.IsCart,
                              item.Amount,
-                             item.TotalPrice,
+                             totalPrice = (item.TotalPrice * currency).ToString("#.##") + currencySign,
                              p.Name,
                          };
              var o = await orders.ToListAsync();

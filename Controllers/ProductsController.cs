@@ -37,8 +37,9 @@ namespace web_development_course.Controllers
         }
 
         // GET: Products?categoryId=5
-        public async Task<IActionResult> Index(int? categoryId, string? categoryName)
+        public async Task<IActionResult> Index(int? categoryId, string? categoryName, int? index)
         {
+            int pageSize = 1;
             ViewBag.Colors = await _context.ProductColor.ToListAsync();
             ViewBag.shouldShowEdit = User.IsInRole("Admin") || User.IsInRole("Editor");
 
@@ -47,33 +48,45 @@ namespace web_development_course.Controllers
                 var cat = await _context.Category.FirstOrDefaultAsync(p => p.Name == categoryName);
                 if (cat != null)
                     categoryId = cat.Id;
+                    ViewBag.categoryId = categoryId;
             }
-
             Category[] RelevantCategories;
             if (categoryId == null)
             {
                 RelevantCategories = await _context.Category.ToArrayAsync();
+                ViewBag.categoryId = "";
             }
             else
             {
                 RelevantCategories = await _context.Category.Where(c => c.Id == categoryId || c.ParentCategoryId == categoryId).ToArrayAsync();
+                ViewBag.categoryId = "";
             }
+            int i = 1;
+            int skipItems = 0;
+            if (index > 1 && index != null)
+            {
+                i = (int)index;
+                skipItems = (int)((index -1 ) * pageSize);
+            }
+            ViewBag.index = i;
 
             HashSet<int> RelevantCategoryIds = RelevantCategories.Select(c => c.Id).ToHashSet();
+            int numOfPages = _context.Product.Count(p => p.ProductCategories.Any(pc => RelevantCategoryIds.Contains(pc.CategoryId))) / pageSize;
+            ViewBag.numOfPages = numOfPages;
 
             var ProductsQuery = _context.Product
                     .Include(product => product.ProductImages)
                     .Include(product => product.ProductTypes)
                     .ThenInclude(pt => pt.Color)
                     .Include(product => product.ProductCategories)
-                    .Where(p => p.ProductCategories.Any(pc => RelevantCategoryIds.Contains(pc.CategoryId)));
+                    .Where(p => p.ProductCategories.Any(pc => RelevantCategoryIds.Contains(pc.CategoryId)))
+                    .Skip(skipItems).Take(pageSize);
             List<Product> ProductsToShow = await ProductsQuery.ToListAsync();
             return View(ProductsToShow);
         }
 
         public async Task<IActionResult> AdvancedSearch(string? productName, float? maximumPrice, int? categoryId)
         {
-
             ViewBag.Colors = await _context.ProductColor.ToListAsync();
             ViewBag.shouldShowEdit = User.IsInRole("Admin") || User.IsInRole("Editor");
 
@@ -104,6 +117,8 @@ namespace web_development_course.Controllers
             {
                 productNameValue = productName.ToLower();
             }
+            ViewBag.index = -1;
+            ViewBag.numOfPages = 0;
 
             HashSet<int> RelevantCategoryIds = RelevantCategories.Select(c => c.Id).ToHashSet();
 

@@ -39,7 +39,7 @@ namespace web_development_course.Controllers
         // GET: Products?categoryId=5
         public async Task<IActionResult> Index(int? categoryId, string? categoryName, int? index)
         {
-            int pageSize = 1;
+            int pageSize = 10;
             ViewBag.Colors = await _context.ProductColor.ToListAsync();
             ViewBag.shouldShowEdit = User.IsInRole("Admin") || User.IsInRole("Editor");
 
@@ -48,7 +48,7 @@ namespace web_development_course.Controllers
                 var cat = await _context.Category.FirstOrDefaultAsync(p => p.Name == categoryName);
                 if (cat != null)
                     categoryId = cat.Id;
-                    ViewBag.categoryId = categoryId;
+                    ViewBag.categoryId = categoryId.ToString();
             }
             Category[] RelevantCategories;
             if (categoryId == null)
@@ -134,13 +134,26 @@ namespace web_development_course.Controllers
         }
 
         [Authorize(Roles = "Admin,Editor")]
-        public async Task<IActionResult> EditorIndex(int? categoryId)
+        public async Task<IActionResult> EditorIndex(int? categoryId, int? index)
         {
+            int pageSize = 10;
+            int i = 1;
+            int skipItems = 0;
+            if (index > 1 && index != null)
+            {
+                i = (int)index;
+                skipItems = (int)((index - 1) * pageSize);
+            }
+            ViewBag.index = i;
+            int numOfPages = 1;
+            ViewBag.categoryId = "";
             if (categoryId != null)
             {
+                ViewBag.index = i;
                 Category category = await _context.Category.FirstOrDefaultAsync(q => q.Id == categoryId);
                 if (category != null)
                 {
+                    ViewBag.categoryId = category.Id.ToString();
                     var products = from q in _context.ProductCategory
                                    join CategoryName in _context.Category on q.CategoryId equals CategoryName.Id
                                    where q.CategoryId == category.Id
@@ -149,14 +162,17 @@ namespace web_development_course.Controllers
                                    where q.ProductId == p.Id
                                    orderby p.Id descending
                                    select p;
+                    numOfPages = products.Count() / pageSize;
+                    ViewBag.numOfPages = numOfPages;
                     ViewBag.Colors = await _context.ProductColor.ToListAsync();
-                    return View(await products.ToListAsync());
+                    return View(await products.Skip(skipItems).Take(pageSize).ToListAsync());
                 }
             }
+            var defaultProducts = _context.Product.Include(product => product.ProductImages)
+                    .Include(product => product.ProductTypes).Include(product => product.ProductCategories).OrderByDescending(p => p.Id);
+            ViewBag.numOfPages = defaultProducts.Count() / pageSize;
             ViewBag.Colors = await _context.ProductColor.ToListAsync();
-            return View(await _context.Product.Include(product => product.ProductImages)
-                    .Include(product => product.ProductTypes).Include(product => product.ProductCategories).OrderByDescending(p => p.Id).ToListAsync());
-
+            return View(await defaultProducts.Skip(skipItems).Take(pageSize).ToListAsync());
         }
 
         // GET: Products/json
@@ -206,6 +222,9 @@ namespace web_development_course.Controllers
         [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> EditorIndexSearch(string? product)
         {
+            ViewBag.index = 1;
+            ViewBag.categoryId = "";
+            ViewBag.numOfPages = 1;
             try
             {
                 ViewBag.Colors = await _context.ProductColor.ToListAsync();

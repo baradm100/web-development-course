@@ -43,6 +43,8 @@ namespace web_development_course.Common
 
         public const string PHONE_ERROR = "Please enter valid phone number";
 
+        public const string NAME_ERROR = "Please write your name with letters only";
+
         #endregion
 
         #region Regex
@@ -50,6 +52,8 @@ namespace web_development_course.Common
         public const string HOUR24_REGEX = "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$";
 
         public const string PHONE_REGEX = "[0]{1}[0-9]{8,9}";
+
+        public const string NAME_REGEX = "^[a-zA-Z]+$";
 
         # endregion
     }

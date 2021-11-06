@@ -61,7 +61,7 @@ namespace web_development_course.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register([Bind("Id,FirstName,LastName,Password,Email,DateOfBirth")] User user)
+        public async Task<IActionResult> Register([Bind("Id,FirstName,LastName,Password,Phone,Email,DateOfBirth")] User user)
         {
             if (ModelState.IsValid)
             {
@@ -75,9 +75,19 @@ namespace web_development_course.Controllers
                     return View(user);
                 }
 
+                if(user.DateOfBirth > DateTime.Now)
+                {
+                    string date = DateTime.Now.ToString("dd/mm/yyyy");
+                    string msg = ("Birthday Must be less than " + date);
+                    ViewData["Error"] = msg;
+                    return View(user);
+
+                }
+
                 _context.Add(user);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                loginUser(user.FirstName + " " + user.LastName, user.Email, user.UserType);
+                return RedirectToAction("Index", "home");
             }
             return View(user);
         }
@@ -165,7 +175,6 @@ namespace web_development_course.Controllers
         {
             return View();
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]

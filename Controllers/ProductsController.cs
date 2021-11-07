@@ -38,7 +38,7 @@ namespace web_development_course.Controllers
         // GET: Products?categoryId=5
         public async Task<IActionResult> Index(int? categoryId, string? categoryName, int? index)
         {
-            int pageSize = 10;
+            int pageSize = 12;
             ViewBag.Colors = await _context.ProductColor.ToListAsync();
             ViewBag.shouldShowEdit = User.IsInRole("Admin") || User.IsInRole("Editor");
 
@@ -135,7 +135,7 @@ namespace web_development_course.Controllers
         [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> EditorIndex(int? categoryId, int? index)
         {
-            int pageSize = 10;
+            int pageSize = 12;
             int i = 1;
             int skipItems = 0;
             if (index > 1 && index != null)

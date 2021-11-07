@@ -129,18 +129,18 @@
                     </div>
                     <div class="colorContainer text-align-center">
                         @foreach (var item in ColorsAndCounts)
+                        {
+                            bool notInStock = item.Value <= 0;
+                            String colorName = @item.Key.Name + (notInStock ? " (Not in stock)" : "");
+                            if (notInStock)
+                            { }
+                            else
                             {
-                                bool notInStock = item.Value <= 0;
-                                String colorName = @item.Key.Name + (notInStock ? " (Not in stock)" : "");
-
-                        <span class="p-2 border border-dark rounded-circle color position-relative" style="background-color: #@item.Key.Color;">
-                            @if (notInStock)
-                                    {
-                            <span class="emptyStock">X</span>
-                                    }
-                            <span class="visually-hidden">@colorName</span>
-                        </span>
+                                <span class="p-2 border border-dark rounded-circle color position-relative" style="background-color: #@item.Key.Color;">
+                                    <span class="visually-hidden">@colorName</span>
+                                </span>
                             }
+                        }
                     </div>
 
                     <a asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary stretched-link viewButton">

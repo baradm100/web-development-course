@@ -209,8 +209,8 @@ namespace web_development_course.Controllers
                     success = true,
                     data = new
                     {
-                        totalPrice = totalPrice,
-                        midPrice = midPrice,
+                        totalPrice = totalPrice.ToString("#.##"),
+                        midPrice = midPrice.ToString("#.##"),
                         saving = totalDiscount,
                         sign = currencySign,
                     }
@@ -224,7 +224,7 @@ namespace web_development_course.Controllers
         [HttpGet]
         [Route("orders/json")]
         [Authorize(Roles = "Admin,Editor")]
-        public async Task<IActionResult> getOrdersJsonAsync(string product, string category, string username)
+        public async Task<IActionResult> getOrdersJsonAsync(string product, string category, string username, string orderid)
         {
             if (product == null)
                 product = "";
@@ -232,6 +232,16 @@ namespace web_development_course.Controllers
                 category = "";
             if (username == null)
                 username = "";
+            if(orderid == null)
+                orderid = "";
+            float currency = 1;
+            if (_httpContextAccessor.HttpContext.Request.Cookies["currency"] != null)
+                currency = float.Parse(_httpContextAccessor.HttpContext.Request.Cookies["currency"]);
+            var currencySign = "$";
+            if (_httpContextAccessor.HttpContext.Request.Cookies["currencySign"] != null)
+            {
+                currencySign = Currencies[int.Parse(_httpContextAccessor.HttpContext.Request.Cookies["CurrencySign"])];
+            }
 
             var orders = from order in _context.Order
                          join item in _context.OrderItem on order.Id equals item.OrderId
@@ -248,11 +258,15 @@ namespace web_development_course.Controllers
                              date = order.Date.ToShortDateString(),
                              order.IsCart,
                              item.Amount,
-                             item.TotalPrice,
+                             totalPrice = (item.TotalPrice * currency).ToString("#.##") + currencySign,
                              p.Name,
                          };
+             var o = await orders.ToListAsync();
 
-            var o = await orders.ToListAsync();
+            if (!orderid.Equals(""))
+            {
+                o = await orders.Where(o=>o.Id == Int16.Parse(orderid)).ToListAsync();
+            }
             if (orders != null)
             {
                 return Json(new
@@ -270,12 +284,14 @@ namespace web_development_course.Controllers
         [Authorize(Roles = "Admin,Editor")]
         public async Task<IActionResult> getOrdersByMonthJsonAsync()
         {
+            var mainCatagories = _context.Category.Where(c => c.ParentCategoryId == null).Select(a => a.Id).ToList();
             var orders = from order in _context.Order
                          where order.IsCart == false
                          join item in _context.OrderItem on order.Id equals item.OrderId
                          join productType in _context.ProductType on item.ProductTypeID equals productType.Id
                          join pCategory in _context.ProductCategory on productType.ProductId equals pCategory.ProductId
                          join category in _context.Category on pCategory.CategoryId equals category.Id
+                         where (mainCatagories.Contains(category.Id))
                          group new { item.Amount } by order.Date.Month into sum
                          select new { sum.Key, amount = sum.Select(item => item.Amount).Sum() };
 

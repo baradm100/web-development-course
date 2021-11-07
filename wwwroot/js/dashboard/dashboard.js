@@ -25,7 +25,14 @@ $(function () {
         var $product = $searchDiv.find("input#userProductSearch");
         var $category = $searchDiv.find(".userCategorySearch");
         var $username = $searchDiv.find("input#userNameSearch");
-        orders($product.val(), $category.val(), $username.val());
+        var $orderid = $searchDiv.find("input#orderIdSearch");
+        orders($product.val(), $category.val(), $username.val(), $orderid.val());
+    })
+
+    $("#usersSearchBtn").click(function () {
+        var name = $("#nameSearch").val()
+        var email = $("#userEmailSearch").val()
+        users(name, email)
     })
 
     const categories = () => {
@@ -65,16 +72,12 @@ $(function () {
 
     categories()
 
-    const orders = (product = "", category = "", username = "") => {
+    const orders = (product = "", category = "", username = "", orderid = "") => {
         var form = new FormData();
         var token = $('input[name="__RequestVerificationToken"]').val();
-        form.set("__RequestVerificationToken", token);
-        form.set("product", product);
-        form.set("category", category);
-        form.set("username", username);
         $dealsTableBody.empty();
         $.ajax({
-            url: "/orders/json/?product=" + product + "&category=" + category + "&username=" + username + "&__RequestVerificationToken=" + token,
+            url: "/orders/json/?product=" + product + "&category=" + category + "&username=" + username + "&orderid=" + orderid + "&__RequestVerificationToken=" + token,
             type: 'GET',
             dataType: 'json',
             processData: false,
@@ -117,36 +120,42 @@ $(function () {
         return select
     }
 
-    $.ajax({
-        url: "/users/json/",
-        type: 'GET',
-        dataType: 'json',
-        processData: false,
-        contentType: false,
-        data: formData,
-        success: function (response) {
-            if (response.success == true) {
-                Success = true;
-                var users = response.users;
-                console.log(users);
-                for (let i = 0; i < users.length; i++) {
-                    var user = users[i];
-                    var select = selectOption(user.userType, user.id);
-                    var orders = "<tr class='tableRow'><th scope='row'>" + user.id + "</th><td>" + user.firstName + " " + user.lastName
-                        + "</td><td>" + user.email + "</td><td>" + select + "</td>"
-                        + "<td><a id='editUser" + user.id + "'class='mx-2' type='button'><i class='bi bi-pencil - square'></i></a> <a id='" + user.id +"'class='deleteUser" + user.id + "'type='button'><i class='bi bi-trash'></i></a></td></tr>"
-                    $usersTableBody.append(orders);
-                    $('#editUser' + user.id).bind("click", enableSelect);
-                    $('.deleteUser' + user.id).bind("click", deleteUser);
-                };
-            }
-        },
-        error: function (result) {
-            console.log(result);
-            return false;
-        },
-        timeout: 5000,
-    });
+    users()
+
+    function users(name = "", email = "") {
+        $.ajax({
+            url: "/users/json/?name=" + name + "&email=" + email,
+            type: 'GET',
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function (response) {
+                $usersTableBody.empty()
+                if (response.success) {
+                    Success = true;
+                    var users = response.users;
+                    console.log(users);
+                    for (let i = 0; i < users.length; i++) {
+                        var user = users[i];
+                        var select = selectOption(user.userType, user.id);
+                        var orders = "<tr class='tableRow'><th scope='row'>" + user.id + "</th><td>" + user.firstName + " " + user.lastName
+                            + "</td><td>" + user.email + "</td><td>" + select + "</td>"
+                            + "<td><a id='editUser" + user.id + "'class='mx-2' type='button'><i class='bi bi-pencil - square'></i></a> <a id='" + user.id + "'class='deleteUser" + user.id + "'type='button'><i class='bi bi-trash'></i></a></td></tr>"
+                        $usersTableBody.append(orders);
+                        $('#editUser' + user.id).bind("click", enableSelect);
+                        $('.deleteUser' + user.id).bind("click", deleteUser);
+                    };
+                }
+            },
+            error: function (result) {
+                console.log(result);
+                return false;
+            },
+            timeout: 5000,
+        });
+
+    }
 
 
     function enableSelect() {

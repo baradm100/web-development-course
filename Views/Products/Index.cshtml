@@ -164,7 +164,7 @@
             <a class="btn btn-outline-secondary disabled"  href="/products?categoryId=@categoryId&index=@lastIndexPage"><i class="bi bi-arrow-left"></i>  </a>
             }
         <h6>page 
-        @if (index == -1){ <span>1</span> } else{ <span>index</span> }</h6> 
+        @if (index == -1){ <span>1</span> } else{ <span>@index</span> }</h6> 
         @if (index == -1 || index >= numOfPages) {
             <a class="btn btn-outline-secondary disabled"  href="/products?categoryId=@categoryId&index=@nextIndexPage"><i class="bi bi-arrow-right"></i></a>
         } else {

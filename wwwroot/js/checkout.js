@@ -62,7 +62,7 @@
         for (let index = 0; index < response.length; index++) {
             $("#table-body").append('<tr><th scope="row">' + (Number(index)+1) +
                 '</th><td>' + response[index].productName + '</td><td>' + response[index].amount +
-                '</td><td>' + (Number(response[index].totalPrice) * currency).toFixed(2))
+                '</td><td>' + (Number(response[index].totalPrice) * currency).toFixed(2) + cSign +"</td></tr>")
         }
     }
 

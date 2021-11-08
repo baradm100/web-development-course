@@ -36,7 +36,7 @@ namespace web_development_course.Controllers
         }
 
         // GET: Products?categoryId=5
-        public async Task<IActionResult> Index(int? categoryId, string? categoryName, int? index)
+        public async Task<IActionResult> Index(int? categoryId, string categoryName, int? index)
         {
             int pageSize = 12;
             ViewBag.Colors = await _context.ProductColor.ToListAsync();
@@ -84,7 +84,7 @@ namespace web_development_course.Controllers
             return View(ProductsToShow);
         }
 
-        public async Task<IActionResult> AdvancedSearch(string? productName, float? maximumPrice, int? categoryId)
+        public async Task<IActionResult> AdvancedSearch(string productName, float? maximumPrice, int? categoryId)
         {
             ViewBag.Colors = await _context.ProductColor.ToListAsync();
             ViewBag.shouldShowEdit = User.IsInRole("Admin") || User.IsInRole("Editor");
@@ -176,7 +176,7 @@ namespace web_development_course.Controllers
 
         // GET: Products/json
         [Route("products/json")]
-        public async Task<IActionResult> getProductsJson(string? color, string? name)
+        public async Task<IActionResult> getProductsJson(string color, string name)
         {
 
             ProductColor productColor = await _context.ProductColor.FirstOrDefaultAsync(c => color.Contains(c.Color));
@@ -219,7 +219,7 @@ namespace web_development_course.Controllers
         }
 
         [Authorize(Roles = "Admin,Editor")]
-        public async Task<IActionResult> EditorIndexSearch(string? product)
+        public async Task<IActionResult> EditorIndexSearch(string product)
         {
             ViewBag.index = 1;
             ViewBag.categoryId = "";

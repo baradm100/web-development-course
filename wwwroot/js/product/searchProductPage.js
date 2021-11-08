@@ -3,6 +3,7 @@ $(function () {
     var $price = $("#maxPriceSearch");
     var $name = $("#productNameSearch");
     var $productSearchBtn = $("#btnSearch");
+    var $sortDropDown = $("#sortDropDown");
 
     $.ajax({
         url: "/Categories/json/",
@@ -37,20 +38,20 @@ $(function () {
         timeout: 5000,
     });
 
-    const productAdvancedSearch = (categoryId, maximumPrice, name) => {
+    const productAdvancedSearch = (categoryId, maximumPrice, name, sort) => {
         var coin = getCookieValue("currency");
-        console.log(categoryId, maximumPrice, name)
         var url = ""
+        var sortValue = sort ? sort : "";
         if (maximumPrice <= 0)
-            url = "/Products/AdvancedSearch?productName=" + name + "&maximumPrice=" + "&categoryId=" + categoryId;
+            url = "/Products/AdvancedSearch?productName=" + name + "&maximumPrice=" + "&categoryId=" + categoryId + "&sort=" + sort;
         else {
-            url = "/Products/AdvancedSearch?productName=" + name + "&maximumPrice=" + maximumPrice / coin + "&categoryId=" + categoryId;
+            url = "/Products/AdvancedSearch?productName=" + name + "&maximumPrice=" + maximumPrice / coin + "&categoryId=" + categoryId + "&sort=" + sort;
         }
         window.location.href = url;
     };
 
     $productSearchBtn.on("click", function (event) {
-        productAdvancedSearch(findSelectedDropdown($dropDownCategories), $price.val(), $name.val())
+        productAdvancedSearch(findSelectedDropdown($dropDownCategories), $price.val(), $name.val(), findSelectedDropdown($sortDropDown))
     });
 
     const findSelectedDropdown = ($selector) => {

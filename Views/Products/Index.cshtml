@@ -33,8 +33,17 @@
                         <option selected multiple>Category Select</option>
                     </select>
                 </div>
-                <div class="col-1 padding-0 margin-0">
-                    <button id="btnSearch" type="button" class="nav-link text-black btn btn-light position-relative" role="button">
+                <div class="dropdown col-md-2 col-12">
+                    <select class="btn btn-outline-secondary dropdown-toggle w-100" id="sortDropDown" style="height:3rem;" aria-label="Default select example">
+                        <option selected>Sort By</option>
+                        <option>Highest Price</option>
+                        <option>Lowest Price</option>
+                        <option>Newest Product</option>
+                        <option>Only Sales</option>
+                    </select>
+                </div>
+                <div class="col-1">
+                    <button id="btnSearch" type="button" class="text-black btn btn-light position-relative" role="button">
                         <i class="bi bi-search"></i>
                     </button>
                 </div>

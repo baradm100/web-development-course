@@ -84,7 +84,7 @@ namespace web_development_course.Controllers
             return View(ProductsToShow);
         }
 
-        public async Task<IActionResult> AdvancedSearch(string? productName, float? maximumPrice, int? categoryId)
+        public async Task<IActionResult> AdvancedSearch(string? productName, float? maximumPrice, int? categoryId, string? sort)
         {
             ViewBag.Colors = await _context.ProductColor.ToListAsync();
             ViewBag.shouldShowEdit = User.IsInRole("Admin") || User.IsInRole("Editor");
@@ -128,8 +128,29 @@ namespace web_development_course.Controllers
                     .Include(product => product.ProductCategories)
                     .Where(p => p.ProductCategories.Any(pc => RelevantCategoryIds.Contains(pc.CategoryId)) &&
                     p.Name.ToLower().Contains(productNameValue) && (1 - (p.DiscountPercentage / 100)) * p.Price <= maximumPriceValue);
-            List<Product> ProductsToShow = await ProductsQuery.ToListAsync();
-            return View("index", ProductsToShow);
+
+            if (sort == null)
+            {
+                return View("index", await ProductsQuery.ToListAsync());
+            }
+            else if (sort.ToLower() == "highest price")
+            {
+                return View("index", await ProductsQuery.OrderByDescending(a => a.Price).ToListAsync());
+            }
+            else if (sort.ToLower() == "lowest price")
+            {
+                return View("index", await ProductsQuery.OrderBy(a => a.Price).ToListAsync());
+            }
+            else if (sort.ToLower() == "newest product")
+            {
+                return View("index", await ProductsQuery.OrderByDescending(a => a.Id).ToListAsync());
+            }
+            else if (sort.ToLower() == "only sales")
+            {
+                return View("index", await ProductsQuery.Where(a => a.DiscountPercentage > 0).ToListAsync());
+            }
+            return View("index", await ProductsQuery.ToListAsync());
+
         }
 
         [Authorize(Roles = "Admin,Editor")]

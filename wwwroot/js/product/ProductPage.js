@@ -19,6 +19,14 @@ $(function () {
     $("#addToCart").prop("disabled", true);
   });
 
+    // open cart
+    $("#addToCart").click(function () {
+        $("#navbarDropdown").addClass("show")
+        $("#navbarDropdown").prop("aria-expanded",true)
+        $("#quickCartDropdown").addClass("show")
+        $("#navbarDropdown").attr("data-bs-popper", "none")
+    })
+
   // Handle updating size
   $("#productForm input[name=Size]").change(function (e) {
     const color = $("#productForm input[name=colorSelection]:checked").val();

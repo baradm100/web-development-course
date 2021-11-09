@@ -64,6 +64,13 @@
                                         }
                                     }
                                 </div>
+                                <div class="d-flex align-items-end flex-column bd-highlight mb-3" style="height: 150px;">
+                                    <div class="mt-auto p-2 bd-highlight" type="button" id="next_delivery">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                        </svg>
+                                    </div>
+                                </div>
                             </div>
                             <div class="tab-pane fade" id="details_input" role="tabpanel" aria-labelledby="details-tab">
                                 <form class="needs-validation" novalidate style="margin-top:2rem" id="Details-form">
@@ -110,6 +117,13 @@
                                         </div>
                                     </div>
                                 </form>
+                                <div class="d-flex align-items-end flex-column bd-highlight mb-3" style="height: 60px;">
+                                    <div class="mt-auto p-2 bd-highlight" type="button" id="next_addr">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                        </svg>
+                                    </div>
+                                </div>
                             </div>
                             <div class="tab-pane fade" id="payment_input" role="tabpanel" aria-labelledby="payment-tab">
                                 <form class="container needs-validation" novalidate style="margin-top:2rem" id="payment-form">
@@ -157,10 +171,10 @@
                         </div>
                     </div>
                     <div class="col-12 col-lg-5 p-3 mb-5">
-                        <div class="row d-flex justify-content-center">
+                        <div class="row d-flex wd-100 justify-content-center">
                             <h5>Summary</h5>
-                            <div class="table-responsive" style="max-height:175px;">
-                                <table class="table">
+                            <div class="table-responsive" style="max-height:225px;">
+                                <table class="table wd-100">
                                     <thead>
                                         <tr>
                                             <th scope="col">#</th>
@@ -173,32 +187,32 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="cart-totals ms-auto">
-                                <table>
+                            <div class="cart-totals">
+                                <table class="">
                                     <tfoot>
                                         <tr class="row justify-content-between">
-                                            <td class="col-9">
+                                            <td class="col-8">
                                                 <b>Total to pay</b>
                                             </td>
-                                            <td class="d-flex ms-auto col-1 ">
+                                            <td class="col-1 ">
                                                 <b id="total-price">0</b>
                                             </td>
                                         </tr>
                                     </tfoot>
-                                    <tbody>
+                                    <tbody class="wd-100">
                                         <tr class="row justify-content-between">
-                                            <td class="col-9">
+                                            <td class="col-8">
                                                 <div>Subtotal</div>
                                             </td>
-                                            <td class="d-flex ms-auto col-1 ">
+                                            <td class="col-1 ">
                                                 <div id="subtotal-price">0</div>
                                             </td>
                                         </tr>
                                         <tr class="row justify-content-between">
-                                            <td class="col-9">
+                                            <td class="col-8">
                                                 <div>Delivery</div>
                                             </td>
-                                            <td class="d-flex ms-auto col-1">
+                                            <td class="col-1">
                                                 <div id="delivery_price">0</div>
                                             </td>
                                         </tr>
@@ -221,7 +235,7 @@
             <div class="modal-header" style="background:black">
                 <h5 class="modal-title" id="orderSummaryLabel" style="color:white">Order Approvement</h5>
                     <button type="button" class="btn-close orderSummaryClose  btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-</div>
+            </div>
             <div class="modal-body">
                 <div class="flex-row">
                     <h3 id="title">Thanks for buying in CLOTHIT</h3>

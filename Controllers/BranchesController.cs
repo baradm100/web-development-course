@@ -21,7 +21,7 @@ namespace web_development_course.Controllers
         }
 
         // GET: Branches
-        public async Task<IActionResult> Index(string? name)
+        public async Task<IActionResult> Index(string name)
         {
             if (name != null)
             {

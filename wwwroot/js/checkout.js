@@ -15,6 +15,14 @@
 
     //#region Listeners
 
+    $("#next_delivery").click(function () {
+        navigetePane($("#delivery-tab"), $("#delivery_methods"), $("#details-tab"), $("#details_input"))
+    })
+
+    $("#next_addr").click(function () {
+        navigetePane($("#details-tab"), $("#details_input"), $("#payment-tab"), $("#payment_input"))
+    })
+
     $("#checkout_partial").click(function () {
         GetSummary()
     })
@@ -55,6 +63,17 @@
     //#endregion
 
     //#region Helpers
+
+    function navigetePane($srcTab, $srcPane, $dstTab, $dstPane) {
+        $srcPane.removeClass("show")
+        $srcPane.removeClass("active")
+        $srcTab.removeClass("active")
+        $srcTab.prop("aria-selected", false)
+        $dstTab.addClass("active")
+        $dstTab.prop("aria-selected", true)
+        $dstPane.addClass("show")
+        $dstPane.addClass("active")
+    }
 
     function addItems(response) {
         var currency = getCookieValue("currency");

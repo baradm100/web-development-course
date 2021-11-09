@@ -353,7 +353,7 @@ namespace web_development_course.Controllers
 
         //Post: Orders/PlaceOrder
         [HttpPost]
-        public async Task<IActionResult> PlaceOrder(double totalPrice, string? deliveryOption, string branchName, string phone, [Bind("Id,City,Street,BuildingNumber")] Address? address)
+        public async Task<IActionResult> PlaceOrder(double totalPrice, string deliveryOption, string branchName, string phone, [Bind("Id,City,Street,BuildingNumber")] Address address)
         {
             int dbUser = await isValidUserAsync();
             DeliveryOptions option = ((DeliveryOptions)DeliveryExtractor(deliveryOption));

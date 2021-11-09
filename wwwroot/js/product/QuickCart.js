@@ -1,4 +1,3 @@
-
 function createCarouse(item) {
   const carouseDiv = document.createElement("div");
   const carouselId = "carouselQuickCartIndicators-" + item.id;
@@ -51,7 +50,7 @@ function createCarouse(item) {
   if (item.discountPercentage) {
     carouseDiv.innerHTML += `    
 <div class="discountOverlay">
-  <h5 class="discount-on-card">${item.discountPercentage}%</h5>
+  <h6 class="discount-on-card">${item.discountPercentage}%</h6>
 </div>`;
   }
 

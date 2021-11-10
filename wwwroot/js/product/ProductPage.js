@@ -39,8 +39,8 @@ $(function () {
   });
 
     $("#back_btn").click(function () {
-        console.log("clicked")
-        window.history.back();
+        var last_url = document.referrer;
+        window.location.replace(last_url);
     });
 
   const indicateLoading = () => {

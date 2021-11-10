@@ -63,3 +63,19 @@ color-white {
 .background-black {
     background-color: black;
 }
+
+@media only screen and (min-width: 1800px) {
+    .products-cart-responsive {
+        height: 550px;
+        overflow: scroll;
+        overflow-x: hidden;
+    }
+}
+
+@media only screen and (max-width: 1800px) {
+    .products-cart-responsive {
+        height: 350px;
+        overflow: scroll;
+        overflow-x: hidden;
+    }
+}

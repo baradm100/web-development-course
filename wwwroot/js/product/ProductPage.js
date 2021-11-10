@@ -1,4 +1,5 @@
 $(function () {
+
   // Handle updating color
   $("#productForm input[name=colorSelection]").change(function (e) {
     const sizesBySelectedColor = SizesCountByColorIds[e.target.value];
@@ -21,10 +22,10 @@ $(function () {
 
     // open cart
     $("#addToCart").click(function () {
-        $("#navbarDropdown").addClass("show")
+/*        $("#navbarDropdown").addClass("show")
         $("#navbarDropdown").prop("aria-expanded",true)
         $("#quickCartDropdown").addClass("show")
-        $("#navbarDropdown").attr("data-bs-popper", "none")
+        $("#navbarDropdown").attr("data-bs-popper", "none")*/
     })
 
   // Handle updating size

@@ -503,7 +503,7 @@ namespace web_development_course.Controllers
 
             ProductType releventProductType = await _context.ProductType
                 .Include(pd => pd.Product)
-                .Where(pd => pd.ProductId == productId && pd.ColorId == colorId)
+                .Where(pd => pd.ProductId == productId && pd.ColorId == colorId && pd.Size == size)
                 .FirstOrDefaultAsync();
 
             if (releventProductType == null)

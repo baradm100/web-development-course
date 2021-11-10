@@ -99,12 +99,6 @@
                         <span class="visually-hidden">Next</span>
                     </button>
                 </div>
-                <div class="discountOverlay">
-                    @if (orderItem.ProductType.Product.DiscountPercentage != 0)
-                    {
-                        <h6 class="discount-on-card">@orderItem.ProductType.Product.DiscountPercentage%</h6>
-                    }
-                </div>
                 <div class="col cartItemDetails">
                     <span>
                         <a asp-action="Details" asp-controller="Products" class="link-primary"

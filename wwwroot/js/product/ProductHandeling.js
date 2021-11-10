@@ -108,6 +108,9 @@
         });
     }
 
+    $(".editCategoriesModal-close").click(function () {
+        window.location.reload();
+    })
 
     $('#EdtiCategoriesBtn').click(function () {
         $CategorieTable.empty();

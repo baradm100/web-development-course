@@ -2,12 +2,12 @@
 SET ANSI_PADDING, ANSI_WARNINGS, CONCAT_NULL_YIELDS_NULL, ARITHABORT, QUOTED_IDENTIFIER, ANSI_NULLS ON
 SET XACT_ABORT ON
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
 PRINT N'CREATE TABLE [dbo].[AspNetRoleClaims]'
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
--- SQRIBE/OBJ;d94b91
+-- SQRIBE/OBJ;c2f4f5
 CREATE TABLE [dbo].[AspNetRoleClaims]
 (
     [Id] [int] IDENTITY(1,1) NOT NULL,
@@ -16,12 +16,12 @@ CREATE TABLE [dbo].[AspNetRoleClaims]
     [ClaimValue] [nvarchar](max) COLLATE Hebrew_CI_AS NULL
 
 ) ON [PRIMARY]
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
 PRINT N'CREATE TABLE [dbo].[AspNetRoles]'
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
--- SQRIBE/OBJ;d94b91
+-- SQRIBE/OBJ;c2f4f5
 CREATE TABLE [dbo].[AspNetRoles]
 (
     [Id] [nvarchar](450) COLLATE Hebrew_CI_AS NOT NULL,
@@ -30,12 +30,12 @@ CREATE TABLE [dbo].[AspNetRoles]
     [ConcurrencyStamp] [nvarchar](max) COLLATE Hebrew_CI_AS NULL
 
 ) ON [PRIMARY]
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
 PRINT N'CREATE TABLE [dbo].[AspNetUserClaims]'
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
--- SQRIBE/OBJ;d94b91
+-- SQRIBE/OBJ;c2f4f5
 CREATE TABLE [dbo].[AspNetUserClaims]
 (
     [Id] [int] IDENTITY(1,1) NOT NULL,
@@ -44,12 +44,12 @@ CREATE TABLE [dbo].[AspNetUserClaims]
     [ClaimValue] [nvarchar](max) COLLATE Hebrew_CI_AS NULL
 
 ) ON [PRIMARY]
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
 PRINT N'CREATE TABLE [dbo].[AspNetUserLogins]'
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
--- SQRIBE/OBJ;d94b91
+-- SQRIBE/OBJ;c2f4f5
 CREATE TABLE [dbo].[AspNetUserLogins]
 (
     [LoginProvider] [nvarchar](128) COLLATE Hebrew_CI_AS NOT NULL,
@@ -58,24 +58,24 @@ CREATE TABLE [dbo].[AspNetUserLogins]
     [UserId] [nvarchar](450) COLLATE Hebrew_CI_AS NOT NULL
 
 ) ON [PRIMARY]
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
 PRINT N'CREATE TABLE [dbo].[AspNetUserRoles]'
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
--- SQRIBE/OBJ;d94b91
+-- SQRIBE/OBJ;c2f4f5
 CREATE TABLE [dbo].[AspNetUserRoles]
 (
     [UserId] [nvarchar](450) COLLATE Hebrew_CI_AS NOT NULL,
     [RoleId] [nvarchar](450) COLLATE Hebrew_CI_AS NOT NULL
 
 ) ON [PRIMARY]
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
 PRINT N'CREATE TABLE [dbo].[AspNetUserTokens]'
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
--- SQRIBE/OBJ;d94b91
+-- SQRIBE/OBJ;c2f4f5
 CREATE TABLE [dbo].[AspNetUserTokens]
 (
     [UserId] [nvarchar](450) COLLATE Hebrew_CI_AS NOT NULL,
@@ -84,12 +84,12 @@ CREATE TABLE [dbo].[AspNetUserTokens]
     [Value] [nvarchar](max) COLLATE Hebrew_CI_AS NULL
 
 ) ON [PRIMARY]
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
 PRINT N'CREATE TABLE [dbo].[Branch]'
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
--- SQRIBE/OBJ;d94b91
+-- SQRIBE/OBJ;c2f4f5
 CREATE TABLE [dbo].[Branch]
 (
     [Id] [int] IDENTITY(1,1) NOT NULL,
@@ -97,70 +97,12 @@ CREATE TABLE [dbo].[Branch]
     [Name] [nvarchar](100) COLLATE Hebrew_CI_AS NOT NULL
 
 ) ON [PRIMARY]
-GO -- SQRIBE/GO;d94b91
-
-PRINT N'CREATE TABLE [dbo].[OpeningHour]'
-GO -- SQRIBE/GO;d94b91
-
--- SQRIBE/OBJ;d94b91
-CREATE TABLE [dbo].[OpeningHour]
-(
-    [Id] [int] IDENTITY(1,1) NOT NULL,
-    [Open] [nvarchar](max) COLLATE Hebrew_CI_AS NOT NULL,
-    [Close] [nvarchar](max) COLLATE Hebrew_CI_AS NOT NULL,
-    [BranchId] [int] NOT NULL,
-    [DayOfWeek] [int] NOT NULL
-
-) ON [PRIMARY]
-GO -- SQRIBE/GO;d94b91
-
-PRINT N'CREATE TABLE [dbo].[OrderItem]'
-GO -- SQRIBE/GO;d94b91
-
--- SQRIBE/OBJ;d94b91
-CREATE TABLE [dbo].[OrderItem]
-(
-    [Id] [int] IDENTITY(1,1) NOT NULL,
-    [OrderId] [int] NOT NULL,
-    [Amount] [int] NOT NULL,
-    [TotalPrice] [float] NOT NULL,
-    [ProductTypeID] [int] NOT NULL
-
-) ON [PRIMARY]
-GO -- SQRIBE/GO;d94b91
-
-PRINT N'CREATE TABLE [dbo].[Address]'
-GO -- SQRIBE/GO;d94b91
-
--- SQRIBE/OBJ;d94b91
-CREATE TABLE [dbo].[Address]
-(
-    [Id] [int] IDENTITY(1,1) NOT NULL,
-    [City] [nvarchar](50) COLLATE Hebrew_CI_AS NOT NULL,
-    [Street] [nvarchar](50) COLLATE Hebrew_CI_AS NOT NULL,
-    [BuildingNumber] [int] NOT NULL,
-    [Latitude] [float] NOT NULL,
-    [Longitude] [float] NOT NULL
-
-) ON [PRIMARY]
-GO -- SQRIBE/GO;d94b91
-
-PRINT N'CREATE TABLE [dbo].[AddressUser]'
-GO -- SQRIBE/GO;d94b91
-
--- SQRIBE/OBJ;d94b91
-CREATE TABLE [dbo].[AddressUser]
-(
-    [AddressesId] [int] NOT NULL,
-    [UsersId] [int] NOT NULL
-
-) ON [PRIMARY]
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
 PRINT N'CREATE TABLE [dbo].[AspNetUsers]'
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
--- SQRIBE/OBJ;d94b91
+-- SQRIBE/OBJ;c2f4f5
 CREATE TABLE [dbo].[AspNetUsers]
 (
     [Id] [nvarchar](450) COLLATE Hebrew_CI_AS NOT NULL,
@@ -180,12 +122,70 @@ CREATE TABLE [dbo].[AspNetUsers]
     [AccessFailedCount] [int] NOT NULL
 
 ) ON [PRIMARY]
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
+
+PRINT N'CREATE TABLE [dbo].[AddressUser]'
+GO -- SQRIBE/GO;c2f4f5
+
+-- SQRIBE/OBJ;c2f4f5
+CREATE TABLE [dbo].[AddressUser]
+(
+    [AddressesId] [int] NOT NULL,
+    [UsersId] [int] NOT NULL
+
+) ON [PRIMARY]
+GO -- SQRIBE/GO;c2f4f5
+
+PRINT N'CREATE TABLE [dbo].[OrderItem]'
+GO -- SQRIBE/GO;c2f4f5
+
+-- SQRIBE/OBJ;c2f4f5
+CREATE TABLE [dbo].[OrderItem]
+(
+    [Id] [int] IDENTITY(1,1) NOT NULL,
+    [OrderId] [int] NOT NULL,
+    [Amount] [int] NOT NULL,
+    [TotalPrice] [float] NOT NULL,
+    [ProductTypeID] [int] NOT NULL
+
+) ON [PRIMARY]
+GO -- SQRIBE/GO;c2f4f5
+
+PRINT N'CREATE TABLE [dbo].[Address]'
+GO -- SQRIBE/GO;c2f4f5
+
+-- SQRIBE/OBJ;c2f4f5
+CREATE TABLE [dbo].[Address]
+(
+    [Id] [int] IDENTITY(1,1) NOT NULL,
+    [City] [nvarchar](50) COLLATE Hebrew_CI_AS NOT NULL,
+    [Street] [nvarchar](50) COLLATE Hebrew_CI_AS NOT NULL,
+    [BuildingNumber] [int] NOT NULL,
+    [Latitude] [float] NOT NULL,
+    [Longitude] [float] NOT NULL
+
+) ON [PRIMARY]
+GO -- SQRIBE/GO;c2f4f5
+
+PRINT N'CREATE TABLE [dbo].[OpeningHour]'
+GO -- SQRIBE/GO;c2f4f5
+
+-- SQRIBE/OBJ;c2f4f5
+CREATE TABLE [dbo].[OpeningHour]
+(
+    [Id] [int] IDENTITY(1,1) NOT NULL,
+    [Open] [nvarchar](max) COLLATE Hebrew_CI_AS NOT NULL,
+    [Close] [nvarchar](max) COLLATE Hebrew_CI_AS NOT NULL,
+    [BranchId] [int] NOT NULL,
+    [DayOfWeek] [int] NOT NULL
+
+) ON [PRIMARY]
+GO -- SQRIBE/GO;c2f4f5
 
 PRINT N'CREATE TABLE [dbo].[User]'
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
--- SQRIBE/OBJ;d94b91
+-- SQRIBE/OBJ;c2f4f5
 CREATE TABLE [dbo].[User]
 (
     [Id] [int] IDENTITY(1,1) NOT NULL,
@@ -198,12 +198,12 @@ CREATE TABLE [dbo].[User]
     [Phone] [nvarchar](max) COLLATE Hebrew_CI_AS NULL
 
 ) ON [PRIMARY]
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
 PRINT N'CREATE TABLE [dbo].[Order]'
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
--- SQRIBE/OBJ;d94b91
+-- SQRIBE/OBJ;c2f4f5
 CREATE TABLE [dbo].[Order]
 (
     [Id] [int] IDENTITY(1,1) NOT NULL,
@@ -213,12 +213,12 @@ CREATE TABLE [dbo].[Order]
     [Delivery] [int] NOT NULL
 
 ) ON [PRIMARY]
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
 PRINT N'CREATE TABLE [dbo].[ProductColor]'
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
--- SQRIBE/OBJ;d94b91
+-- SQRIBE/OBJ;c2f4f5
 CREATE TABLE [dbo].[ProductColor]
 (
     [Id] [int] IDENTITY(1,1) NOT NULL,
@@ -226,12 +226,12 @@ CREATE TABLE [dbo].[ProductColor]
     [Name] [nvarchar](max) COLLATE Hebrew_CI_AS NULL
 
 ) ON [PRIMARY]
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
 PRINT N'CREATE TABLE [dbo].[Category]'
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
--- SQRIBE/OBJ;d94b91
+-- SQRIBE/OBJ;c2f4f5
 CREATE TABLE [dbo].[Category]
 (
     [Id] [int] IDENTITY(1,1) NOT NULL,
@@ -239,24 +239,24 @@ CREATE TABLE [dbo].[Category]
     [ParentCategoryId] [int] NULL
 
 ) ON [PRIMARY]
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
 PRINT N'CREATE TABLE [dbo].[__EFMigrationsHistory]'
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
--- SQRIBE/OBJ;d94b91
+-- SQRIBE/OBJ;c2f4f5
 CREATE TABLE [dbo].[__EFMigrationsHistory]
 (
     [MigrationId] [nvarchar](150) COLLATE Hebrew_CI_AS NOT NULL,
     [ProductVersion] [nvarchar](32) COLLATE Hebrew_CI_AS NOT NULL
 
 ) ON [PRIMARY]
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
 PRINT N'CREATE TABLE [dbo].[Product]'
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
--- SQRIBE/OBJ;d94b91
+-- SQRIBE/OBJ;c2f4f5
 CREATE TABLE [dbo].[Product]
 (
     [Id] [int] IDENTITY(1,1) NOT NULL,
@@ -266,12 +266,12 @@ CREATE TABLE [dbo].[Product]
     [CategoryId] [int] NULL
 
 ) ON [PRIMARY]
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
 PRINT N'CREATE TABLE [dbo].[ProductCategory]'
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
--- SQRIBE/OBJ;d94b91
+-- SQRIBE/OBJ;c2f4f5
 CREATE TABLE [dbo].[ProductCategory]
 (
     [Id] [int] IDENTITY(1,1) NOT NULL,
@@ -279,12 +279,12 @@ CREATE TABLE [dbo].[ProductCategory]
     [CategoryId] [int] NOT NULL
 
 ) ON [PRIMARY]
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
 PRINT N'CREATE TABLE [dbo].[ProductImage]'
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
--- SQRIBE/OBJ;d94b91
+-- SQRIBE/OBJ;c2f4f5
 CREATE TABLE [dbo].[ProductImage]
 (
     [Id] [int] IDENTITY(1,1) NOT NULL,
@@ -293,12 +293,12 @@ CREATE TABLE [dbo].[ProductImage]
     [ProductId] [int] NOT NULL
 
 ) ON [PRIMARY]
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
 PRINT N'CREATE TABLE [dbo].[ProductType]'
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
--- SQRIBE/OBJ;d94b91
+-- SQRIBE/OBJ;c2f4f5
 CREATE TABLE [dbo].[ProductType]
 (
     [Id] [int] IDENTITY(1,1) NOT NULL,
@@ -308,4 +308,4 @@ CREATE TABLE [dbo].[ProductType]
     [ColorId] [int] NOT NULL
 
 ) ON [PRIMARY]
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5

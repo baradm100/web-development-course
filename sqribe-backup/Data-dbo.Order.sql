@@ -3,27 +3,31 @@ SET ANSI_PADDING, ANSI_WARNINGS, CONCAT_NULL_YIELDS_NULL, ARITHABORT, QUOTED_IDE
 SET DATEFORMAT YMD
 SET XACT_ABORT ON
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
--- SQRIBE/TABLE;d94b91
--- Adding 6 rows to dbo.Order
+-- SQRIBE/TABLE;c2f4f5
+-- Adding 8 rows to dbo.Order
 
 SET IDENTITY_INSERT [dbo].[Order] ON
 
 BEGIN TRANSACTION
 
--- SQRIBE/INSERT;d94b91
+-- SQRIBE/INSERT;c2f4f5
 INSERT INTO [dbo].[Order] ([Id],[Date],[UserId],[IsCart],[Delivery]) VALUES (1,CONVERT(datetime2,'2021-11-06 10:42:27.5130536',121),1,1,1);
--- SQRIBE/INSERT;d94b91
+-- SQRIBE/INSERT;c2f4f5
 INSERT INTO [dbo].[Order] ([Id],[Date],[UserId],[IsCart],[Delivery]) VALUES (2,CONVERT(datetime2,'2021-11-08 13:21:38.6209475',121),2,1,1);
--- SQRIBE/INSERT;d94b91
+-- SQRIBE/INSERT;c2f4f5
 INSERT INTO [dbo].[Order] ([Id],[Date],[UserId],[IsCart],[Delivery]) VALUES (3,CONVERT(datetime2,'2021-11-08 13:22:24.0962153',121),3,1,1);
--- SQRIBE/INSERT;d94b91
+-- SQRIBE/INSERT;c2f4f5
 INSERT INTO [dbo].[Order] ([Id],[Date],[UserId],[IsCart],[Delivery]) VALUES (4,CONVERT(datetime2,'2021-11-08 13:23:07.7252041',121),4,1,1);
--- SQRIBE/INSERT;d94b91
+-- SQRIBE/INSERT;c2f4f5
 INSERT INTO [dbo].[Order] ([Id],[Date],[UserId],[IsCart],[Delivery]) VALUES (5,CONVERT(datetime2,'2021-11-08 13:34:15.0191751',121),5,0,53);
--- SQRIBE/INSERT;d94b91
-INSERT INTO [dbo].[Order] ([Id],[Date],[UserId],[IsCart],[Delivery]) VALUES (6,CONVERT(datetime2,'2021-11-08 13:34:18.3584824',121),5,1,1);
+-- SQRIBE/INSERT;c2f4f5
+INSERT INTO [dbo].[Order] ([Id],[Date],[UserId],[IsCart],[Delivery]) VALUES (6,CONVERT(datetime2,'2021-11-11 09:41:12.7738370',121),5,0,1);
+-- SQRIBE/INSERT;c2f4f5
+INSERT INTO [dbo].[Order] ([Id],[Date],[UserId],[IsCart],[Delivery]) VALUES (7,CONVERT(datetime2,'2021-10-11 09:55:56.9017190',121),5,0,53);
+-- SQRIBE/INSERT;c2f4f5
+INSERT INTO [dbo].[Order] ([Id],[Date],[UserId],[IsCart],[Delivery]) VALUES (8,CONVERT(datetime2,'2021-11-11 09:56:01.6372790',121),5,1,1);
 
 COMMIT TRANSACTION
 

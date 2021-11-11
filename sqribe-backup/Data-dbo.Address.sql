@@ -3,17 +3,23 @@ SET ANSI_PADDING, ANSI_WARNINGS, CONCAT_NULL_YIELDS_NULL, ARITHABORT, QUOTED_IDE
 SET DATEFORMAT YMD
 SET XACT_ABORT ON
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
-GO -- SQRIBE/GO;d94b91
+GO -- SQRIBE/GO;c2f4f5
 
--- SQRIBE/TABLE;d94b91
--- Adding 1 row to dbo.Address
+-- SQRIBE/TABLE;c2f4f5
+-- Adding 4 rows to dbo.Address
 
 SET IDENTITY_INSERT [dbo].[Address] ON
 
 BEGIN TRANSACTION
 
--- SQRIBE/INSERT;d94b91
+-- SQRIBE/INSERT;c2f4f5
 INSERT INTO [dbo].[Address] ([Id],[City],[Street],[BuildingNumber],[Latitude],[Longitude]) VALUES (1,N'Tel Aviv',N'Disingof',263,0.000000000000000e+000,0.000000000000000e+000);
+-- SQRIBE/INSERT;c2f4f5
+INSERT INTO [dbo].[Address] ([Id],[City],[Street],[BuildingNumber],[Latitude],[Longitude]) VALUES (2,N'Tel Aviv',N'Dizengoff st',50,3.477493950000000e+001,3.207502240000000e+001);
+-- SQRIBE/INSERT;c2f4f5
+INSERT INTO [dbo].[Address] ([Id],[City],[Street],[BuildingNumber],[Latitude],[Longitude]) VALUES (3,N'tel aviv',N'test',4,0.000000000000000e+000,0.000000000000000e+000);
+-- SQRIBE/INSERT;c2f4f5
+INSERT INTO [dbo].[Address] ([Id],[City],[Street],[BuildingNumber],[Latitude],[Longitude]) VALUES (4,N'Tel aviv',N'test',5,0.000000000000000e+000,0.000000000000000e+000);
 
 COMMIT TRANSACTION
 

@@ -64,9 +64,10 @@ For mac just run:
 sqribe backup /data_source:"server=db.cs.colman.ac.il;User ID=csdb13a;Password=********;Database=CsDB13;" /objects:"all" /output_path:"~/Desktop/sqribe-backup"
 ```
 
-
 ### How To Restore
+
 For mac just run:
+
 ```bash
 sqribe restore /script_path:"~/Desktop/sqribe-backup" /data_source:'Server=localhost;Database=aspLearningDB;User ID=sa;Password=yourStrong(!)Password;' /objects:"all"
 ```

@@ -13,6 +13,15 @@
     12: "December",
 }
 
+const sizes = {
+    0: "XS",
+    1: "S",
+    2: "M",
+    3: "L",
+    4: "XL",
+    5: "XXL",
+}
+
 $(function () {
     var $dealsTableBody = $(".dealsTableBody");
     var $usersTableBody = $(".usersBodyTable");
@@ -92,7 +101,7 @@ $(function () {
                         var order = a[i];
                         var closedDeal = order.isCart == true ? "false" : "true";
                         var orders = "<tr><th scope='row'>" + order.id + "</th><td>" + order.firstName + " " + order.lastName + "</td><td>" + order.date + "</td><td>"
-                            + order.name + "</td><td>" + order.amount + "</td><td>" + order.totalPrice + "</td><td>" + closedDeal + "</td></tr>"
+                            + order.name + " " + order.color + " " + sizes[order.size] + "</td><td>" + order.amount + "</td><td>" + order.totalPrice + "</td><td>" + closedDeal + "</td></tr>"
                         $dealsTableBody.append(orders);
                     };
                 }

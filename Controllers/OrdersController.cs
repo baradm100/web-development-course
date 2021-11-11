@@ -260,6 +260,8 @@ namespace web_development_course.Controllers
                              item.Amount,
                              totalPrice = (item.TotalPrice * currency).ToString("#.##") + currencySign,
                              p.Name,
+                             color = productType.Color.Name,
+                             size = productType.Size,
                          };
              var o = await orders.ToListAsync();
 

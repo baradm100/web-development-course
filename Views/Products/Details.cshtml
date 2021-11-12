@@ -135,7 +135,7 @@
                     <div class="spinner-border d-none" role="status" id="loadingSpinner">
                         <span class="visually-hidden">Loading...</span>
                     </div>
-                    <button type="submit" class="btn btn-primary" id="addToCart" disabled onclick="openCart(event)">
+                    <button type="submit" class="btn btn-primary" id="addToCart" disabled>
                         <i class="bi bi-cart-plus"></i>
                         Add to cart
                     </button>
@@ -172,12 +172,6 @@
     </div>
     
 </div>
-<script>
-    function openCart(e) {
-        e.stopPropagation();
-        $("button.navBarDropDownCart").dropdown('toggle');
-    }
-</script>
 
 @section Scripts {
     <script src="~/js/product/ProductPage.js"></script>

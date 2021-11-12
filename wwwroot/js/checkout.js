@@ -13,7 +13,7 @@ function addItems(response) {
   var currency = getCookieValue("currency");
   var cSign = sign[getCookieValue("currencySign")];
   $("#table-body").empty();
-  
+
   for (let index = 0; index < response.length; index++) {
     $("#table-body").append(
       '<tr><th scope="row">' +
@@ -28,6 +28,11 @@ function addItems(response) {
         "</td></tr>"
     );
   }
+}
+
+function updateCheckoutModal() {
+  getCart();
+  GetSummary();
 }
 
 function getCart() {
@@ -54,6 +59,61 @@ function getCart() {
     },
     timeout: 5000,
   });
+}
+
+function GetSummary() {
+  $.ajax({
+    url: "/Orders/GetSummary",
+    type: "GET",
+    dataType: "json",
+    data: null,
+    fail: function (xhr, textStatus, errorThrown) {
+      Success = false;
+      alert("Something went wrong in server");
+    },
+    success: function (response) {
+      Success = true;
+      if (response != null) {
+        let cSign = sign[getCookieValue("currencySign")];
+        let subtotalPrice = Number(Number(response.data.totalPrice).toFixed(2));
+        $("#subtotal-price").text(subtotalPrice + cSign);
+        $("#subtotal-price").val(subtotalPrice);
+        updatePrice();
+      }
+    },
+    error: function (result) {
+      console.log(result);
+      return false;
+    },
+    timeout: 5000,
+  });
+}
+
+function updatePrice() {
+  var currency = getCookieValue("currency");
+  var cSign = sign[getCookieValue("currencySign")];
+  deliveryPrice = 0;
+  if ($(".delivery-border")[0]) {
+    let id = $($(".delivery-border")[0]).attr("id");
+    id = id.split("_");
+    if (id[1] > 1) {
+      deliveryPrice = Number(id[1]) * currency;
+    }
+    $("#delivery_price").text(deliveryPrice.toFixed(2));
+  } else {
+    $("#delivery_price").text("0");
+  }
+
+  $("#total-price").text(
+    Number(
+      (Number(deliveryPrice) + Number($("#subtotal-price").val())).toFixed(2)
+    ) + cSign
+  );
+  $("#total-price").val(
+    Number(
+      (Number(deliveryPrice) + Number($("#subtotal-price").val())).toFixed(2)
+    )
+  );
 }
 
 $(function () {
@@ -180,33 +240,6 @@ $(function () {
     updatePrice();
   }
 
-  function updatePrice() {
-    var currency = getCookieValue("currency");
-    var cSign = sign[getCookieValue("currencySign")];
-    deliveryPrice = 0;
-    if ($(".delivery-border")[0]) {
-      let id = $($(".delivery-border")[0]).attr("id");
-      id = id.split("_");
-      if (id[1] > 1) {
-        deliveryPrice = Number(id[1]) * currency;
-      }
-      $("#delivery_price").text(deliveryPrice.toFixed(2));
-    } else {
-      $("#delivery_price").text("0");
-    }
-
-    $("#total-price").text(
-      Number(
-        (Number(deliveryPrice) + Number($("#subtotal-price").val())).toFixed(2)
-      ) + cSign
-    );
-    $("#total-price").val(
-      Number(
-        (Number(deliveryPrice) + Number($("#subtotal-price").val())).toFixed(2)
-      )
-    );
-  }
-
   function updateInfo(name, email, phone) {
     $("#floatingName").val(name);
     $("#floatingEmail").val(email);
@@ -285,36 +318,6 @@ $(function () {
             response.data.email,
             response.data.phone
           );
-        }
-      },
-      error: function (result) {
-        console.log(result);
-        return false;
-      },
-      timeout: 5000,
-    });
-  }
-
-  function GetSummary() {
-    $.ajax({
-      url: "/Orders/GetSummary",
-      type: "GET",
-      dataType: "json",
-      data: null,
-      fail: function (xhr, textStatus, errorThrown) {
-        Success = false;
-        alert("Something went wrong in server");
-      },
-      success: function (response) {
-        Success = true;
-        if (response != null) {
-          let cSign = sign[getCookieValue("currencySign")];
-          let subtotalPrice = Number(
-            Number(response.data.totalPrice).toFixed(2)
-          );
-          $("#subtotal-price").text(subtotalPrice + cSign);
-          $("#subtotal-price").val(subtotalPrice);
-          updatePrice();
         }
       },
       error: function (result) {

@@ -162,8 +162,7 @@ function openCart() {
 }
 
 function updateCart(shouldOpen = true) {
-  // Update the cart for the checkout modal
-  getCart();
+  updateCheckoutModal();
 
   $.ajax({
     type: "GET",

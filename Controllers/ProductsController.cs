@@ -58,7 +58,7 @@ namespace web_development_course.Controllers
             else
             {
                 RelevantCategories = await _context.Category.Where(c => c.Id == categoryId || c.ParentCategoryId == categoryId).ToArrayAsync();
-                ViewBag.categoryId = "";
+                ViewBag.categoryId = categoryId.ToString();
             }
             int i = 1;
             int skipItems = 0;

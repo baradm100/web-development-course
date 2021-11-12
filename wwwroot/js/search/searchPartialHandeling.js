@@ -38,6 +38,7 @@
     });
 
     // when page is ready configure price attribute:
+    let signToDisplay;
     $.ajax({
         url: "/products/maxPrice/json",
         type: 'GET',
@@ -51,7 +52,7 @@
             if (response.success == true) {
                 Success = true;
                 maxPrice = response.max;
-                sign = response.sign;
+                signToDisplay = response.sign;
                 $price.attr("max", maxPrice);
 
             }
@@ -61,7 +62,7 @@
             return false
         },
         complete: function () {
-            $("#dynamicPrice").text(maxPrice + " " + sign);
+            $("#dynamicPrice").text(maxPrice + " " + signToDisplay);
             $price.val(maxPrice);
         },
         timeout: 10000,

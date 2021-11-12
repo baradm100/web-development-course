@@ -1,11 +1,62 @@
-﻿$(function () {
-  const sign = {
-    1: "$",
-    2: "₪",
-    3: "€",
-    4: "£",
-  };
+﻿const getCookieValue = (name, defaultValue = 1) =>
+  document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)")?.pop() ||
+  defaultValue;
 
+const sign = {
+  1: "$",
+  2: "₪",
+  3: "€",
+  4: "£",
+};
+
+function addItems(response) {
+  var currency = getCookieValue("currency");
+  var cSign = sign[getCookieValue("currencySign")];
+  $("#table-body").empty();
+  
+  for (let index = 0; index < response.length; index++) {
+    $("#table-body").append(
+      '<tr><th scope="row">' +
+        (Number(index) + 1) +
+        "</th><td>" +
+        response[index].productName +
+        "</td><td>" +
+        response[index].amount +
+        "</td><td>" +
+        (Number(response[index].totalPrice) * currency).toFixed(2) +
+        cSign +
+        "</td></tr>"
+    );
+  }
+}
+
+function getCart() {
+  $.ajax({
+    url: "/Orders/GetCart",
+    type: "GET",
+    dataType: "json",
+    data: null,
+    fail: function (xhr, textStatus, errorThrown) {
+      Success = false;
+      alert("Something went wrong in server");
+    },
+    success: function (response) {
+      if (response != null) {
+        addItems(response);
+      } else {
+        Success = false;
+        alert("Something went wrong in server");
+      }
+    },
+    error: function (result) {
+      console.log(result);
+      return false;
+    },
+    timeout: 5000,
+  });
+}
+
+$(function () {
   GetSummary();
   getUserInfo();
   validationHelper();
@@ -86,25 +137,6 @@
     $dstPane.addClass("active");
   }
 
-  function addItems(response) {
-    var currency = getCookieValue("currency");
-    var cSign = sign[getCookieValue("currencySign")];
-    for (let index = 0; index < response.length; index++) {
-      $("#table-body").append(
-        '<tr><th scope="row">' +
-          (Number(index) + 1) +
-          "</th><td>" +
-          response[index].productName +
-          "</td><td>" +
-          response[index].amount +
-          "</td><td>" +
-          (Number(response[index].totalPrice) * currency).toFixed(2) +
-          cSign +
-          "</td></tr>"
-      );
-    }
-  }
-
   function initStores(branches) {
     let index = 1;
     branches.forEach(function (branch) {
@@ -147,10 +179,6 @@
     allowPurchase();
     updatePrice();
   }
-
-  const getCookieValue = (name, defaultValue = 1) =>
-    document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)")?.pop() ||
-    defaultValue;
 
   function updatePrice() {
     var currency = getCookieValue("currency");
@@ -365,32 +393,6 @@
       timeout: 5000,
     });
   });
-
-  function getCart() {
-    $.ajax({
-      url: "/Orders/GetCart",
-      type: "GET",
-      dataType: "json",
-      data: null,
-      fail: function (xhr, textStatus, errorThrown) {
-        Success = false;
-        alert("Something went wrong in server");
-      },
-      success: function (response) {
-        if (response != null) {
-          addItems(response);
-        } else {
-          Success = false;
-          alert("Something went wrong in server");
-        }
-      },
-      error: function (result) {
-        console.log(result);
-        return false;
-      },
-      timeout: 5000,
-    });
-  }
 
   //#endregion
 

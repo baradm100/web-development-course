@@ -162,6 +162,9 @@ function openCart() {
 }
 
 function updateCart(shouldOpen = true) {
+  // Update the cart for the checkout modal
+  getCart();
+
   $.ajax({
     type: "GET",
     url: "/Orders/GetCart",

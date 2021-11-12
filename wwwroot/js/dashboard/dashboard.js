@@ -144,7 +144,6 @@ $(function () {
                 if (response.success) {
                     Success = true;
                     var users = response.users;
-                    console.log(users);
                     for (let i = 0; i < users.length; i++) {
                         var user = users[i];
                         var select = selectOption(user.userType, user.id);
@@ -168,9 +167,7 @@ $(function () {
 
 
     function enableSelect() {
-        console.log("here");
         var tr = $(this).parents(".tableRow");
-        console.log(tr);
         var td = $(tr).children("td");
         var select = $(td).children("select");
         $(select).attr("disabled", false);
@@ -229,7 +226,6 @@ $(function () {
             data: formData,
             success: function (response) {
                 if (response.success == true) {
-                    console.log(response);
                     const max = Math.max.apply(Math, (response.orders).map(function (o) { return o.amount; }));
                     const x = d3.scaleBand().domain(d3.range(response.orders.length))
                         .range([margin.left, width - margin.right]).padding(0.2);
@@ -283,7 +279,6 @@ $(function () {
             data: formData,
             success: function (response) {
                 if (response.success == true) {
-                    console.log(response);
                     const max = Math.max.apply(Math, (response.products).map(function (o) { return o.amount; }));
                     const x = d3.scaleBand().domain(d3.range(response.products.length))
                         .range([margin.left, width - margin.right]).padding(0.1);
@@ -337,7 +332,6 @@ $(function () {
             data: formData,
             success: function (response) {
                 if (response.success == true) {
-                    console.log(response);
                     const max = Math.max.apply(Math, (response.orders).map(function (o) { return o.amount; }));
                     const x = d3.scaleBand().domain(d3.range(response.orders.length))
                         .range([margin.left, width - margin.right]).padding(0.1);

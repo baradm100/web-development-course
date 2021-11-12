@@ -42,7 +42,6 @@ $(function () {
   }
 
   function GetSummary() {
-    console.log("GetSummary");
     updateCart(false);
     $.ajax({
       url: "/Orders/GetSummary",
@@ -97,7 +96,7 @@ $(function () {
       success: function (response) {
         Success = true;
         getItemFinalPrice(id, index);
-        getCart();
+        updateCheckoutModal();
       },
       error: function (result) {
         console.log(result);
@@ -183,7 +182,7 @@ $(function () {
         } else {
           removeCard(index);
           GetSummary();
-          getCart();
+          updateCheckoutModal();
         }
       },
       error: function (result) {

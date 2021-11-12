@@ -99,11 +99,9 @@
                 dataType: 'json',
                 data: newBranch,
                 fail: function () {
-                    console.log("fail");
                     alert("failed")
                 },
                 success: function () {
-                    console.log("success");
                     location.href = "/Branches"
                 }
             });
@@ -115,7 +113,6 @@
     });
 
     $("#deleteBranchBtn").click(function () {
-        console.log(clicked);
         var BranchId = $(this).parent("div").Id;
         var token = $('input[name="__RequestVerificationToken"]').val();
         var url = "/Branches/DeleteConfirmed?id=" + BranchId + "&__RequestVerificationToken=" + token;
@@ -131,7 +128,6 @@
     });
 
     function validHour() {
-        console.log("validHour")
         var rowNumberIndex = $(".days").length;
 
         while (rowNumberIndex >= 0) {
@@ -146,7 +142,6 @@
             var closeHour = $("#close_" + rowNumberIndex).val()
 
             if (!openHour || !closeHour || openHour > closeHour) {
-                console.log("all bad")
                 $("#open_error_" + rowNumberIndex).removeClass("d-none")
                 $("#close_error_" + rowNumberIndex).removeClass("d-none")
 
@@ -173,7 +168,6 @@
     }
 
     function validDay() {
-        console.log("validDay")
         var valid = true
         var daysIndex = document.getElementsByClassName("day_selection")
         var hlper = [0, 0, 0, 0, 0, 0, 0];
@@ -182,7 +176,6 @@
             hlper[daysIndex[i].value] += 1;
         }
         hlper.forEach(function (item, index) {
-            console.log(item + "  " + index);
             if (item > 1) {
                 //raise toast with index
                 valid = false;

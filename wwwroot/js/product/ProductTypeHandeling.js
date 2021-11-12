@@ -98,7 +98,6 @@
                         $('#Color').html('');
                         var options = '';
                         for (var i = 0; i < response.colors.result.length; i++) {
-                            console.log(("#" + response.colors.result[i].color).toLowerCase() + " " + rgb2hex($btn.css("background-color")))
                             if (("#" + response.colors.result[i].color).toLowerCase() == rgb2hex($btn.css("background-color")))
                                 options += `<input disabled checked class="form-check-input checked" type="radio" id="${response.colors.result[i].name}" name="inlineRadioOptions" value="${response.colors.result[i].id}" style="background-color: #${response.colors.result[i].color}; border-radius: 18px;"></input>`
                             else
@@ -116,7 +115,6 @@
                 var color = $btn.css("background-color");
                 productName = $btn.attr("name");
                 var types = await getProductsInColor(color, productName);
-                console.log(types);
                 $("#addGoodsModal").modal("show");
                 for (let i = 0; i < types.types.length; i++) {
                     if (i != 0) {
@@ -124,7 +122,6 @@
                         $good.find("input[type=radio]").each(function (i, x) {
                             $(x).attr("name", $("input").length);
                         });
-                        console.log(types[i]);
                         $good.find("#Color").attr("disabled", true);
                         $good.find("#Quantity").val(types.types[i].quantity);
                         $good.find("#Size").val(types.types[i].size).change();
@@ -163,7 +160,6 @@
                     return true;
                 } else {
                     return false;
-                    console.log(result);
                 }
             },
             error: function (result) {

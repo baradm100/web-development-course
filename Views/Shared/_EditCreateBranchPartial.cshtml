@@ -76,7 +76,7 @@
                     {
                         @for (var i = 0; i < @ViewBag.OpeningHours.Count; i++)
                         {
-                            <tr id="tr_@i ">
+                            <tr class="days" id="tr_@i ">
                                 <th scope="row">
                                     <select class="form-select day_selection" id="day_selection_@i" aria-label="Default select example" dbid="@ViewBag.OpeningHours[i].Id">
                                         @foreach (var day in Enum.GetValues(typeof(DayOfWeek)))

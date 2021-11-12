@@ -220,14 +220,15 @@ function deleteItemFromCart(itemId) {
       console.log("fail", arguments);
     },
     success: function (response) {
-        updateCart();
-        if (response.isLastItem) {
-            location.reload()
+        if (response.success) {
+            updateCart();
+            if ($(".cartItem").length==1) {
+                location.reload()
+            }
+            else {
+                updateCart()
+            }
         }
-        else {
-            updateCart()
-        }
-
     },
     error: function (result) {
       console.log("error", arguments);

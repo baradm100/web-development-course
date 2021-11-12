@@ -95,10 +95,17 @@ namespace web_development_course.Controllers
                 return NotFound();
             }
 
+            int orderid = await _context.OrderItem
+             .Include(oi => oi.Order)
+             .Where(oi => oi.Id == id && oi.Order.UserId == dbUser)
+             .Select(oi=>oi.Order.Id).FirstOrDefaultAsync();
+
+            Order order = await _context.Order.FindAsync(orderid);
+            bool isLastItem = order.OrderItems.Count() == 1;
             _context.OrderItem.Remove(ItemToDelete);
             await _context.SaveChangesAsync();
 
-            return Json(new {success = true });
+            return Json(new {success = true, isLastItem = isLastItem });
         }
 
         // GET: Orders/GetItemFinalPrice

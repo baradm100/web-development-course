@@ -164,6 +164,10 @@ function renderCart(items) {
   }
 }
 
+function openCart() {
+  $("button.navBarDropDownCart").dropdown("toggle");
+}
+
 function updateCart(shouldOpen = true) {
   $.ajax({
     type: "GET",
@@ -173,6 +177,9 @@ function updateCart(shouldOpen = true) {
     },
     success: function (response) {
       renderCart(response);
+      if (shouldOpen) {
+        openCart();
+      }
     },
     error: function (result) {
       console.log("error", arguments);
@@ -262,7 +269,7 @@ function updateItemQuantity(itemId) {
         console.log("fail", arguments);
       },
       success: function (response) {
-        updateCart();
+        updateCart(false);
       },
       error: function (result) {
         console.log("error", arguments);

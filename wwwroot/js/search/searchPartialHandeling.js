@@ -96,5 +96,5 @@
         branchAdvancedSearch($branchName.val());
     });
 
-    $price.on("change", (event) => $("#dynamicPrice").text($price.val() + " " + sign));
+    $price.on("change", (event) => $("#dynamicPrice").text($price.val() + " " + signToDisplay));
 });

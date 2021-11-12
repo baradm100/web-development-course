@@ -46,7 +46,7 @@
                         </div>
                         <div class="form-group">
                             <label asp-for="Address.BuildingNumber" class="control-label"></label>
-                            <input asp-for="Address.BuildingNumber" class="form-control" id="building-number" value="@buildingNum" />
+                            <input asp-for="Address.BuildingNumber" class="form-control" id="building-number" min="1" value="@buildingNum" />
                             <span id="number_error" class="text-danger d-none">Number must be between 1-10000</span>
                         </div>
                         <div class="form-group">
@@ -66,9 +66,9 @@
             <table class="table " id="open_hour_table">
                 <thead>
                     <tr>
-                        <th scope="col">Day</th>
-                        <th scope="col">Open</th>
-                        <th scope="col">Close</th>
+                        <th class="col-4">Day</th>
+                        <th class="col-4">Open</th>
+                        <th class="col-4">Close</th>
                     </tr>
                 </thead>
                 <tbody id="table_body">
@@ -76,9 +76,9 @@
                     {
                         @for (var i = 0; i < @ViewBag.OpeningHours.Count; i++)
                         {
-                            <tr class="days" id="tr_@i ">
-                                <th scope="row">
-                                    <select class="form-select day_selection" id="day_selection_@i" aria-label="Default select example" dbid="@ViewBag.OpeningHours[i].Id">
+                            <tr class="days" id="tr_@i">
+                                <td style="min-width:8em">
+                                    <select class="form-control day_selection" id="day_selection_@i" aria-label="Default select example" dbid="@ViewBag.OpeningHours[i].Id">
                                         @foreach (var day in Enum.GetValues(typeof(DayOfWeek)))
                                         {
                                             if (day.Equals(@ViewBag.OpeningHours[i].DayOfWeek))
@@ -93,16 +93,16 @@
                                     </select>
                                     <span class="text-danger d-none" id="day_error_@i">It is not possible to repeat a day</span>
 
-                                </th>
+                                </td>
                                 <td>
-                                    <div scope="row">
-                                        <input id="open_@i" class="form-select" type="time" value="@ViewBag.OpeningHours[i].Open" />
+                                    <div >
+                                        <input id="open_@i" class="form-control" type="time" value="@ViewBag.OpeningHours[i].Open" />
                                         <span class="text-danger d-none" id="open_error_@i">Error</span>
                                     </div>
                                 </td>
                                 <td>
-                                    <div scope="row">
-                                        <input id="close_@i" class="form-select" type="time" value="@ViewBag.OpeningHours[i].Close" />
+                                    <div >
+                                        <input id="close_@i" class="form-control" type="time" value="@ViewBag.OpeningHours[i].Close" />
                                         <span class="text-danger d-none" id="close_error_@i">Error</span>
                                     </div>
                                 </td>
@@ -111,9 +111,9 @@
                     }
                     else
                     {
-                        <tr id="tr_0">
-                            <th scope="row">
-                                <select class="form-select day_selection" id="day_selection_0" aria-label="Default select example">
+                        <tr class="days" id="tr_0">
+                            <th scope="row" style="min-width:8em">
+                                <select class="form-control day_selection" id="day_selection_0" aria-label="Default select example">
                                     @foreach (var day in Enum.GetValues(typeof(DayOfWeek)))
                                     {
                                         <option value=@((int)day)>@day</option>
@@ -124,13 +124,13 @@
                             </th>
                             <td>
                                 <div scope="row">
-                                    <input id="open_0" class="form-select" type="time" />
+                                    <input id="open_0" class="form-control" type="time" />
                                     <span class="text-danger d-none" id="open_error_0">Open hour must be before close hour</span>
                                 </div>
                             </td>
                             <td>
                                 <div scope="row">
-                                    <input id="close_0" class="form-select" type="time" />
+                                    <input id="close_0" class="form-control" type="time" />
                                     <span class="text-danger d-none" id="close_error_0">Close hour must be after open hour</span>
                                 </div>
                             </td>

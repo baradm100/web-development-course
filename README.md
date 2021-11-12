@@ -71,3 +71,9 @@ For mac just run:
 ```bash
 sqribe restore /script_path:"~/Desktop/sqribe-backup" /data_source:'Server=localhost;Database=aspLearningDB;User ID=sa;Password=yourStrong(!)Password;' /objects:"all"
 ```
+
+For Windows just run:
+
+```bash
+sqribe restore /script_path:".\sqribe-backup"  /data_source:"Server=(localdb)\\mssqllocaldb;Database=aspLearningDB"
+```

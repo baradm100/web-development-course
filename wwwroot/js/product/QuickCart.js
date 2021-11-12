@@ -47,13 +47,6 @@ function createCarouse(item) {
   <span class="visually-hidden">Next</span>
 </button>`;
 
-  if (item.discountPercentage) {
-    carouseDiv.innerHTML += `    
-<div class="discountOverlay">
-  <h6 class="discount-on-card">${item.discountPercentage}%</h6>
-</div>`;
-  }
-
   return carouseDiv;
 }
 

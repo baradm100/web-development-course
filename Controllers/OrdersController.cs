@@ -98,14 +98,14 @@ namespace web_development_course.Controllers
             int orderid = await _context.OrderItem
              .Include(oi => oi.Order)
              .Where(oi => oi.Id == id && oi.Order.UserId == dbUser)
-             .Select(oi=>oi.Order.Id).FirstOrDefaultAsync();
+             .Select(oi => oi.Order.Id).FirstOrDefaultAsync();
 
             Order order = await _context.Order.FindAsync(orderid);
             bool isLastItem = order.OrderItems.Count() == 1;
             _context.OrderItem.Remove(ItemToDelete);
             await _context.SaveChangesAsync();
 
-            return Json(new {success = true, isLastItem = isLastItem });
+            return Json(new { success = true, isLastItem = isLastItem });
         }
 
         // GET: Orders/GetItemFinalPrice
@@ -239,7 +239,7 @@ namespace web_development_course.Controllers
                 category = "";
             if (username == null)
                 username = "";
-            if(orderid == null)
+            if (orderid == null)
                 orderid = "";
             float currency = 1;
             if (_httpContextAccessor.HttpContext.Request.Cookies["currency"] != null)
@@ -258,10 +258,11 @@ namespace web_development_course.Controllers
                          join c in _context.Category on pCategory.CategoryId equals c.Id
                          join p in _context.Product on productType.ProductId equals p.Id
                          where p.Name.Contains(product) && c.Name.Contains(category) && (user.FirstName + " " + user.LastName).Contains(username)
-                         select new { 
-                             order.Id, 
-                             user.FirstName, 
-                             user.LastName ,
+                         select new
+                         {
+                             order.Id,
+                             user.FirstName,
+                             user.LastName,
                              date = order.Date.ToShortDateString(),
                              order.IsCart,
                              item.Amount,
@@ -270,21 +271,18 @@ namespace web_development_course.Controllers
                              color = productType.Color.Name,
                              size = productType.Size,
                          };
-             var o = await orders.ToListAsync();
 
             if (!orderid.Equals(""))
             {
-                o = await orders.Where(o=>o.Id == Int16.Parse(orderid)).ToListAsync();
+                orders = orders.Where(o => o.Id == Int16.Parse(orderid));
             }
-            if (orders != null)
+            var queriedOrders = (await orders.ToListAsync()).Distinct();
+
+            return Json(new
             {
-                return Json(new
-                {
-                    success = true,
-                    orders = o,
-                }) ;
-            }
-            return Json(new { success = false });
+                success = true,
+                orders = queriedOrders,
+            });
         }
 
         // GET: Orders/json
@@ -373,7 +371,7 @@ namespace web_development_course.Controllers
 
             if (dbUser > 0)
             {
-                 var order = await GetOrderByUser(dbUser);
+                var order = await GetOrderByUser(dbUser);
 
                 if (order != null)
                 {

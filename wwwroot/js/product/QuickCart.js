@@ -37,12 +37,12 @@ function createCarouse(item) {
   carouseDiv.appendChild(carouseInner);
   carouseDiv.innerHTML += `
   <button class="carousel-control-prev" type="button" data-bs-target="#${carouselId}"
-  data-bs-slide="prev">
+  data-bs-slide="prev" onclick="event.stopPropagation();">
   <span class="carousel-control-prev-icon" aria-hidden="true"></span>
   <span class="visually-hidden">Previous</span>
 </button>
 <button class="carousel-control-next" type="button" data-bs-target="#${carouselId}"
-  data-bs-slide="next">
+  data-bs-slide="next" onclick="event.stopPropagation();">
   <span class="carousel-control-next-icon" aria-hidden="true"></span>
   <span class="visually-hidden">Next</span>
 </button>`;
@@ -96,9 +96,9 @@ function createDetails(item) {
   const selectAmount = document.createElement("select");
   selectAmount.classList.add("form-select");
   editItemDiv.appendChild(selectAmount);
-  let productlimit = Math.min(10, Number(item.productQuantity))
-    
-    for (let i = 1; i <= productlimit; i++) {
+  let productlimit = Math.min(10, Number(item.productQuantity));
+
+  for (let i = 1; i <= productlimit; i++) {
     const option = document.createElement("option");
     option.value = i;
     option.text = i;
@@ -106,7 +106,7 @@ function createDetails(item) {
   }
 
   editItemDiv.innerHTML += `
-  <button type="button" class="btn btn-outline-danger deleteButton" onClick="deleteItemFromCart(${item.id})">
+  <button type="button" class="btn btn-outline-danger deleteButton" onClick="deleteItemFromCart(${item.id}, event)">
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
     class="bi bi-trash-fill" viewBox="0 0 16 16">
         <path
@@ -135,6 +135,14 @@ function renderCart(items) {
   const cartElm = $("#quickCartItemsList");
   cartElm.empty();
 
+  $("#quickCartTotal").text(items.length);
+
+  if (items.length === 0) {
+    cartElm.append("<span>Your cart is empty</span>");
+    $("#bottom-btn").addClass("d-none");
+    return;
+  }
+
   const lastItemId = items.at(-1)?.id;
 
   for (const item of items) {
@@ -150,16 +158,10 @@ function renderCart(items) {
             <hr class="dropdown-divider">
         </li>
     `);
-
     }
-      $("#bottom-btn").removeClass("d-none")
+
+    $("#bottom-btn").removeClass("d-none");
   }
-
-    if (items.length == 0) {
-        $("#bottom-btn").addClass("d-none")
-    }
-  
-  $("#quickCartTotal").text(items.length);
 }
 
 function updateCart(shouldOpen = true) {
@@ -199,7 +201,11 @@ function showCartWasLoaded() {
   quickCartItemsList.classList.remove("d-none");
 }
 
-function deleteItemFromCart(itemId) {
+function deleteItemFromCart(itemId, event) {
+  // Preventing the quick cart to be closed
+  event.preventDefault();
+  event.stopPropagation();
+
   showCartLoading();
 
   const form = new FormData();
@@ -220,22 +226,17 @@ function deleteItemFromCart(itemId) {
       console.log("fail", arguments);
     },
     success: function (response) {
-        if (response.success) {
-            updateCart();
-            if ($(".cartItem").length==1) {
-                location.reload()
-            }
-            else {
-                updateCart()
-            }
-        }
+      console.log("success");
+      if (response.success) {
+        updateCart(false);
+      }
     },
     error: function (result) {
       console.log("error", arguments);
       return false;
     },
     complete: function () {
-        showCartWasLoaded();
+      showCartWasLoaded();
     },
     timeout: 5000,
   });

@@ -8,7 +8,7 @@
         var option = initDays()
 
         // get the amount of days we already have
-        var rowNum = $(".days").length + 1
+        var rowNum = $(".days").length
 
         if ($(".days").length < 7) {
             $("#table_body").append('<tr class="days" id="tr_' + rowNum
@@ -121,14 +121,14 @@
     });
 
     $("#delete_day").click(function () {
-        var lastRow = $(".days").length
+        var lastRow = $(".days").length-1
         if (lastRow > 0) {
             $("#tr_" + (lastRow)).remove()
         }
     });
 
     function validHour() {
-        var rowNumberIndex = $(".days").length;
+        var rowNumberIndex = $(".days").length-1;
 
         while (rowNumberIndex >= 0) {
             if (!$("#open_error_" + rowNumberIndex).hasClass("d-none")) {

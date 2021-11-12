@@ -62,6 +62,8 @@ $(function () {
         _map.panTo(marker.getPosition())
         showInfoWindow(marker)
         _map.setZoom(14)
+        $('html, body').animate({
+            scrollTop: $("#google-map").offset().top
+        }, 150);
     });
-
 });

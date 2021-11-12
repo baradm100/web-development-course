@@ -34,21 +34,6 @@ namespace web_development_course.Migrations
                     b.ToTable("AddressUser");
                 });
 
-            modelBuilder.Entity("CategoryProductCategory", b =>
-                {
-                    b.Property<int>("CategoriesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductCategoriesId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CategoriesId", "ProductCategoriesId");
-
-                    b.HasIndex("ProductCategoriesId");
-
-                    b.ToTable("CategoryProductCategory");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -249,21 +234,6 @@ namespace web_development_course.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("ProductProductCategory", b =>
-                {
-                    b.Property<int>("ProductCategoriesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ProductCategoriesId", "ProductsId");
-
-                    b.HasIndex("ProductsId");
-
-                    b.ToTable("ProductProductCategory");
-                });
-
             modelBuilder.Entity("web_development_course.Models.Address", b =>
                 {
                     b.Property<int>("Id")
@@ -278,6 +248,12 @@ namespace web_development_course.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("float");
 
                     b.Property<string>("Street")
                         .IsRequired()
@@ -298,6 +274,11 @@ namespace web_development_course.Migrations
 
                     b.Property<int>("AddressId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -383,12 +364,15 @@ namespace web_development_course.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("BranchId")
+                    b.Property<int>("BranchId")
                         .HasColumnType("int");
 
                     b.Property<string>("Close")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int");
 
                     b.Property<string>("Open")
                         .IsRequired()
@@ -496,6 +480,10 @@ namespace web_development_course.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("ProductCategory");
                 });
@@ -691,21 +679,6 @@ namespace web_development_course.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CategoryProductCategory", b =>
-                {
-                    b.HasOne("web_development_course.Models.Category", null)
-                        .WithMany()
-                        .HasForeignKey("CategoriesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("web_development_course.Models.ProductModels.ProductCategory", null)
-                        .WithMany()
-                        .HasForeignKey("ProductCategoriesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -757,21 +730,6 @@ namespace web_development_course.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ProductProductCategory", b =>
-                {
-                    b.HasOne("web_development_course.Models.ProductModels.ProductCategory", null)
-                        .WithMany()
-                        .HasForeignKey("ProductCategoriesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("web_development_course.Models.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("web_development_course.Models.Branch", b =>
                 {
                     b.HasOne("web_development_course.Models.Address", "Address")
@@ -794,9 +752,13 @@ namespace web_development_course.Migrations
 
             modelBuilder.Entity("web_development_course.Models.OpeningHour", b =>
                 {
-                    b.HasOne("web_development_course.Models.Branch", null)
+                    b.HasOne("web_development_course.Models.Branch", "Branch")
                         .WithMany("OpeningHours")
-                        .HasForeignKey("BranchId");
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Branch");
                 });
 
             modelBuilder.Entity("web_development_course.Models.OrderModels.Order", b =>
@@ -836,6 +798,25 @@ namespace web_development_course.Migrations
                         .HasForeignKey("CategoryId");
                 });
 
+            modelBuilder.Entity("web_development_course.Models.ProductModels.ProductCategory", b =>
+                {
+                    b.HasOne("web_development_course.Models.Category", "Category")
+                        .WithMany("ProductCategories")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("web_development_course.Models.Product", "Product")
+                        .WithMany("ProductCategories")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("web_development_course.Models.ProductModels.ProductImage", b =>
                 {
                     b.HasOne("web_development_course.Models.Product", "Product")
@@ -873,6 +854,8 @@ namespace web_development_course.Migrations
 
             modelBuilder.Entity("web_development_course.Models.Category", b =>
                 {
+                    b.Navigation("ProductCategories");
+
                     b.Navigation("Products");
                 });
 
@@ -883,6 +866,8 @@ namespace web_development_course.Migrations
 
             modelBuilder.Entity("web_development_course.Models.Product", b =>
                 {
+                    b.Navigation("ProductCategories");
+
                     b.Navigation("ProductImages");
 
                     b.Navigation("ProductTypes");

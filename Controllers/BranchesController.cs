@@ -23,6 +23,16 @@ namespace web_development_course.Controllers
         // GET: Branches
         public async Task<IActionResult> Index(string name)
         {
+            if (_context.Branch.Count() > 0)
+            {
+                ViewData["ErrorTitle"] = "Sorry, we dont have any physical store match to your search";
+                ViewData["ErrorParagraph"] = "But hey! look for other one";
+            }
+            else
+            {
+                ViewData["ErrorTitle"] = "Sorry, we dont have any physical store yet";
+                ViewData["ErrorParagraph"] = "But dont worry! we are working on it";
+            }
             if (name != null)
             {
                 var q = await _context.User.FirstOrDefaultAsync(c => (c.FirstName + " " + c.LastName) == User.Identity.Name);

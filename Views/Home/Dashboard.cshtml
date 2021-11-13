@@ -37,7 +37,7 @@
                 </div>
             </div>
             <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
-                <div id="dealSearchDiv" class="row g-3 bg-light my-3 pb-3 d-flex flex-column flex-md-row align-items-center">
+                <div id="dealSearchDiv" class="row g-3 bg-light my-3 pb-3 d-flex flex-column align-items-center flex-md-row justify-content-between">
                     <div class="col">
                         <input type="text" id="orderIdSearch" class="form-control" placeholder="Order Id" aria-label="Order Id">
                     </div>
@@ -47,13 +47,15 @@
                     <div class="col">
                         <input type="text" id="userProductSearch" class="form-control" placeholder="Product" aria-label="Product">
                     </div>
-                    <div class="dropdown col-2">
-                        <select class="userCategorySearch btn btn-outline-secondary dropdown-toggle" id="categoriesDropDownList" style="border-radius: 18px;" aria-label="Default select example">
-                            <option selected multiple>Category Select</option>
-                        </select>
+                    <div class="col">
+                        <div  class="dropdown">
+                            <select class="userCategorySearch btn btn-outline-secondary dropdown-toggle " id="categoriesDropDownList" style="border-radius: 18px;" aria-label="Default select example">
+                                <option selected multiple>Category Select</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="col-1">
-                        <button id="ProductDealSearch" type="button" class="nav-link text-black btn btn-light position-relative" role="button">
+                    <div class="col-1 mx-0">
+                        <button id="ProductDealSearch" type="button" class="px-2 nav-link text-black btn btn-light position-relative" role="button">
                             <i class="bi bi-search"></i>
                         </button>
                     </div>
@@ -85,7 +87,7 @@
                         <input type="text" id="userEmailSearch" class="form-control" placeholder="Email" aria-label="Email"/>
                     </div>
                     <div class="col-1">
-                        <button id="usersSearchBtn" type="button" class="nav-link text-black btn btn-light position-relative" role="button">
+                        <button id="usersSearchBtn" type="button" class=" px-2 nav-link text-black btn btn-light position-relative" role="button">
                             <i class="bi bi-search"></i>
                         </button>
                     </div>

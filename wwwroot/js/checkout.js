@@ -444,18 +444,22 @@ $(function () {
   //#endregion
 
   //#region Open Modal
+
   function openOrderApprovment(response) {
     $("#orderNumer").text(response.data.orderId);
     $("#total_price_sum").text(response.data.price + " " + currencySign);
-    $("#orderSummary").modal("show");
 
     if (response.data.branchName != null) {
-      $("#store_info").removeClass("d-none");
-      $("#store_name").text("" + response.data.branchName);
+        $("#store_info").removeClass("d-none");
+        $("#store_name").removeClass("d-none");
+        $("#store_name").text("" + response.data.branchName);
     } else {
-      $("#delivery_guy").removeClass("d-none");
-      $("#phone_number").text("" + response.data.phone);
+        $("#delivery_guy").removeClass("d-none");
+        $("#phone_number").removeClass("d-none");
+        $("#phone_number").text("" + response.data.phone);
     }
+     $("#orderSummary").modal("show");
+
   }
 
   //#endregion

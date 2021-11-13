@@ -3,17 +3,21 @@ SET ANSI_PADDING, ANSI_WARNINGS, CONCAT_NULL_YIELDS_NULL, ARITHABORT, QUOTED_IDE
 SET DATEFORMAT YMD
 SET XACT_ABORT ON
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
-GO -- SQRIBE/GO;c2f4f5
+GO -- SQRIBE/GO;0a120d
 
--- SQRIBE/TABLE;c2f4f5
--- Adding 1 row to dbo.Branch
+-- SQRIBE/TABLE;0a120d
+-- Adding 3 rows to dbo.Branch
 
 SET IDENTITY_INSERT [dbo].[Branch] ON
 
 BEGIN TRANSACTION
 
--- SQRIBE/INSERT;c2f4f5
-INSERT INTO [dbo].[Branch] ([Id],[AddressId],[Name]) VALUES (1,2,N'Dizengoff Center');
+-- SQRIBE/INSERT;0a120d
+INSERT INTO [dbo].[Branch] ([Id],[AddressId],[Name]) VALUES (2,7,N'Dizengoff Center');
+-- SQRIBE/INSERT;0a120d
+INSERT INTO [dbo].[Branch] ([Id],[AddressId],[Name]) VALUES (3,8,N'TLV Fashion Mall');
+-- SQRIBE/INSERT;0a120d
+INSERT INTO [dbo].[Branch] ([Id],[AddressId],[Name]) VALUES (4,9,N'Malcha Mall');
 
 COMMIT TRANSACTION
 

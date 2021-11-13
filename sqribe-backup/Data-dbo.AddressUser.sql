@@ -3,19 +3,23 @@ SET ANSI_PADDING, ANSI_WARNINGS, CONCAT_NULL_YIELDS_NULL, ARITHABORT, QUOTED_IDE
 SET DATEFORMAT YMD
 SET XACT_ABORT ON
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
-GO -- SQRIBE/GO;c2f4f5
+GO -- SQRIBE/GO;0a120d
 
--- SQRIBE/TABLE;c2f4f5
--- Adding 3 rows to dbo.AddressUser
+-- SQRIBE/TABLE;0a120d
+-- Adding 5 rows to dbo.AddressUser
 
 BEGIN TRANSACTION
 
--- SQRIBE/INSERT;c2f4f5
+-- SQRIBE/INSERT;0a120d
 INSERT INTO [dbo].[AddressUser] ([AddressesId],[UsersId]) VALUES (1,5);
--- SQRIBE/INSERT;c2f4f5
+-- SQRIBE/INSERT;0a120d
 INSERT INTO [dbo].[AddressUser] ([AddressesId],[UsersId]) VALUES (3,5);
--- SQRIBE/INSERT;c2f4f5
+-- SQRIBE/INSERT;0a120d
 INSERT INTO [dbo].[AddressUser] ([AddressesId],[UsersId]) VALUES (4,5);
+-- SQRIBE/INSERT;0a120d
+INSERT INTO [dbo].[AddressUser] ([AddressesId],[UsersId]) VALUES (5,7);
+-- SQRIBE/INSERT;0a120d
+INSERT INTO [dbo].[AddressUser] ([AddressesId],[UsersId]) VALUES (6,8);
 
 COMMIT TRANSACTION
 

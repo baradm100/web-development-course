@@ -36,11 +36,14 @@ namespace web_development_course.Controllers
         }
 
         // GET: Products?categoryId=5
-        public async Task<IActionResult> Index(int? categoryId, string categoryName, int? index)
+        public async Task<IActionResult> Index(int? categoryId, string categoryName, int? index, string? sort)
         {
+            ViewBag.advanced = false;
             int pageSize = 12;
             ViewBag.Colors = await _context.ProductColor.ToListAsync();
             ViewBag.shouldShowEdit = User.IsInRole("Admin") || User.IsInRole("Editor");
+            if (sort != null) { ViewBag.sort = sort; }
+            else { ViewBag.sort = ""; sort = ""; }
 
             if (categoryName != null)
             {
@@ -78,14 +81,33 @@ namespace web_development_course.Controllers
                     .Include(product => product.ProductTypes)
                     .ThenInclude(pt => pt.Color)
                     .Include(product => product.ProductCategories)
-                    .Where(p => p.ProductCategories.Any(pc => RelevantCategoryIds.Contains(pc.CategoryId)))
-                    .Skip(skipItems).Take(pageSize);
-            List<Product> ProductsToShow = await ProductsQuery.ToListAsync();
-            return View(ProductsToShow);
+                    .Where(p => p.ProductCategories.Any(pc => RelevantCategoryIds.Contains(pc.CategoryId)));
+                    
+
+            if (sort.ToLower() == "highest price")
+            {
+                return View(await ProductsQuery.OrderByDescending(a => a.Price).Skip(skipItems).Take(pageSize).ToListAsync());
+            }
+            else if (sort.ToLower() == "lowest price")
+            {
+                return View(await ProductsQuery.OrderBy(a => a.Price).Skip(skipItems).Take(pageSize).ToListAsync());
+            }
+            else if (sort.ToLower() == "newest product")
+            {
+                return View(await ProductsQuery.OrderByDescending(a => a.Id).Skip(skipItems).Take(pageSize).ToListAsync());
+            }
+            else if (sort.ToLower() == "only sales")
+            {
+                return View(await ProductsQuery.Where(a => a.DiscountPercentage > 0).Skip(skipItems).Take(pageSize).ToListAsync());
+            }
+            return View(await ProductsQuery.Skip(skipItems).Take(pageSize).ToListAsync());
+
         }
 
-        public async Task<IActionResult> AdvancedSearch(string? productName, float? maximumPrice, int? categoryId, string? sort)
+        public async Task<IActionResult> AdvancedSearch(string? productName, float? maximumPrice, int? categoryId, string? sort, int? index)
         {
+            ViewBag.advanced = true;
+            int pageSize = 12;
             ViewBag.Colors = await _context.ProductColor.ToListAsync();
             ViewBag.shouldShowEdit = User.IsInRole("Admin") || User.IsInRole("Editor");
 
@@ -93,11 +115,15 @@ namespace web_development_course.Controllers
             if (categoryId == null)
             {
                 RelevantCategories = await _context.Category.ToArrayAsync();
+                ViewBag.categoryId = "";
             }
             else
             {
                 RelevantCategories = await _context.Category.Where(c => c.Id == categoryId || c.ParentCategoryId == categoryId).ToArrayAsync();
+                ViewBag.categoryId = categoryId.ToString();
             }
+            if (sort != null) { ViewBag.sort = sort; }
+            else { ViewBag.sort = ""; sort = ""; }
             float maximumPriceValue;
             if (maximumPrice == null)
             {
@@ -106,6 +132,7 @@ namespace web_development_course.Controllers
             else
             {
                 maximumPriceValue = (float)maximumPrice;
+                ViewBag.maximumPrice = maximumPrice.ToString();
             }
             string productNameValue;
             if (productName == null)
@@ -115,11 +142,20 @@ namespace web_development_course.Controllers
             else
             {
                 productNameValue = productName.ToLower();
+                ViewBag.productName = productNameValue;
             }
-            ViewBag.index = -1;
-            ViewBag.numOfPages = 0;
+            int i = 1;
+            int skipItems = 0;
+            if (index > 1 && index != null)
+            {
+                i = (int)index;
+                skipItems = (int)((index - 1) * pageSize);
+            }
+            ViewBag.index = i;
 
             HashSet<int> RelevantCategoryIds = RelevantCategories.Select(c => c.Id).ToHashSet();
+            int numOfPages = _context.Product.Count(p => p.ProductCategories.Any(pc => RelevantCategoryIds.Contains(pc.CategoryId))) / pageSize;
+            ViewBag.numOfPages = numOfPages;
 
             var ProductsQuery = _context.Product
                     .Include(product => product.ProductImages)
@@ -129,27 +165,24 @@ namespace web_development_course.Controllers
                     .Where(p => p.ProductCategories.Any(pc => RelevantCategoryIds.Contains(pc.CategoryId)) &&
                     p.Name.ToLower().Contains(productNameValue) && (1 - (p.DiscountPercentage / 100)) * p.Price <= maximumPriceValue);
 
-            if (sort == null)
+
+            if (sort.ToLower() == "highest price")
             {
-                return View("index", await ProductsQuery.ToListAsync());
-            }
-            else if (sort.ToLower() == "highest price")
-            {
-                return View("index", await ProductsQuery.OrderByDescending(a => a.Price).ToListAsync());
+                return View("index", await ProductsQuery.OrderByDescending(a => a.Price).Skip(skipItems).Take(pageSize).ToListAsync());
             }
             else if (sort.ToLower() == "lowest price")
             {
-                return View("index", await ProductsQuery.OrderBy(a => a.Price).ToListAsync());
+                return View("index", await ProductsQuery.OrderBy(a => a.Price).Skip(skipItems).Take(pageSize).ToListAsync());
             }
             else if (sort.ToLower() == "newest product")
             {
-                return View("index", await ProductsQuery.OrderByDescending(a => a.Id).ToListAsync());
+                return View("index", await ProductsQuery.OrderByDescending(a => a.Id).Skip(skipItems).Take(pageSize).ToListAsync());
             }
             else if (sort.ToLower() == "only sales")
             {
-                return View("index", await ProductsQuery.Where(a => a.DiscountPercentage > 0).ToListAsync());
+                return View("index", await ProductsQuery.Where(a => a.DiscountPercentage > 0).Skip(skipItems).Take(pageSize).ToListAsync());
             }
-            return View("index", await ProductsQuery.ToListAsync());
+            return View("index", await ProductsQuery.Skip(skipItems).Take(pageSize).ToListAsync());
 
         }
 

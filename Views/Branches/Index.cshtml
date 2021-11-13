@@ -2,87 +2,95 @@
 @using Microsoft.AspNetCore.Authorization;
 
 @{
-    ViewData["Title"] = "Stores";
+    ViewData["Title"] = "Branches";
     var user = Context.User.Identity.Name;
     var authanticated = Context.User.Identity.IsAuthenticated;
     var userAuthLevel = Context.User.Identity.AuthenticationType;
+    var listSize = Model.ToList().Count();
 }
 <div class="container">
-    <h1>Stores</h1>
+    <h1>Branches</h1>
     <div class="row">
-        @{if (Model.ToList().Count == 0)
+        @{if (listSize == 0)
             {
                 <div id="stores" class="col-12">
                     <div class="card mb-3 flex-fill" style="width:100%">
                         <img src="~/assets/sad.jpg" class="card-img-top" alt="sad person" style="height:300px">
                         <div class="card-body">
-                            <h2 class="card-text">Sorry, we dont have any physical store yet</h2>
-                            <p class="card-text">But dont worrey! we are working on it</p>
+                            <h2 class="card-text">@ViewBag.ErrorTitle</h2>
+                            <p class="card-text">@ViewBag.ErrorParagraph</p>
                         </div>
                     </div>
                 </div>
             }
         }
-        <div id="stores" class="col-xl-7 mb-4">
-            <div class="from-container branches-responsive">
-                @{if (Model.ToList().Count > 0)
+    <div id="stores" class="col-xl-7 mb-4">
+        @{string stringClass = "";
+            if (listSize >= 2)
+            {
+                stringClass = "branches-responsive";
+            }
+        }
+        <div class="from-container @stringClass">
+
+            @{if (listSize > 0)
+                {
+                    for (int i = 0; i < Model.ToList().Count; i++)
                     {
-                        for (int i = 0; i < Model.ToList().Count; i++)
-                        {
-                            <div class="card">
-                                <div class="card-body">
-                                    <h3 class="card-title">@Model.ToList()[i].Name</h3>
-                                    <div class="row">
-                                        <div class="col-xl-4 mb-4">
-                                            <b class="txt-lg col-sm-12">Address</b>
-                                            <div class="txt-md col-sm-12">@Model.ToList()[i].Address</div>
-                                        </div>
-                                        <div class="col-xl-4 mb-4">
-                                            <b class="txt-lg col-sm-12">Opening Hours</b>
-                                            @functions {
-                                                private string OpenDays(IEnumerable<OpeningHour> item)
-                                                {
-                                                    string str = "";
-                                                    List<OpeningHour> sortedList = item.OrderBy(o => o.DayOfWeek).ToList();
-
-                                                    foreach (var day in sortedList)
-                                                    {
-                                                        str += day.ToString();
-                                                    }
-                                                    return str;
-                                                }
-
-                                            }
-
-                                            <p class="txt-md col-sm-12" style="white-space: pre-line">@OpenDays(Model.ToList()[i].OpeningHours) </p>
-                                        </div>
-                                        <div class="col ">
-                                            <div class="col  d-flex justify-content-center align-items-center">
-                                                <button type="button" class="btn btn-primary text-center shadow" marker-position-show="@i">Show In Map</button>
-                                            </div>
-                                            @if (authanticated && (User.IsInRole("Admin") || User.IsInRole("Editor")))
+                        <div class="card">
+                            <div class="card-body">
+                                <h3 class="card-title">@Model.ToList()[i].Name</h3>
+                                <div class="row">
+                                    <div class="col-xl-4 mb-4">
+                                        <b class="txt-lg col-sm-12">Address</b>
+                                        <div class="txt-md col-sm-12">@Model.ToList()[i].Address</div>
+                                    </div>
+                                    <div class="col-xl-4 mb-4">
+                                        <b class="txt-lg col-sm-12">Opening Hours</b>
+                                        @functions {
+                                            private string OpenDays(IEnumerable<OpeningHour> item)
                                             {
-                                                <div id="@Model.ToList()[i].Id" class="col mt-2 d-flex justify-content-center align-items-center">
-                                                    <a type="button" class="mx-2 text-center text-black" asp-action="Edit" asp-route-id="@Model.ToList()[i].Id"><i class="bi bi-pencil-fill"></i></a>
-                                                    <a type="button" class="deleteBranchBtn mx-2 text-center " style="color:firebrick"><i class="bi bi-trash-fill"></i></a>
-                                                </div>
+                                                string str = "";
+                                                List<OpeningHour> sortedList = item.OrderBy(o => o.DayOfWeek).ToList();
+
+                                                foreach (var day in sortedList)
+                                                {
+                                                    str += day.ToString();
+                                                }
+                                                return str;
                                             }
+
+                                        }
+
+                                        <p class="txt-md col-sm-12" style="white-space: pre-line">@OpenDays(Model.ToList()[i].OpeningHours) </p>
+                                    </div>
+                                    <div class="col ">
+                                        <div class="col  d-flex justify-content-center align-items-center">
+                                            <button type="button" class="btn btn-primary text-center shadow" marker-position-show="@i">Show In Map</button>
                                         </div>
+                                        @if (authanticated && (User.IsInRole("Admin") || User.IsInRole("Editor")))
+                                        {
+                                            <div id="@Model.ToList()[i].Id" class="col mt-2 d-flex justify-content-center align-items-center">
+                                                <a type="button" class="mx-2 text-center text-black" asp-action="Edit" asp-route-id="@Model.ToList()[i].Id"><i class="bi bi-pencil-fill"></i></a>
+                                                <a type="button" class="deleteBranchBtn mx-2 text-center " style="color:firebrick"><i class="bi bi-trash-fill"></i></a>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
                             </div>
-                        }
+                        </div>
                     }
                 }
-            </div>
-            @if (authanticated && (User.IsInRole("Admin") || User.IsInRole("Editor")))
-            {
-                <p>
-                    <a type="button" class="btn btn-success text-center shadow mt-2" asp-action="Create">Create New</a>
-                </p>
             }
         </div>
-        @{if (Model.ToList().Count > 0)
+        @if (authanticated && (User.IsInRole("Admin") || User.IsInRole("Editor")))
+        {
+            <p>
+                <a type="button" class="btn btn-success text-center shadow mt-2" asp-action="Create">Create New</a>
+            </p>
+        }
+    </div>
+        @{if (listSize > 0)
             {
                 <div class="col">
                     <div id="map-container" class="from-container">

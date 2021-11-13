@@ -4,6 +4,21 @@ $(function () {
     var $name = $("#productNameSearch");
     var $productSearchBtn = $("#btnSearch");
     var $sortDropDown = $("#sortDropDown");
+    var priceValid = true;
+
+    $price.change(function () {
+        if ($price.val() <= 0) {
+            $price.addClass("alert alert-danger")
+            priceValid = false;
+        } else {
+            $price.removeClass("alert alert-danger");
+            priceValid = true;
+        }
+        if ($price.val() == "") {
+            $price.removeClass("alert alert-danger");
+            priceValid = true;
+        }
+    })
 
     $.ajax({
         url: "/Categories/json/",
@@ -39,6 +54,8 @@ $(function () {
     });
 
     const productAdvancedSearch = (categoryId, maximumPrice, name, sort) => {
+        if (priceValid == false)
+            return;
         var coin = getCookieValue("currency");
         var url = ""
         var sortValue = sort ? sort : "";

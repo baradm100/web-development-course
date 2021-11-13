@@ -12,13 +12,13 @@
 
         if ($(".days").length < 7) {
             $("#table_body").append('<tr class="days" id="tr_' + rowNum
-                + '"><th scope="row"><select class="form-select day_selection" id="day_selection_' + rowNum
+                + '"><th scope="row"><select class="form-control day_selection" id="day_selection_' + rowNum
                 + '" aria-label="Default select example">' + option
                 + '</select><span class="text-danger d-none" id="day_error_' + rowNum
                 + '">Error</span></th><td><div scope="row"><input id="open_' + rowNum
-                + '" class="form-select" type="time"/><span class="text-danger d-none" id="open_error_' + rowNum
+                + '" class="form-control " type="time"/><span class="text-danger d-none" id="open_error_' + rowNum
                 + '">Error</span></div></td><td><div scope="row"><input id ="close_' + rowNum
-                + '" class= "form-select" type="time"/><span class="text-danger d-none" id="close_error_' + rowNum
+                + '" class= "form-control " type="time"/><span class="text-danger d-none" id="close_error_' + rowNum
                 + '">Error</span></div ></td></tr>')
         }
         else {

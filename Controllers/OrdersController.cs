@@ -337,7 +337,11 @@ namespace web_development_course.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateAmount(int id, int amount)
         {
-            OrderItem order = await _context.OrderItem.Include(oi => oi.ProductType).Where(oi => oi.Id == id).FirstOrDefaultAsync();
+            OrderItem order = await _context.OrderItem
+                .Include(oi => oi.ProductType)
+                .Include(o => o.ProductType.Product)
+                .Where(oi => oi.Id == id)
+                .FirstOrDefaultAsync();
 
             if (order != null)
             {
@@ -347,7 +351,13 @@ namespace web_development_course.Controllers
                     return BadRequest(new { errorMessage = Consts.NOT_IN_STOCK });
                 }
 
+                float discount = order.ProductType.Product.DiscountPercentage;
+                float price = order.ProductType.Product.Price;
+                discount = discount > 0 ? ((100 - discount) / 100) : 1;
+                var totalPrice = price * discount * amount;
+
                 order.Amount = amount;
+                order.TotalPrice = totalPrice;
 
                 _context.OrderItem.Update(order);
                 await _context.SaveChangesAsync();

@@ -32,9 +32,11 @@ dotnet ef migrations add InitialCreate
 dotnet watch run
 ```
 
-## Documents
+## UML
 
-- [UML](https://lucid.app/lucidchart/invitations/accept/inv_d49a6e28-5842-4ef0-bf0c-35581ee00ad5)
+![UML](./docs/UML.png)
+
+[Link](https://lucid.app/lucidchart/invitations/accept/inv_d49a6e28-5842-4ef0-bf0c-35581ee00ad5)
 
 ## Connection Strings
 

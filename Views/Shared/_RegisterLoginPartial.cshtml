@@ -47,9 +47,9 @@
                             <div class="form-group mt-2 d-grid">
                                 <input type="submit" value="LOGIN" class="btn btn-primary bg-black text-white" />
                             </div>
-                            @if (!String.IsNullOrEmpty(ViewBag.Error))
+                            @if (!String.IsNullOrEmpty(ViewBag.LoginError))
                             {
-                                <div class="text-danger">@ViewBag.Error</div>
+                                <div class="text-danger">@ViewBag.LoginError</div>
                             }
                         </form>
                     </div>
@@ -98,9 +98,9 @@
                             <div class="form-group mt-2 d-grid">
                                 <input type="submit" id="register" value="REGISTER" class="btn btn-primary bg-black text-white" />
                             </div>
-                            @if (!String.IsNullOrEmpty(ViewBag.Error))
+                            @if (!String.IsNullOrEmpty(ViewBag.RegisterError))
                             {
-                                <div class="text-danger">@ViewBag.Error</div>
+                                <div class="text-danger">@ViewBag.RegisterError</div>
                             }
                         </form>
                     </div>

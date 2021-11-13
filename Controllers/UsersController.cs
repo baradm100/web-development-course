@@ -71,7 +71,7 @@ namespace web_development_course.Controllers
 
                 if (q.Count() > 0)
                 {
-                    ViewData["Error"] = "Email is already exist";
+                    ViewData["RegisterError"] = "Email is already exist";
                     return View(user);
                 }
 
@@ -79,7 +79,7 @@ namespace web_development_course.Controllers
                 {
                     string date = DateTime.Now.ToString("dd/mm/yyyy");
                     string msg = ("Birthday Must be less than " + date);
-                    ViewData["Error"] = msg;
+                    ViewData["RegisterError"] = msg;
                     return View(user);
 
                 }
@@ -202,7 +202,7 @@ namespace web_development_course.Controllers
                 return RedirectToAction("Index","home");
             } else
             {
-                ViewData["Error"] = "Email / Password is incorrect";
+                ViewData["LoginError"] = "Email / Password is incorrect";
                 return View(user);
             }
         }

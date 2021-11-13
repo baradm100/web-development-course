@@ -73,8 +73,6 @@ namespace web_development_course.Controllers
             ViewBag.index = i;
 
             HashSet<int> RelevantCategoryIds = RelevantCategories.Select(c => c.Id).ToHashSet();
-            int numOfPages = _context.Product.Count(p => p.ProductCategories.Any(pc => RelevantCategoryIds.Contains(pc.CategoryId))) / pageSize;
-            ViewBag.numOfPages = numOfPages;
 
             var ProductsQuery = _context.Product
                     .Include(product => product.ProductImages)
@@ -82,7 +80,10 @@ namespace web_development_course.Controllers
                     .ThenInclude(pt => pt.Color)
                     .Include(product => product.ProductCategories)
                     .Where(p => p.ProductCategories.Any(pc => RelevantCategoryIds.Contains(pc.CategoryId)));
-                    
+
+            int numOfPages = ProductsQuery.Count() / pageSize;
+            ViewBag.numOfPages = numOfPages;
+
 
             if (sort.ToLower() == "highest price")
             {
@@ -154,8 +155,7 @@ namespace web_development_course.Controllers
             ViewBag.index = i;
 
             HashSet<int> RelevantCategoryIds = RelevantCategories.Select(c => c.Id).ToHashSet();
-            int numOfPages = _context.Product.Count(p => p.ProductCategories.Any(pc => RelevantCategoryIds.Contains(pc.CategoryId))) / pageSize;
-            ViewBag.numOfPages = numOfPages;
+            
 
             var ProductsQuery = _context.Product
                     .Include(product => product.ProductImages)
@@ -165,6 +165,8 @@ namespace web_development_course.Controllers
                     .Where(p => p.ProductCategories.Any(pc => RelevantCategoryIds.Contains(pc.CategoryId)) &&
                     p.Name.ToLower().Contains(productNameValue) && (1 - (p.DiscountPercentage / 100)) * p.Price <= maximumPriceValue);
 
+            int numOfPages = ProductsQuery.Count() / pageSize;
+            ViewBag.numOfPages = numOfPages;
 
             if (sort.ToLower() == "highest price")
             {

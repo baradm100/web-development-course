@@ -130,7 +130,7 @@ namespace web_development_course.Controllers
                 }
 
                 var amount = order.Amount;
-                var price = order.ProductType.Product.Price * currency;
+                var price = order.ProductType.Product.Price;
 
                 var discount = order.ProductType.Product.DiscountPercentage;
                 discount = discount > 0 ? ((100 - discount) / 100) : 1;
@@ -140,7 +140,7 @@ namespace web_development_course.Controllers
                 _context.OrderItem.Update(order);
                 await _context.SaveChangesAsync();
 
-                return Json(new { success = true, data = new { totalPrice = totalPrice, sign = currencySign } });
+                return Json(new { success = true, data = new { totalPrice = (totalPrice * currency), sign = currencySign } });
             }
 
             return Json(new { success = false });
@@ -686,11 +686,7 @@ namespace web_development_course.Controllers
                 {
                     return dbUser.Id;
                 }
-                else
-                {
-                    // should be gust
-                }
-            }
+              }
             else
             {
                 return -1;

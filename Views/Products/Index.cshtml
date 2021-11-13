@@ -16,6 +16,9 @@
     string categoryId = (string)ViewData["categoryId"];
     string sort = (string)ViewData["sort"];
     int numOfPages = (int)ViewData["numOfPages"];
+    bool advancedSearch = (bool)ViewData["advanced"];
+    string productName = (string)ViewData["productName"] != null ? (string)ViewData["productName"] : "";
+    string maxPrice = (string)ViewData["maximumPrice"] != null ? (string)ViewData["maximumPrice"] : "";
 }
 <div class="container">
     <div class="container-fluid category p-1 text-center text-xl-start mt-2">
@@ -168,17 +171,53 @@
         }
     </div>
     <div class="d-flex justify-content-between">
-        @if (lastIndexPage > 0 ){
-        <a class="btn btn-outline-secondary" href="/products?categoryId=@categoryId&index=@lastIndexPage&sort=@sort"><i class="bi bi-arrow-left"></i>  @lastIndexPage</a>
-         } else {
-            <a class="btn btn-outline-secondary disabled"  href="/products?categoryId=@categoryId&index=@lastIndexPage&sort=@sort"><i class="bi bi-arrow-left"></i>  </a>
+        @if (lastIndexPage > 0)
+        {
+            if (advancedSearch == true)
+            {
+        <a class="btn btn-outline-secondary" href="/products/advancedSearch?categoryId=@categoryId&index=@lastIndexPage&sort=@sort&maximumPrice=@maxPrice&produceName=@productName"><i class="bi bi-arrow-left"></i> @lastIndexPage</a>
             }
-        <h6>page 
-        @if (index == -1){ <span>1</span> } else{ <span>@index</span> }</h6> 
-        @if (index == -1 || index >= numOfPages) {
-            <a class="btn btn-outline-secondary disabled"  href="/products?categoryId=@categoryId&index=@nextIndexPage&sort=@sort"><i class="bi bi-arrow-right"></i></a>
-        } else {
-    <a class="btn btn-outline-secondary" href="/products?categoryId=@categoryId&index=@nextIndexPage&sort=@sort"> @nextIndexPage <i class="bi bi-arrow-right"></i></a>
+            else
+            {
+    <a class="btn btn-outline-secondary" href="/products?categoryId=@categoryId&index=@lastIndexPage&sort=@sort"><i class="bi bi-arrow-left"></i> @lastIndexPage</a>
+            }
+        }
+        else
+        {
+            if (advancedSearch == true)
+            {
+            <a class="btn btn-outline-secondary disabled" href="/products/advancedSearch?categoryId=@categoryId&index=@lastIndexPage&sort=@sort&maximumPrice=@maxPrice&produceName=@productName"><i class="bi bi-arrow-left"></i>@lastIndexPage</a>
+            } else
+            {
+            <a class="btn btn-outline-secondary disabled" href="/products?categoryId=@categoryId&index=@lastIndexPage&sort=@sort"><i class="bi bi-arrow-left"></i> @lastIndexPage </a>
+            }
+        }
+        <h6>
+            page
+            @if (index == -1)
+            {<span>1</span> }
+            else
+            { <span>@index</span>}
+        </h6>
+        @if (index == -1 || index >= numOfPages)
+        {
+            if (advancedSearch == true)
+            {
+                <a class="btn btn-outline-secondary disabled" href="/products/advancedSearch?categoryId=@categoryId&index=@nextIndexPage&sort=@sort&maximumPrice=@maxPrice&produceName=@productName"><i class="bi bi-arrow-right"></i></a>
+            } else
+            {
+            <a class="btn btn-outline-secondary disabled" href="/products?categoryId=@categoryId&index=@nextIndexPage&sort=@sort"><i class="bi bi-arrow-right"></i></a>
+            }
+        }
+        else
+        {
+            if (advancedSearch == true)
+            {
+            <a class="btn btn-outline-secondary" href="/products/advancedSearch?categoryId=@categoryId&index=@nextIndexPage&sort=@sort&maximumPrice=@maxPrice&produceName=@productName"> @nextIndexPage <i class="bi bi-arrow-right"></i></a>
+            } else
+            {
+            <a class="btn btn-outline-secondary" href="/products?categoryId=@categoryId&index=@nextIndexPage&sort=@sort"> @nextIndexPage <i class="bi bi-arrow-right"></i></a>
+            }
         }
     </div>
 
